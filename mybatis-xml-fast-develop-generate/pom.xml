@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.wangshu-g</groupId>
+        <artifactId>ws-dep-manage</artifactId>
+        <version>1.4.5</version>
+    </parent>
+
+    <artifactId>mybatis-xml-fast-develop-generate</artifactId>
+
+    <url>https://github.com/wangshu-g/mybatis-xml-fast-develop</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>wangshu-g</name>
+            <url>https://github.com/wangshu-g</url>
+            <email>2560334673@qq.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/Aftersoil/ws-dep-manage.git</connection>
+        <developerConnection>scm:git:https://github.com/Aftersoil/ws-dep-manage.git</developerConnection>
+        <url>https://github.com/Aftersoil/ws-dep-manage</url>
+    </scm>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>io.github.wangshu-g</groupId>
+            <artifactId>ws-base</artifactId>
+            <version>1.4.5</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>2.1.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+            <version>1.13.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
+    </dependencies>
+
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <configuration>-->
+<!--                    <source>${java.version}</source>-->
+<!--                    <target>${java.version}</target>-->
+<!--                    <encoding>UTF-8</encoding>-->
+<!--                    <compilerArgs>-->
+<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>-->
+<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>-->
+<!--                        <arg>&#45;&#45;add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED</arg>-->
+<!--                    </compilerArgs>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
+
+</project>
