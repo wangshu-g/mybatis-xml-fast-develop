@@ -1,6 +1,5 @@
 package com.wangshu.annotation;
 
-import com.wangshu.enu.ColumnType;
 import com.wangshu.enu.DataBaseType;
 
 import java.lang.annotation.*;
@@ -13,7 +12,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Data {
+public @interface Model {
 
     String table() default "";
 
@@ -24,7 +23,5 @@ public @interface Data {
     String[] names() default {};
 
     DataBaseType dataBaseType() default DataBaseType.mysql;
-
-    ColumnType columnType() default ColumnType.antd;
 
 }

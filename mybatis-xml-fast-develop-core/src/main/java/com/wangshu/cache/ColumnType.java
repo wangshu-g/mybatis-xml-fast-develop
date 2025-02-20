@@ -1,7 +1,7 @@
-package com.wangshu.cache.column;
+package com.wangshu.cache;
 
+import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
-import com.wangshu.tool.StringUtil;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +12,9 @@ import java.util.Objects;
 public class ColumnType {
 
     String name;
-    String dataType;
-    Integer order = 0;
     String title;
+    String dataType;
+    Integer order;
 
     public ColumnType() {
 
@@ -30,7 +30,7 @@ public class ColumnType {
     private String fieldTitle(@NotNull Field field) {
         Column column = field.getAnnotation(Column.class);
         if (Objects.nonNull(column)) {
-            if (StringUtil.isEmpty(column.title())) {
+            if (StrUtil.isBlank(column.title())) {
                 return column.comment();
             }
             return column.title();
@@ -38,8 +38,7 @@ public class ColumnType {
         return field.getName();
     }
 
-    @NotNull
-    private Integer fieldOrder(@NotNull Field field) {
+    private @NotNull Integer fieldOrder(@NotNull Field field) {
         Column column = field.getAnnotation(Column.class);
         if (Objects.nonNull(column)) {
             return column.order();

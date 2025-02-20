@@ -2,8 +2,6 @@ package com.wangshu.base.service;
 
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -118,9 +116,5 @@ public interface BaseDataService<P, M extends BaseDataMapper<T>, T extends BaseM
     int getTotal(Object... keyValuesArray);
 
     int getTotal();
-
-    void importExcel(MultipartFile multipartFile, Integer headerRowNumber);
-
-    void exportExcel(String fileName, List<Map<String, Object>> data, HttpServletResponse response);
 
 }

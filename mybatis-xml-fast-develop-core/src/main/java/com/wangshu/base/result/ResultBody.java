@@ -3,7 +3,6 @@ package com.wangshu.base.result;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 import com.alibaba.fastjson2.filter.Filter;
-import com.wangshu.enu.CommonErrorInfo;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -76,7 +75,7 @@ public class ResultBody<T> implements Serializable {
      **/
     @NotNull
     public static <T> ResultBody<T> success(T data) {
-        return ResultBody.success(data, CommonErrorInfo.SUCCESS.getResultMsg());
+        return ResultBody.success(data, HttpStatus.OK.getReasonPhrase());
     }
 
     @NotNull
@@ -93,7 +92,7 @@ public class ResultBody<T> implements Serializable {
      **/
     @NotNull
     public static <T> ResultBody<T> success(T data, String message) {
-        return ResultBody.success(data, CommonErrorInfo.SUCCESS.getResultCode(), message);
+        return ResultBody.success(data, String.valueOf(HttpStatus.OK.value()), message);
     }
 
     /**
@@ -109,61 +108,6 @@ public class ResultBody<T> implements Serializable {
     }
 
     /**
-     * <p>警告</p>
-     *
-     * @return ResultBody
-     **/
-    @NotNull
-    public static <T> ResultBody<T> warn() {
-        return ResultBody.warn(null);
-    }
-
-    /**
-     * <p>警告</p>
-     *
-     * @return ResultBody
-     **/
-    @NotNull
-    public static <T> ResultBody<T> warn(String message) {
-        return ResultBody.warn(null, message);
-    }
-
-    /**
-     * <p>警告</p>
-     *
-     * @return ResultBody
-     **/
-    @NotNull
-    public static <T> ResultBody<T> warn(T data) {
-        return ResultBody.warn(data, CommonErrorInfo.SUCCESS.getResultMsg());
-    }
-
-    /**
-     * <p>警告</p>
-     *
-     * @param data    响应数据
-     * @param message 提示信息
-     * @return ResultBody
-     **/
-    @NotNull
-    public static <T> ResultBody<T> warn(T data, String message) {
-        return ResultBody.warn(data, "-1", message);
-    }
-
-    /**
-     * <p>警告</p>
-     *
-     * @param data    响应数据
-     * @param code    响应码
-     * @param message 提示信息
-     * @return ResultBody
-     **/
-    @NotNull
-    public static <T> ResultBody<T> warn(T data, String code, String message) {
-        return ResultBody.build(data, code, message, false);
-    }
-
-    /**
      * <p>失败</p>
      *
      * @param message 提示信息
@@ -171,17 +115,12 @@ public class ResultBody<T> implements Serializable {
      **/
     @NotNull
     public static <T> ResultBody<T> error(String message) {
-        return ResultBody.error(CommonErrorInfo.ERROR.getResultCode(), message);
+        return ResultBody.error(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), message);
     }
 
     @NotNull
     public static <T> ResultBody<T> error(@NotNull HttpStatus httpStatus) {
         return ResultBody.error(String.valueOf(httpStatus.value()), httpStatus.getReasonPhrase());
-    }
-
-    @NotNull
-    public static <T> ResultBody<T> error(@NotNull CommonErrorInfo commonErrorInfo) {
-        return ResultBody.error(commonErrorInfo.getResultCode(), commonErrorInfo.getResultMsg());
     }
 
     /**

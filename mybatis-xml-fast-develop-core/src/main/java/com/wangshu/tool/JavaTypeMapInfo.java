@@ -1,5 +1,7 @@
 package com.wangshu.tool;
 
+import cn.hutool.core.util.StrUtil;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,7 +13,7 @@ public class JavaTypeMapInfo {
 
     public static String getNameBySimpleName(String simpleName) throws IllegalArgumentException {
         String name = JAVA_TYPE_SIMPLE_NAME_MAP_JAVA_TYPE_NAME.get(simpleName);
-        if (StringUtil.isEmpty(name)) {
+        if (StrUtil.isBlank(name)) {
             throw new IllegalArgumentException("Unsupported SimpleName: " + simpleName);
         } else {
             return name;

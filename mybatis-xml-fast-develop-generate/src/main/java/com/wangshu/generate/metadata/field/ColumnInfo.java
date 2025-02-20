@@ -7,7 +7,6 @@ import com.wangshu.enu.JoinCondition;
 import com.wangshu.enu.JoinType;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.tool.MysqlTypeMapInfo;
-import com.wangshu.tool.StringUtil;
 import org.apache.ibatis.type.JdbcType;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +35,7 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
         String title = null;
         if (this.isBaseField()) {
             title = this.getColumn().title();
-            if (StringUtil.isEmpty(title)) {
+            if (StrUtil.isBlank(title)) {
                 title = this.getName();
             }
         }
@@ -47,10 +46,10 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
         String comment = null;
         if (this.isBaseField()) {
             comment = this.getColumn().comment();
-            if (StringUtil.isEmpty(comment)) {
+            if (StrUtil.isBlank(comment)) {
                 comment = this.getColumn().title();
             }
-            if (StringUtil.isEmpty(comment)) {
+            if (StrUtil.isBlank(comment)) {
                 comment = this.getName();
             }
         }
@@ -64,7 +63,7 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
         switch (this.getModel().getDataBaseType()) {
             case DataBaseType.mysql -> mybatisJdbcType = MysqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
 //            TODO 添加对应处理
-            case DataBaseType.oracle, DataBaseType.sqlServer -> throw new IllegalArgumentException("暂无对应数据库类型实现");
+            case DataBaseType.oracle, DataBaseType.mssql -> throw new IllegalArgumentException("暂无对应数据库类型实现");
             default -> throw new IllegalArgumentException("没有匹配的数据库类型");
         }
         return mybatisJdbcType;

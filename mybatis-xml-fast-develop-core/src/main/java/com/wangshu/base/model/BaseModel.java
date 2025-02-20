@@ -1,14 +1,12 @@
 package com.wangshu.base.model;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 import com.alibaba.fastjson2.filter.ValueFilter;
 import com.wangshu.annotation.Column;
 import com.wangshu.tool.CacheTool;
-import com.wangshu.tool.RequestUtil;
-import com.wangshu.tool.StringUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
@@ -69,7 +67,7 @@ public class BaseModel implements Serializable {
             fields.forEach((fieldName, field) -> {
                 String title = fieldName;
                 Column annotation = field.getAnnotation(Column.class);
-                if (Objects.nonNull(annotation) && StringUtil.isNotEmpty(annotation.title())) {
+                if (Objects.nonNull(annotation) && StrUtil.isNotBlank(annotation.title())) {
                     title = annotation.title();
                 }
                 if (Objects.nonNull(map.get(title))) {
@@ -84,10 +82,6 @@ public class BaseModel implements Serializable {
         }
     }
 
-    public void setModelValuesFromRequest(HttpServletRequest request) {
-        this.setModelValuesFromMapByFieldName(this.setModelValuesFromRequestBodyParam(request));
-    }
-
     public void setModelValuesFromModelJsonStr(String json) {
         this.setModelValuesFromMapByFieldName(JSON.parseObject(json));
     }
@@ -98,16 +92,6 @@ public class BaseModel implements Serializable {
 
     public boolean fieldIsExist(Field field) {
         return this.modelFields().contains(field);
-    }
-
-    /**
-     * <p>兴许有重写需求</p>
-     *
-     * @param request 请求
-     * @return Map<String, Object> 请求参数
-     **/
-    public Map<String, Object> setModelValuesFromRequestBodyParam(HttpServletRequest request) {
-        return RequestUtil.getRequestParams(request);
     }
 
     public Map<String, Object> toMap() {

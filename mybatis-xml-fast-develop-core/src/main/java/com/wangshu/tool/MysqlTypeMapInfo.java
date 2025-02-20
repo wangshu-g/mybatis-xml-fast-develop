@@ -1,5 +1,6 @@
 package com.wangshu.tool;
 
+import cn.hutool.core.util.StrUtil;
 import org.apache.ibatis.type.JdbcType;
 import org.jetbrains.annotations.NotNull;
 
@@ -124,7 +125,7 @@ public class MysqlTypeMapInfo {
 
     public static String getDbColumnTypeByJavaTypeName(String javaTypeName) {
         String mysqlType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(javaTypeName);
-        if (StringUtil.isEmpty(mysqlType)) {
+        if (StrUtil.isBlank(mysqlType)) {
             throw new IllegalArgumentException("Unsupported javaTypeName: " + javaTypeName);
         }
         return mysqlType;
@@ -132,7 +133,7 @@ public class MysqlTypeMapInfo {
 
     public static String getJavaTypeNameByDbColumnType(@NotNull String dbColumnType) {
         String javaType = DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.get(dbColumnType.toUpperCase());
-        if (StringUtil.isEmpty(javaType)) {
+        if (StrUtil.isBlank(javaType)) {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
         }
         return javaType;

@@ -1,24 +1,23 @@
 package com.wangshu.generate.metadata.model;
 
 import cn.hutool.core.util.StrUtil;
-import com.wangshu.annotation.Data;
+import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
-import com.wangshu.tool.StringUtil;
 
 import java.util.List;
 
 import static com.wangshu.tool.CommonStaticField.JAVA_SUFFIX;
 import static com.wangshu.tool.CommonStaticField.XML_SUFFIX;
 
-public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends Model {
+public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.generate.metadata.model.Model {
 
     ModuleInfo getModuleInfo();
 
     T getMetaData();
 
-    Data getDataAnnotation();
+    Model getDataAnnotation();
 
     default DataBaseType getDataBaseType() {
         return this.getDataAnnotation().dataBaseType();
@@ -41,7 +40,7 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends Model {
     String getModelFullName();
 
     default String getModelPackageName() {
-        return this.getModelFullName().replace(StringUtil.concat(".", this.getModelName()), "");
+        return this.getModelFullName().replace(StrUtil.concat(false, ".", this.getModelName()), "");
     }
 
     List<F> getFields();
@@ -83,131 +82,131 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends Model {
     }
 
     default String getMapperName() {
-        return StringUtil.concat(this.getModelName(), "Mapper");
+        return StrUtil.concat(false, this.getModelName(), "Mapper");
     }
 
     default String getMapperFullName() {
-        return this.getModelFullName().replace(StringUtil.concat("model.", this.getModelName()), StringUtil.concat("mapper.", this.getMapperName()));
+        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "mapper.", this.getMapperName()));
     }
 
     default String getMapperPackageName() {
-        return this.getMapperFullName().replace(StringUtil.concat(".", this.getMapperName()), "");
+        return this.getMapperFullName().replace(StrUtil.concat(false, ".", this.getMapperName()), "");
     }
 
     default String getServiceName() {
-        return StringUtil.concat(this.getModelName(), "Service");
+        return StrUtil.concat(false, this.getModelName(), "Service");
     }
 
     default String getServiceFullName() {
-        return this.getModelFullName().replace(StringUtil.concat("model.", this.getModelName()), StringUtil.concat("service.", this.getServiceName()));
+        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "service.", this.getServiceName()));
     }
 
     default String getServicePackageName() {
-        return this.getServiceFullName().replace(StringUtil.concat(".", this.getServiceName()), "");
+        return this.getServiceFullName().replace(StrUtil.concat(false, ".", this.getServiceName()), "");
     }
 
     default String getServiceImplName() {
-        return StringUtil.concat(this.getModelName(), "ServiceImpl");
+        return StrUtil.concat(false, this.getModelName(), "ServiceImpl");
     }
 
     default String getServiceImplFullName() {
-        return this.getModelFullName().replace(StringUtil.concat("model.", this.getModelName()), StringUtil.concat("service.impl.", this.getServiceImplName()));
+        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "service.impl.", this.getServiceImplName()));
     }
 
     default String getServiceImplPackageName() {
-        return this.getServiceImplFullName().replace(StringUtil.concat(".", this.getServiceImplName()), "");
+        return this.getServiceImplFullName().replace(StrUtil.concat(false, ".", this.getServiceImplName()), "");
     }
 
     default String getControllerName() {
-        return StringUtil.concat(this.getModelName(), "Controller");
+        return StrUtil.concat(false, this.getModelName(), "Controller");
     }
 
     default String getControllerFullName() {
-        return this.getModelFullName().replace(StringUtil.concat("model.", this.getModelName()), StringUtil.concat("controller.", this.getControllerName()));
+        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "controller.", this.getControllerName()));
     }
 
     default String getControllerPackageName() {
-        return this.getControllerFullName().replace(StringUtil.concat(".", this.getControllerName()), "");
+        return this.getControllerFullName().replace(StrUtil.concat(false, ".", this.getControllerName()), "");
     }
 
     default String getApiSave() {
-        return StringUtil.concat("/", this.getModelName(), "/save");
+        return StrUtil.concat(false, "/", this.getModelName(), "/save");
     }
 
     default String getApiUpdate() {
-        return StringUtil.concat("/", this.getModelName(), "/update");
+        return StrUtil.concat(false, "/", this.getModelName(), "/update");
     }
 
     default String getApiSelect() {
-        return StringUtil.concat("/", this.getModelName(), "/select");
+        return StrUtil.concat(false, "/", this.getModelName(), "/select");
     }
 
     default String getApiDelete() {
-        return StringUtil.concat("/", this.getModelName(), "/delete");
+        return StrUtil.concat(false, "/", this.getModelName(), "/delete");
     }
 
     default String getApiList() {
-        return StringUtil.concat("/", this.getModelName(), "/getList");
+        return StrUtil.concat(false, "/", this.getModelName(), "/getList");
     }
 
     default String getApiNestList() {
-        return StringUtil.concat("/", this.getModelName(), "/getNestList");
+        return StrUtil.concat(false, "/", this.getModelName(), "/getNestList");
     }
 
     default String getApiExport() {
-        return StringUtil.concat("/", this.getModelName(), "/exportExcel");
+        return StrUtil.concat(false, "/", this.getModelName(), "/exportExcel");
     }
 
     default String getApiImport() {
-        return StringUtil.concat("/", this.getModelName(), "/importExcel");
+        return StrUtil.concat(false, "/", this.getModelName(), "/importExcel");
     }
 
     default String getModelFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleModelPath(), this.getModelName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleModelPath(), this.getModelName(), JAVA_SUFFIX);
     }
 
     default String getMapperFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleMapperPath(), this.getMapperName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleMapperPath(), this.getMapperName(), JAVA_SUFFIX);
     }
 
     default String getServiceFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleServicePath(), this.getServiceName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleServicePath(), this.getServiceName(), JAVA_SUFFIX);
     }
 
     default String getServiceImplFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleServiceImplPath(), this.getServiceImplName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleServiceImplPath(), this.getServiceImplName(), JAVA_SUFFIX);
     }
 
     default String getControllerFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleControllerPath(), this.getControllerName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleControllerPath(), this.getControllerName(), JAVA_SUFFIX);
     }
 
     default String getXmlFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleXmlPath(), this.getMapperName(), XML_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleXmlPath(), this.getMapperName(), XML_SUFFIX);
     }
 
     default String getGenerateModelFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleGenerateModelPath(), this.getModelName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateModelPath(), this.getModelName(), JAVA_SUFFIX);
     }
 
     default String getGenerateMapperFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleGenerateMapperPath(), this.getMapperName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateMapperPath(), this.getMapperName(), JAVA_SUFFIX);
     }
 
     default String getGenerateServiceFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleGenerateServicePath(), this.getServiceName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateServicePath(), this.getServiceName(), JAVA_SUFFIX);
     }
 
     default String getGenerateServiceImplFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleGenerateServiceImplPath(), this.getServiceImplName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateServiceImplPath(), this.getServiceImplName(), JAVA_SUFFIX);
     }
 
     default String getGenerateControllerFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleGenerateControllerPath(), this.getControllerName(), JAVA_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateControllerPath(), this.getControllerName(), JAVA_SUFFIX);
     }
 
     default String getGenerateXmlFilePath() {
-        return StringUtil.concat(this.getModuleInfo().getModuleGenerateXmlPath(), this.getMapperName(), XML_SUFFIX);
+        return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateXmlPath(), this.getMapperName(), XML_SUFFIX);
     }
 
 }

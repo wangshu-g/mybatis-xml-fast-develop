@@ -6,7 +6,6 @@ import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.generate.metadata.model.ModelClazzInfo;
 import com.wangshu.tool.MysqlTypeMapInfo;
-import com.wangshu.tool.StringUtil;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,7 +104,7 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
     }
 
     private String initJdbcType(@NotNull Field field, @NotNull Column column) {
-        if (StringUtil.isEmpty(column.jdbcType())) {
+        if (StrUtil.isBlank(column.jdbcType())) {
             return MysqlTypeMapInfo.getDbColumnTypeByField(field);
         }
         return column.jdbcType();

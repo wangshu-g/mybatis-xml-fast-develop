@@ -1,13 +1,12 @@
 package com.wangshu.generate.metadata.model;
 
 import com.wangshu.annotation.Column;
-import com.wangshu.annotation.Data;
+import com.wangshu.annotation.Model;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnFieldInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
-import com.wangshu.tool.StringUtil;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,15 +39,15 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
     }
 
     public void initBaseInfo(ModuleInfo moduleInfo, @NotNull Class<? extends BaseModel> metaData, boolean ignoreJoinFields) {
-        Data dataAnnotation = metaData.getAnnotation(Data.class);
-        this.setDataAnnotation(dataAnnotation);
-        this.setDataBaseType(dataAnnotation.dataBaseType());
-        this.setModelDefaultKeyword(dataAnnotation.modelDefaultKeyword());
+        Model modelAnnotation = metaData.getAnnotation(Model.class);
+        this.setModelAnnotation(modelAnnotation);
+        this.setDataBaseType(modelAnnotation.dataBaseType());
+        this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
         this.setTableName(this.initTableName(moduleInfo, metaData, ignoreJoinFields));
-        this.setModelTitle(dataAnnotation.title());
+        this.setModelTitle(modelAnnotation.title());
         this.setModelName(metaData.getSimpleName());
         this.setModelFullName(metaData.getTypeName());
-        this.setModelPackageName(this.getModelFullName().replace(StringUtil.concat(".", this.getModelName()), ""));
+        this.setModelPackageName(this.getModelFullName().replace(StrUtil.concat(false, ".", this.getModelName()), ""));
     }
 
     private void initFields(ModuleInfo moduleInfo, Class<? extends BaseModel> metaData, boolean ignoreJoinFields) {
@@ -75,14 +74,14 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
     }
 
     private String initTableName(ModuleInfo moduleInfo, @NotNull Class<? extends BaseModel> metaData, boolean ignoreJoinFields) {
-        Data dataAnnotation = metaData.getAnnotation(Data.class);
+        Model modelAnnotation = metaData.getAnnotation(Model.class);
         String table = null;
-        if (Objects.nonNull(dataAnnotation)) {
-            this.setDataAnnotation(dataAnnotation);
-            this.setModelDefaultKeyword(dataAnnotation.modelDefaultKeyword());
-            table = dataAnnotation.table();
+        if (Objects.nonNull(modelAnnotation)) {
+            this.setModelAnnotation(modelAnnotation);
+            this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
+            table = modelAnnotation.table();
         }
-        if (StringUtil.isEmpty(table)) {
+        if (StrUtil.isBlank(table)) {
             table = metaData.getSimpleName();
         }
         return table;

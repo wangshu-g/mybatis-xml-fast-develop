@@ -10,7 +10,6 @@ import com.wangshu.generate.GenerateInfo;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.tool.CommonStaticField;
-import com.wangshu.tool.StringUtil;
 import org.apache.ibatis.type.JdbcType;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -142,7 +141,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             insertElement.addAttribute("keyProperty", primaryField.getName());
             baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
         }
-        insertElement.addText(StringUtil.concat(CommonStaticField.WRAP, "insert into ", this.getBackQuoteStr(this.getModel().getTableName()), "(", baseFields.stream().map(item -> getBackQuoteStr(item.getName())).collect(Collectors.joining(",")), ") values (", String.join(",", baseFields.stream().map(item -> getPreCompileStr(item.getName())).collect(Collectors.joining(","))), ");", CommonStaticField.WRAP));
+        insertElement.addText(StrUtil.concat(false, CommonStaticField.WRAP, "insert into ", this.getBackQuoteStr(this.getModel().getTableName()), "(", baseFields.stream().map(item -> getBackQuoteStr(item.getName())).collect(Collectors.joining(",")), ") values (", String.join(",", baseFields.stream().map(item -> getPreCompileStr(item.getName())).collect(Collectors.joining(","))), ");", CommonStaticField.WRAP));
         return insertElement;
     }
 
@@ -157,9 +156,9 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             batchInsertElement.addAttribute("keyProperty", primaryField.getName());
             baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
         }
-        String text = StringUtil.concat(CommonStaticField.WRAP, "insert into ", this.getBackQuoteStr(this.getModel().getTableName()), "(", baseFields.stream().map(item -> getBackQuoteStr(item.getName())).collect(Collectors.joining(",")), ") values", CommonStaticField.WRAP);
+        String text = StrUtil.concat(false, CommonStaticField.WRAP, "insert into ", this.getBackQuoteStr(this.getModel().getTableName()), "(", baseFields.stream().map(item -> getBackQuoteStr(item.getName())).collect(Collectors.joining(",")), ") values", CommonStaticField.WRAP);
         batchInsertElement.addText(text);
-        String forEachText = StringUtil.concat("(", String.join(",", baseFields.stream().map(item -> getPreCompileStr(StringUtil.concat("item.", item.getName()))).collect(Collectors.joining(","))), ")");
+        String forEachText = StrUtil.concat(false, "(", String.join(",", baseFields.stream().map(item -> getPreCompileStr(StrUtil.concat(false, "item.", item.getName()))).collect(Collectors.joining(","))), ")");
         org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
         forEachElement.addText(forEachText);
         batchInsertElement.add(forEachElement);
@@ -170,7 +169,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         org.dom4j.Element deleteElement = this.createXmlElement("delete");
         deleteElement.addAttribute("id", CommonStaticField.DELETE_METHOD_NAME);
         deleteElement.addAttribute("parameterType", "Map");
-        deleteElement.addText(StringUtil.concat(CommonStaticField.WRAP, "delete from ", this.getBackQuoteStr(this.getModel().getTableName())));
+        deleteElement.addText(StrUtil.concat(false, CommonStaticField.WRAP, "delete from ", this.getBackQuoteStr(this.getModel().getTableName())));
         org.dom4j.Element whereElement = this.createXmlElement("where");
 
         List<F> tempFields = new ArrayList<>(this.getModel().getBaseFields());
@@ -184,15 +183,15 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         org.dom4j.Element updateElement = this.createXmlElement("update");
         updateElement.addAttribute("id", CommonStaticField.UPDATE_METHOD_NAME);
         updateElement.addAttribute("parameterType", "Map");
-        String text = StringUtil.concat(CommonStaticField.WRAP, "update ", this.getBackQuoteStr(this.getModel().getTableName()), CommonStaticField.WRAP);
+        String text = StrUtil.concat(false, CommonStaticField.WRAP, "update ", this.getBackQuoteStr(this.getModel().getTableName()), CommonStaticField.WRAP);
         updateElement.addText(text);
         org.dom4j.Element setElement = this.createXmlElement("set");
         this.getModel().getBaseFields().forEach(item -> {
-            Element ifNotNullElement = this.getIfNotNullElement(StringUtil.concat("new", StrUtil.upperFirst(item.getName())));
-            ifNotNullElement.addText(StringUtil.concat(getBackQuoteStr(item.getName()), " = ", getPreCompileStr(StringUtil.concat("new", StrUtil.upperFirst(item.getName()))), ","));
+            Element ifNotNullElement = this.getIfNotNullElement(StrUtil.concat(false, "new", StrUtil.upperFirst(item.getName())));
+            ifNotNullElement.addText(StrUtil.concat(false, getBackQuoteStr(item.getName()), " = ", getPreCompileStr(StrUtil.concat(false, "new", StrUtil.upperFirst(item.getName()))), ","));
             setElement.add(ifNotNullElement);
             Element ifSetNullElement = this.getIfSetNullElement(item.getName());
-            ifSetNullElement.addText(StringUtil.concat(getBackQuoteStr(item.getName()), " = null,"));
+            ifSetNullElement.addText(StrUtil.concat(false, getBackQuoteStr(item.getName()), " = null,"));
             setElement.add(ifSetNullElement);
         });
         updateElement.add(setElement);
@@ -211,7 +210,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         selectElement.addAttribute("parameterType", "Map");
         selectElement.addAttribute("resultType", this.getModel().getModelFullName());
         selectElement.addAttribute("resultMap", this.getModel().getModelName());
-        selectElement.addText(StringUtil.concat(CommonStaticField.WRAP, "select ", "\n"));
+        selectElement.addText(StrUtil.concat(false, CommonStaticField.WRAP, "select ", "\n"));
 
         List<F> tempFields = new ArrayList<>();
         tempFields.addAll(this.getModel().getBaseFields());
@@ -221,7 +220,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         selectElement.addText(this.getFieldsSelectText(tempFields));
         selectElement.addText(CommonStaticField.WRAP);
 
-        selectElement.addText(StringUtil.concat("from ", this.getBackQuoteStr(this.getModel().getTableName())));
+        selectElement.addText(StrUtil.concat(false, "from ", this.getBackQuoteStr(this.getModel().getTableName())));
         selectElement.addText(CommonStaticField.WRAP);
 
         List<F> joinFields = new ArrayList<>();
@@ -263,7 +262,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         listElement.addText(this.getFieldsSelectText(tempFields));
         listElement.addText(CommonStaticField.WRAP);
 
-        listElement.addText(StringUtil.concat("from ", this.getBackQuoteStr(this.getModel().getTableName()), CommonStaticField.WRAP));
+        listElement.addText(StrUtil.concat(false, "from ", this.getBackQuoteStr(this.getModel().getTableName()), CommonStaticField.WRAP));
         List<F> joinFields = new ArrayList<>();
         joinFields.addAll(this.getModel().getClazzJoinFields());
 //        joinFields.addAll(collectionFields);
@@ -300,7 +299,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         nestListElement.addText(this.getFieldsSelectText(tempFields));
         nestListElement.addText(CommonStaticField.WRAP);
 
-        nestListElement.addText(StringUtil.concat("from ", this.getBackQuoteStr(this.getModel().getTableName())));
+        nestListElement.addText(StrUtil.concat(false, "from ", this.getBackQuoteStr(this.getModel().getTableName())));
         nestListElement.addText(CommonStaticField.WRAP);
 
         List<F> joinFields = new ArrayList<>();
@@ -327,7 +326,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         totalElement.addAttribute("parameterType", "Map");
         totalElement.addAttribute("resultType", Integer.class.getSimpleName());
         totalElement.addText(CommonStaticField.WRAP);
-        totalElement.addText(StringUtil.concat("select count(", this.getBackQuoteStr(this.getModel().getTableName()), ".", this.getBackQuoteStr(this.getModel().getPrimaryField().getName()), ") from ", this.getBackQuoteStr(this.getModel().getTableName())));
+        totalElement.addText(StrUtil.concat(false, "select count(", this.getBackQuoteStr(this.getModel().getTableName()), ".", this.getBackQuoteStr(this.getModel().getPrimaryField().getName()), ") from ", this.getBackQuoteStr(this.getModel().getTableName())));
         totalElement.addText(CommonStaticField.WRAP);
 
         List<F> joinFields = new ArrayList<>();
@@ -369,7 +368,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             }
             for (F baseField : baseFields) {
                 String property = baseField.getName();
-                String column = StringUtil.concat(field.getName(), field.getInfix(), StringUtils.capitalize(property));
+                String column = StrUtil.concat(false, field.getName(), field.getInfix(), StringUtils.capitalize(property));
                 JdbcType mybatisJdbcType = baseField.getMybatisJdbcType();
                 Element idResultElement = this.getResultMapElement(column, mybatisJdbcType.name(), property, baseField.isPrimaryField());
                 element.add(idResultElement);
@@ -401,7 +400,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
                 for (F baseField : baseFields) {
                     String table = getJoinLeftTableAsName(field);
                     String columnName = baseField.getName();
-                    String columnAsName = StringUtil.concat(field.getName(), field.getInfix(), StringUtils.capitalize(columnName));
+                    String columnAsName = StrUtil.concat(false, field.getName(), field.getInfix(), StringUtils.capitalize(columnName));
                     fieldsSelectText.add(this.getSelectText(table, columnName, columnAsName));
                 }
             }
@@ -418,7 +417,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     public String getJoinRightTableAsName(@NotNull F joinField) {
         T leftModel = joinField.getLeftModel();
         T rightModel = joinField.getRightModel();
-        if (StringUtil.isEmpty(joinField.getIndirectJoinField()) && StrUtil.equals(rightModel.getModelName(), this.getModel().getModelName())) {
+        if (StrUtil.isBlank(joinField.getIndirectJoinField()) && StrUtil.equals(rightModel.getModelName(), this.getModel().getModelName())) {
             return rightModel.getTableName();
         } else {
 //            存在间接关联
@@ -426,7 +425,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             if (list.isEmpty()) {
                 list = this.getModel().getCollectionJoinFields().stream().filter(item -> StrUtil.equals(item.getLeftModel().getModelName(), item.getLeftModel().getModelFullName())).toList();
             }
-            if (StringUtil.isEmpty(joinField.getIndirectJoinField())) {
+            if (StrUtil.isBlank(joinField.getIndirectJoinField())) {
                 return this.getJoinLeftTableAsName(list.getFirst());
             } else {
                 return this.getJoinLeftTableAsName(list.stream().collect(Collectors.toMap(k -> k.getName(), v -> v)).get(joinField.getIndirectJoinField()));
@@ -460,16 +459,16 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
 
                 switch (joinCondition) {
                     case equal -> {
-                        fieldsJoinText.add(StringUtil.concat(joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " = ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
+                        fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " = ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
                     }
                     case great -> {
-                        fieldsJoinText.add(StringUtil.concat(joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " > ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
+                        fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " > ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
                     }
                     case less -> {
-                        fieldsJoinText.add(StringUtil.concat(joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " < ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
+                        fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " < ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
                     }
                     case like -> {
-                        fieldsJoinText.add(StringUtil.concat(joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on instr(", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), ",", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField), ")"));
+                        fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on instr(", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), ",", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField), ")"));
                     }
                 }
             }
@@ -527,7 +526,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     }
 
     public org.dom4j.Element getBaseFieldIfElement(@NotNull F field, @NotNull Condition condition) {
-        String testConditionName = StringUtil.concat(field.getName(), StringUtils.capitalize(condition.equals(Condition.equal) ? "" : condition.name()));
+        String testConditionName = StrUtil.concat(false, field.getName(), StringUtils.capitalize(condition.equals(Condition.equal) ? "" : condition.name()));
         org.dom4j.Element ifElement = this.getIfNotNullElement(testConditionName);
         this.getBaseFieldIfText(ifElement, field, condition, testConditionName);
         return ifElement;
@@ -546,7 +545,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
      * @return org.dom4j.Element ifElement
      **/
     public org.dom4j.Element getJoinFieldIfElement(@NotNull F joinField, T leftModel, @NotNull F selectField, @NotNull Condition condition) {
-        String testConditionName = StringUtil.concat(joinField.getName(), joinField.getInfix(), StringUtils.capitalize(selectField.getName()), StringUtils.capitalize(condition.equals(Condition.equal) ? "" : condition.name()));
+        String testConditionName = StrUtil.concat(false, joinField.getName(), joinField.getInfix(), StringUtils.capitalize(selectField.getName()), StringUtils.capitalize(condition.equals(Condition.equal) ? "" : condition.name()));
         org.dom4j.Element ifElement = this.getIfNotNullElement(testConditionName);
         this.getJoinFieldIfText(ifElement, joinField, leftModel, selectField, condition, testConditionName);
         return ifElement;
@@ -567,12 +566,12 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             ifText = this.getLikeIfText(table, columnName, testConditionName, isAndStr);
         } else if (List.of(Condition.in, Condition.orIn).contains(condition)) {
             String orAndStr = condition.name().indexOf("or") == 0 ? "or " : "and ";
-            String itemText = StringUtil.concat(testConditionName, "Item");
+            String itemText = StrUtil.concat(false, testConditionName, "Item");
             org.dom4j.Element forEachElement = this.getForEachElement(testConditionName, itemText, null, "(", ")", null);
             forEachElement.addText(CommonStaticField.WRAP);
             forEachElement.addText(this.getPreCompileStr(itemText));
             forEachElement.addText(CommonStaticField.WRAP);
-            ifElement.addText(StringUtil.concat(CommonStaticField.WRAP, orAndStr, this.getBackQuoteStr(table), ".", this.getBackQuoteStr(columnName), " in", CommonStaticField.WRAP));
+            ifElement.addText(StrUtil.concat(false, CommonStaticField.WRAP, orAndStr, this.getBackQuoteStr(table), ".", this.getBackQuoteStr(columnName), " in", CommonStaticField.WRAP));
             ifElement.add(forEachElement);
             return;
         } else if (List.of(Condition.isNull, Condition.orIsNull, Condition.isNotNull, Condition.orIsNotNull).contains(condition)) {
@@ -585,14 +584,14 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     public org.dom4j.Element getLimit() {
         org.dom4j.Element ifElement = this.createXmlElement("if");
         ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
-        ifElement.addText(StringUtil.concat("limit ", this.getPreCompileStr("pageIndex"), ",", this.getPreCompileStr("pageSize")));
+        ifElement.addText(StrUtil.concat(false, "limit ", this.getPreCompileStr("pageIndex"), ",", this.getPreCompileStr("pageSize")));
         return ifElement;
     }
 
     public org.dom4j.Element getOrder() {
         org.dom4j.Element ifElement = this.createXmlElement("if");
         ifElement.addAttribute("test", "orderColumn != null");
-        ifElement.addText(StringUtil.concat("order by ", this.getBackQuoteStr(this.getConcatStr("orderColumn")), " ", this.getConcatStr("order")));
+        ifElement.addText(StrUtil.concat(false, "order by ", this.getBackQuoteStr(this.getConcatStr("orderColumn")), " ", this.getConcatStr("order")));
         return ifElement;
     }
 
@@ -623,59 +622,59 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     }
 
     public String getSelectText(String tableName, String columnName) {
-        return StringUtil.concat(this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName));
+        return StrUtil.concat(false, this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName));
     }
 
     public String getSelectText(String tableName, String columnName, String columnAsName) {
-        return StringUtil.concat(this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), " as ", this.getBackQuoteStr(columnAsName));
+        return StrUtil.concat(false, this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), " as ", this.getBackQuoteStr(columnAsName));
     }
 
     public org.dom4j.Element getIfNotNullElement(String testName) {
         org.dom4j.Element ifElement = this.createXmlElement("if");
-        ifElement.addAttribute("test", StringUtil.concat(testName, " != null"));
+        ifElement.addAttribute("test", StrUtil.concat(false, testName, " != null"));
         return ifElement;
     }
 
     public org.dom4j.Element getIfSetNullElement(String testName) {
         org.dom4j.Element ifElement = this.createXmlElement("if");
-        ifElement.addAttribute("test", StringUtil.concat("set", StrUtil.upperFirst(testName), "Null", " != null"));
+        ifElement.addAttribute("test", StrUtil.concat(false, "set", StrUtil.upperFirst(testName), "Null", " != null"));
         return ifElement;
     }
 
     public String getNormalIfText(String tableName, String columnName, String conditionSeparator, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
-        return StringUtil.concat(orAndStr, this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), conditionSeparator, this.getPreCompileStr(testConditionName));
+        return StrUtil.concat(false, orAndStr, this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), conditionSeparator, this.getPreCompileStr(testConditionName));
     }
 
     public String getLikeIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
-        return StringUtil.concat(orAndStr, "instr(", this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), ",", this.getPreCompileStr(testConditionName), ") > 0");
+        return StrUtil.concat(false, orAndStr, "instr(", this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), ",", this.getPreCompileStr(testConditionName), ") > 0");
     }
 
     public String getNullIfText(String tableName, String columnName, boolean isAndStr, boolean isNull) {
         String orAndStr = isAndStr ? "and " : "or ";
         String endStr = isNull ? " is null" : " is not null";
-        return StringUtil.concat(orAndStr, this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), endStr);
+        return StrUtil.concat(false, orAndStr, this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), endStr);
     }
 
     public org.dom4j.Element getForEachElement(String collection, String item, String index, String open, String close, String separator) {
-        if (StringUtil.isEmpty(item)) {
+        if (StrUtil.isBlank(item)) {
             item = "item";
         }
-        if (StringUtil.isEmpty(index)) {
+        if (StrUtil.isBlank(index)) {
             index = "index";
         }
-        if (StringUtil.isEmpty(separator)) {
+        if (StrUtil.isBlank(separator)) {
             separator = ",";
         }
         org.dom4j.Element forEachElement = this.createXmlElement("foreach");
         forEachElement.addAttribute("collection", collection);
         forEachElement.addAttribute("item", item);
         forEachElement.addAttribute("index", index);
-        if (StringUtil.isNotEmpty(open)) {
+        if (StrUtil.isNotBlank(open)) {
             forEachElement.addAttribute("open", open);
         }
-        if (StringUtil.isNotEmpty(close)) {
+        if (StrUtil.isNotBlank(close)) {
             forEachElement.addAttribute("close", close);
         }
         forEachElement.addAttribute("separator", separator);
@@ -694,14 +693,14 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     }
 
     public String getBackQuoteStr(String str) {
-        return StringUtil.concat("`", str, "`");
+        return StrUtil.concat(false, "`", str, "`");
     }
 
     public String getPreCompileStr(String str) {
-        return StringUtil.concat("#{", str, "}");
+        return StrUtil.concat(false, "#{", str, "}");
     }
 
     public String getConcatStr(String str) {
-        return StringUtil.concat("${", str, "}");
+        return StrUtil.concat(false, "${", str, "}");
     }
 }

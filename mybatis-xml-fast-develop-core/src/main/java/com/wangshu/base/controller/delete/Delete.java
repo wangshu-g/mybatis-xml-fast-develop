@@ -4,12 +4,11 @@ import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
-import com.wangshu.base.service.AbstractBaseDataService;
 import com.wangshu.base.service.BaseDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
@@ -19,7 +18,7 @@ public interface Delete<S extends BaseDataService<?, ? extends BaseDataMapper<T>
     /**
      * <p>删除</p>
      **/
-    @RequestMapping("/delete")
+    @PostMapping("/delete")
     @ResponseBody
     public default String delete(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
         Map<String, Object> map = this.getRequestParams(request);

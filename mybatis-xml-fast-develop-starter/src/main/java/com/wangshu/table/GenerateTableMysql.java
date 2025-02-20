@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.tool.MysqlTypeMapInfo;
-import com.wangshu.tool.StringUtil;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -51,9 +50,9 @@ public class GenerateTableMysql extends GenerateTable {
             }
         } catch (SQLException e) {
             if (flag) {
-                log.error(StringUtil.concat("修改表 ", tableName, " 失败"), e);
+                log.error(StrUtil.concat(false, "修改表 ", tableName, " 失败"), e);
             } else {
-                log.error(StringUtil.concat("创建表 ", tableName, " 失败"), e);
+                log.error(StrUtil.concat(false, "创建表 ", tableName, " 失败"), e);
             }
         }
     }
@@ -106,20 +105,20 @@ public class GenerateTableMysql extends GenerateTable {
     }
 
     public String generateCreateTable(String tableName) {
-        String sql = StringUtil.concat("create table `", tableName, "` ( ");
+        String sql = StrUtil.concat(false, "create table `", tableName, "` ( ");
         for (int index = 0; index < this.getFields().size(); index++) {
             Field item = this.getFields().get(index);
-            String columnName = StringUtil.concat("`", item.getName(), "`");
+            String columnName = StrUtil.concat(false, "`", item.getName(), "`");
             int length = this.getDefaultLength(item);
-            String columnType = StringUtil.concat(this.getJdbcType(item).toLowerCase(), length == -1 ? "" : StringUtil.concat("(", String.valueOf(length), ")"));
+            String columnType = StrUtil.concat(false, this.getJdbcType(item).toLowerCase(), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             boolean defaultNullFlag = this.isDefaultNull(item);
             String columnNull = defaultNullFlag ? "null" : "not null";
             boolean primaryKeyFlag = this.isPrimaryKey(item);
             String columnAutoIncrement = (primaryKeyFlag && (item.getType().equals(Long.class) || item.getType().equals(Integer.class))) ? "auto_increment" : "";
-            String columnComment = StringUtil.concat("comment '", this.getComment(item), "'");
+            String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
             String columnPrimary = this.isPrimaryKey(item) ? "primary key" : "";
             String columnEnd = index == this.getFields().size() - 1 ? "" : ",";
-            sql = StringUtil.concat(sql,
+            sql = StrUtil.concat(false, sql,
                     columnName, " ",
                     columnType, " ",
                     columnNull, " ",
@@ -129,23 +128,23 @@ public class GenerateTableMysql extends GenerateTable {
                     columnEnd
             );
         }
-        sql = StringUtil.concat(sql, " ) collate = utf8mb4_bin;");
+        sql = StrUtil.concat(false, sql, " ) collate = utf8mb4_bin;");
         return sql;
     }
 
     public String generateAddColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StringUtil.concat(
+        return StrUtil.concat(false,
                 "alter table `", tableName,
                 "` add `", columnName, "` ",
-                columnJdbcType, columnLength == -1 ? "" : StringUtil.concat("(", String.valueOf(columnLength), ")")
+                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
         );
     }
 
     public String generateAlterColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StringUtil.concat(
+        return StrUtil.concat(false,
                 "alter table `", tableName,
                 "` modify `", columnName, "` ",
-                columnJdbcType, columnLength == -1 ? "" : StringUtil.concat("(", String.valueOf(columnLength), ")")
+                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
         );
     }
 
@@ -156,7 +155,7 @@ public class GenerateTableMysql extends GenerateTable {
         if (Objects.nonNull(column)) {
             jdbcType = column.jdbcType();
         }
-        if (StringUtil.isEmpty(jdbcType)) {
+        if (StrUtil.isBlank(jdbcType)) {
             jdbcType = MysqlTypeMapInfo.getDbColumnTypeByField(field);
         }
         return jdbcType;

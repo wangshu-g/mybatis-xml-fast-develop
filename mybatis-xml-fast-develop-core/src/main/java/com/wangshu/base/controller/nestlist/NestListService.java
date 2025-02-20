@@ -3,12 +3,11 @@ package com.wangshu.base.controller.nestlist;
 import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.base.service.AbstractBaseDataService;
 import com.wangshu.base.service.BaseDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ public interface NestListService<S extends BaseDataService<?, ? extends BaseData
     /**
      * <p>查询列表</p>
      **/
-    @RequestMapping("/getList")
+    @PostMapping("/getList")
     @ResponseBody
     public default List<T> getNestList(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
         return this.getService().getNestList(this.getRequestParams(request));

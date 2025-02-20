@@ -1,7 +1,7 @@
 package com.wangshu;
 
-import com.wangshu.annotation.Data;
 import com.wangshu.annotation.EnableConfig;
+import com.wangshu.annotation.Model;
 import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
@@ -64,15 +64,15 @@ public class ConfigManager implements ApplicationContextAware {
             dataSourceMap.forEach((k, v) -> {
                 try (Connection connection = v.getConnection()) {
                     for (Class<? extends BaseModel> modelClazz : CommonParam.modelClazz) {
-                        Data dataAnnotation = modelClazz.getAnnotation(Data.class);
+                        Model modelAnnotation = modelClazz.getAnnotation(Model.class);
                         GenerateTable generateTable = null;
-                        switch (dataAnnotation.dataBaseType()) {
+                        switch (modelAnnotation.dataBaseType()) {
                             case mysql -> generateTable = new GenerateTableMysql(modelClazz);
-                            case sqlServer -> generateTable = null;
+                            case mssql -> generateTable = null;
                             case oracle -> generateTable = null;
                         }
                         if (Objects.isNull(generateTable)) {
-                            log.warn("暂无对应数据库类型实现: {}", dataAnnotation.dataBaseType());
+                            log.warn("暂无对应数据库类型实现: {}", modelAnnotation.dataBaseType());
                         } else {
                             generateTable.createTable(connection);
                         }

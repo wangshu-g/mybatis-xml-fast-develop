@@ -8,7 +8,7 @@
     <parent>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>ws-dep-manage</artifactId>
-        <version>1.4.5</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>mybatis-xml-fast-develop-starter</artifactId>
@@ -34,8 +34,8 @@
 
         <dependency>
             <groupId>io.github.wangshu-g</groupId>
-            <artifactId>ws-base</artifactId>
-            <version>1.4.5</version>
+            <artifactId>mybatis-xml-fast-develop-core</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>

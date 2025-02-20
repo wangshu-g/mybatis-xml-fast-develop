@@ -8,7 +8,7 @@ import com.wangshu.base.service.BaseDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ public interface DeleteResultBody<S extends BaseDataService<?, ? extends BaseDat
     /**
      * <p>删除</p>
      **/
-    @RequestMapping("/delete")
+    @PostMapping("/delete")
     @ResponseBody
     public default ResultBody<Object> delete(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
         Map<String, Object> map = this.getRequestParams(request);

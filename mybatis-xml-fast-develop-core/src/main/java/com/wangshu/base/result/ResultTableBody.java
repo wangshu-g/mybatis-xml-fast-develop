@@ -1,10 +1,10 @@
 package com.wangshu.base.result;
 
-import com.wangshu.cache.column.ColumnType;
-import com.wangshu.enu.CommonErrorInfo;
+import com.wangshu.cache.ColumnType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -36,11 +36,11 @@ public class ResultTableBody<T> extends ResultBody<T> {
     }
 
     public static <T> @NotNull ResultTableBody<T> success(T data, int total, List<ColumnType> columns) {
-        return ResultTableBody.build(data, total, columns, CommonErrorInfo.SUCCESS.getResultCode(), CommonErrorInfo.SUCCESS.getResultMsg(), true);
+        return ResultTableBody.build(data, total, columns, String.valueOf(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), true);
     }
 
     public static <T> @NotNull ResultTableBody<T> success(T data, int total) {
-        return ResultTableBody.build(data, total, List.of(), CommonErrorInfo.SUCCESS.getResultCode(), CommonErrorInfo.SUCCESS.getResultMsg(), true);
+        return ResultTableBody.build(data, total, List.of(), String.valueOf(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), true);
     }
 
 }

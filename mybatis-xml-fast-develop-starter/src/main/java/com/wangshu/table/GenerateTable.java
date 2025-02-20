@@ -2,7 +2,6 @@ package com.wangshu.table;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
-import com.wangshu.tool.StringUtil;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,11 +44,11 @@ public abstract class GenerateTable extends ModelInfo {
         Column column = field.getAnnotation(Column.class);
         if (Objects.nonNull(column)) {
             comment = column.comment();
-            if (StringUtil.isEmpty(comment)) {
+            if (StrUtil.isBlank(comment)) {
                 comment = column.title();
             }
         }
-        if (StringUtil.isEmpty(comment)) {
+        if (StrUtil.isBlank(comment)) {
             comment = field.getName();
         }
         return comment;

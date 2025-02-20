@@ -5,13 +5,12 @@ import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
 import com.wangshu.base.result.ResultTableBody;
-import com.wangshu.base.service.AbstractBaseDataService;
 import com.wangshu.base.service.BaseDataService;
 import com.wangshu.tool.CacheTool;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
@@ -23,7 +22,7 @@ public interface ListTableResultTableBody<S extends BaseDataService<?, ? extends
     /**
      * <p>查询列表</p>
      **/
-    @RequestMapping("/getList")
+    @PostMapping("/getList")
     @ResponseBody
     public default ResultBody<List<Map<String, Object>>> getList(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
         Map<String, Object> params = this.getRequestParams(request);

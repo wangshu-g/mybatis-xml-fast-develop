@@ -1,6 +1,6 @@
 package com.wangshu.generate.metadata.model;
 
-import com.wangshu.annotation.Data;
+import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
@@ -13,7 +13,7 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
     private ModuleInfo moduleInfo;
     private T metaData;
 
-    private Data dataAnnotation;
+    private Model modelAnnotation;
     private DataBaseType dataBaseType;
     private String modelDefaultKeyword;
     private String tableName;

@@ -13,7 +13,7 @@
 
     <groupId>io.github.wangshu-g</groupId>
     <artifactId>ws-dep-manage</artifactId>
-    <version>1.4.5</version>
+    <version>1.0.0</version>
 
     <packaging>pom</packaging>
 
@@ -21,6 +21,7 @@
         <module>mybatis-xml-fast-develop-core</module>
         <module>mybatis-xml-fast-develop-generate</module>
         <module>mybatis-xml-fast-develop-starter</module>
+        <module>mybatis-xml-fast-develop-generate-compile-time</module>
     </modules>
 
     <url>https://github.com/wangshu-g/mybatis-xml-fast-develop</url>
@@ -40,11 +41,19 @@
         </developer>
     </developers>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/wangshu-g/mybatis-xml-fast-develop</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <java.version>21</java.version>
         <kotlin.version>1.9.25</kotlin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-framework-bom.version>6.1.14</spring-framework-bom.version>
+        <spring-framework-bom.version>6.2.3</spring-framework-bom.version>
         <mybatis.version>3.5.14</mybatis.version>
         <mybatis-starter.version>3.0.3</mybatis-starter.version>
         <mybatis-spring.version>3.0.3</mybatis-spring.version>
@@ -164,60 +173,6 @@
                         <phase>test-compile</phase>
                         <goals>
                             <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.4.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <publishingServerId>ossrh</publishingServerId>
-                    <tokenAuth>true</tokenAuth>
-                    <autoPublish>false</autoPublish>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.3</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <failOnError>false</failOnError>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.2</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>

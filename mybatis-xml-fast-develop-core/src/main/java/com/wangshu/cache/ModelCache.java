@@ -2,14 +2,11 @@ package com.wangshu.cache;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
-import com.wangshu.annotation.Data;
+import com.wangshu.annotation.Model;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.cache.column.ColumnType;
-import com.wangshu.cache.column.ColumnTypeFactory;
 import com.wangshu.enu.Condition;
 import com.wangshu.tool.CommonTool;
-import com.wangshu.tool.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.StringUtils;
@@ -65,7 +62,7 @@ public class ModelCache {
 
     private @NotNull List<ColumnType> modelColumnType(@NotNull Class<? extends BaseModel> modelClazz) {
         List<ColumnType> columnTypes = new ArrayList<>();
-        Data annotation = modelClazz.getAnnotation(Data.class);
+        Model annotation = modelClazz.getAnnotation(Model.class);
         if (Objects.nonNull(annotation)) {
             com.wangshu.enu.ColumnType columnType = annotation.columnType();
             for (Field field : this.baseFields) {
@@ -88,7 +85,7 @@ public class ModelCache {
                 Class<? extends BaseModel> leftJoinClazz = joinFieldLeftJoinClazz(clazzField);
                 if (Objects.nonNull(leftJoinClazz)) {
                     for (Field clazzBaseField : CommonTool.getClazzBaseFields(leftJoinClazz)) {
-                        orderColumnPossibleParameterName.add(StringUtil.concat(name, infix, StrUtil.upperFirst(clazzBaseField.getName())));
+                        orderColumnPossibleParameterName.add(StrUtil.concat(false, name, infix, StrUtil.upperFirst(clazzBaseField.getName())));
                     }
                 }
             }
@@ -115,7 +112,7 @@ public class ModelCache {
             String name = baseField.getName();
             for (Condition condition : conditions) {
                 if (!condition.equals(Condition.all)) {
-                    list.add(StringUtil.concat(name, StringUtils.capitalize(condition.equals(Condition.equal) ? "" : condition.name())));
+                    list.add(StrUtil.concat(false, name, StringUtils.capitalize(condition.equals(Condition.equal) ? "" : condition.name())));
                 }
             }
         }
