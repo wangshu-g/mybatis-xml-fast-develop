@@ -1,5 +1,7 @@
 package com.wangshu.generate.metadata.module;
 
+import cn.hutool.core.util.StrUtil;
+
 import java.io.File;
 
 import static com.wangshu.tool.CommonStaticField.FILE_DOT;

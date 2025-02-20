@@ -1,9 +1,9 @@
 package com.wangshu.exception;
 
 import com.wangshu.base.result.ResultBody;
-import com.wangshu.enu.CommonErrorInfo;
 import com.wangshu.tool.CommonParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,7 +34,7 @@ public class IExceptionHandler {
         if (e instanceof ErrorResponse errorResponse) {
             return ResultBody.error(String.valueOf(errorResponse.getStatusCode().value()), e.getMessage()).toJsonyMdHms();
         }
-        return ResultBody.error(CommonErrorInfo.SERVER_ERROR).toJson();
+        return ResultBody.error(HttpStatus.INTERNAL_SERVER_ERROR).toJson();
     }
 
 }

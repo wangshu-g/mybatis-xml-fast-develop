@@ -17,22 +17,22 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
 
     T getMetaData();
 
-    Model getDataAnnotation();
+    Model getModelAnnotation();
 
     default DataBaseType getDataBaseType() {
-        return this.getDataAnnotation().dataBaseType();
+        return this.getModelAnnotation().dataBaseType();
     }
 
     default String getModelDefaultKeyword() {
-        return this.getDataAnnotation().modelDefaultKeyword();
+        return this.getModelAnnotation().modelDefaultKeyword();
     }
 
     default String getTableName() {
-        return this.getDataAnnotation().table();
+        return this.getModelAnnotation().table();
     }
 
     default String getModelTitle() {
-        return this.getDataAnnotation().title();
+        return this.getModelAnnotation().title();
     }
 
     String getModelName();

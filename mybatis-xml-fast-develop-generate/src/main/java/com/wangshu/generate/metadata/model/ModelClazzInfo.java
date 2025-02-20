@@ -1,5 +1,6 @@
 package com.wangshu.generate.metadata.model;
 
+import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Model;
 import com.wangshu.annotation.Join;

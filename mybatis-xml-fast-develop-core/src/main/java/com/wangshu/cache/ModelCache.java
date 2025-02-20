@@ -2,8 +2,8 @@ package com.wangshu.cache;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
-import com.wangshu.annotation.Model;
 import com.wangshu.annotation.Join;
+import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import com.wangshu.tool.CommonTool;
@@ -64,9 +64,8 @@ public class ModelCache {
         List<ColumnType> columnTypes = new ArrayList<>();
         Model annotation = modelClazz.getAnnotation(Model.class);
         if (Objects.nonNull(annotation)) {
-            com.wangshu.enu.ColumnType columnType = annotation.columnType();
             for (Field field : this.baseFields) {
-                columnTypes.add(ColumnTypeFactory.getInstance().create(columnType, field));
+                columnTypes.add(new ColumnType(field));
             }
         }
         return columnTypes;
