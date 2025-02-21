@@ -71,17 +71,17 @@ public class GenerateTableMysql extends GenerateTable {
         DatabaseMetaData databaseMetaData = connection.getMetaData();
         String database = connection.getCatalog();
         ResultSet columnsResult = databaseMetaData.getColumns(database, databaseMetaData.getUserName(), tableName, null);
-        Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap(k -> k.getName().toLowerCase(), v -> v));
+        Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap(Field::getName, v -> v));
         while (columnsResult.next()) {
-            String column = columnsResult.getString("COLUMN_NAME").toLowerCase();
+            String column = columnsResult.getString("COLUMN_NAME");
             Field columnInfo = columnMap.get(column);
             if (Objects.nonNull(columnInfo)) {
-                String type = columnsResult.getString("TYPE_NAME").toLowerCase();
-                String columnJdbcType = this.getJdbcType(columnInfo).toLowerCase();
+                String type = columnsResult.getString("TYPE_NAME");
+                String columnJdbcType = this.getJdbcType(columnInfo);
                 int columnLength = this.getDefaultLength(columnInfo);
-                if (!StrUtil.equals(type, columnJdbcType.toLowerCase())) {
+                if (!StrUtil.equals(type, columnJdbcType)) {
                     log.warn("修改列: {}", columnInfo.getName());
-                    String sql = this.generateAlterColumn(tableName, columnInfo.getName().toLowerCase(), columnJdbcType, columnLength);
+                    String sql = this.generateAlterColumn(tableName, columnInfo.getName(), columnJdbcType, columnLength);
                     log.warn("执行sql: {}", sql);
                     Statement statement = connection.createStatement();
                     try {
@@ -96,7 +96,7 @@ public class GenerateTableMysql extends GenerateTable {
         }
         for (Field value : columnMap.values()) {
             log.warn("添加列: {}", value.getName());
-            String sql = this.generateAddColumn(tableName, value.getName(), this.getJdbcType(value).toLowerCase(), this.getDefaultLength(value));
+            String sql = this.generateAddColumn(tableName, value.getName(), this.getJdbcType(value), this.getDefaultLength(value));
             log.warn("执行sql: {}", sql);
             Statement statement = connection.createStatement();
             statement.execute(sql);
@@ -110,7 +110,7 @@ public class GenerateTableMysql extends GenerateTable {
             Field item = this.getFields().get(index);
             String columnName = StrUtil.concat(false, "`", item.getName(), "`");
             int length = this.getDefaultLength(item);
-            String columnType = StrUtil.concat(false, this.getJdbcType(item).toLowerCase(), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
+            String columnType = StrUtil.concat(false, this.getJdbcType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             boolean defaultNullFlag = this.isDefaultNull(item);
             String columnNull = defaultNullFlag ? "null" : "not null";
             boolean primaryKeyFlag = this.isPrimaryKey(item);

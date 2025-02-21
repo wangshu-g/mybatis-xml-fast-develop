@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>io.github.wangshu-g</groupId>
-    <artifactId>ws-dep-manage</artifactId>
+    <artifactId>mybatis-xml-fast-develop</artifactId>
     <version>1.0.0</version>
 
     <packaging>pom</packaging>
@@ -21,7 +21,6 @@
         <module>mybatis-xml-fast-develop-core</module>
         <module>mybatis-xml-fast-develop-generate</module>
         <module>mybatis-xml-fast-develop-starter</module>
-        <module>mybatis-xml-fast-develop-generate-compile-time</module>
     </modules>
 
     <url>https://github.com/wangshu-g/mybatis-xml-fast-develop</url>

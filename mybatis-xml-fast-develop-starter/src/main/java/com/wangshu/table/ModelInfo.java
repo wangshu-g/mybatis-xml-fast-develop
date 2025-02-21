@@ -55,17 +55,16 @@ public abstract class ModelInfo {
     public void initNames(@NotNull Class<?> clazz) {
         Model modelAnnotation = clazz.getAnnotation(Model.class);
         if (Objects.nonNull(modelAnnotation)) {
-            this.setNames(Stream.of(modelAnnotation.names()).map(String::toLowerCase).toList());
+            this.setNames(Stream.of(modelAnnotation.names()).toList());
         }
     }
 
     public String initTableName(@NotNull Class<?> clazz) {
         Model modelAnnotation = clazz.getAnnotation(Model.class);
-        String table = modelAnnotation.table().toLowerCase();
-        if (StrUtil.isBlank(table)) {
-            table = clazz.getSimpleName().toLowerCase();
+        if (Objects.nonNull(modelAnnotation) && StrUtil.isNotBlank(modelAnnotation.table())) {
+            return modelAnnotation.table();
         }
-        return table;
+        return StrUtil.lowerFirst(clazz.getSimpleName());
     }
 
 }
