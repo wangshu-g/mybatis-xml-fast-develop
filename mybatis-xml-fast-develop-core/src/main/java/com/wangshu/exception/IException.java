@@ -21,16 +21,30 @@ public class IException extends RuntimeException {
         super();
     }
 
-    public IException(@NotNull HttpStatus httpStatus) {
-        this.errorCode = String.valueOf(httpStatus.value());
-        this.errorMsg = httpStatus.getReasonPhrase();
-        this.e = new RuntimeException(errorMsg);
-    }
-
     public IException(String errorCode, String errorMsg, Exception e) {
         this.e = e;
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
+    }
+
+    public IException(String errorMsg, Exception e) {
+        this(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), errorMsg, e);
+    }
+
+    public IException(String errorMsg) {
+        this(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), new RuntimeException(errorMsg));
+    }
+
+    public IException(@NotNull HttpStatus httpStatus) {
+        this(String.valueOf(httpStatus.value()), httpStatus.getReasonPhrase(), new RuntimeException(httpStatus.getReasonPhrase()));
+    }
+
+    public IException(@NotNull ErrorInfo errorInfo) {
+        this(String.valueOf(errorInfo.getCode()), errorInfo.getMsg(), new RuntimeException(errorInfo.getMsg()));
+    }
+
+    public IException(Exception e) {
+        this(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e);
     }
 
     @Override

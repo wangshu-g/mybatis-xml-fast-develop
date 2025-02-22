@@ -85,7 +85,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         Object primaryValue = model.modelAnyValueByFieldName(modelPrimaryField.getName());
         if (Objects.isNull(primaryValue) && modelPrimaryField.getType().equals(String.class)) {
-            model.setModelAnyValueByFieldName(modelPrimaryField.getName(), this.getId());
+            model.setModelAnyValueByFieldName(modelPrimaryField.getName(), this.getUUID());
         }
         if (model.fieldIsExist("createdAt") && Objects.isNull(model.modelAnyValueByFieldName("createdAt"))) {
             model.setModelAnyValueByFieldName("createdAt", new Date());

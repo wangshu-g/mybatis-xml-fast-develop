@@ -3,6 +3,7 @@ package com.wangshu.base.result;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 import com.alibaba.fastjson2.filter.Filter;
+import com.wangshu.exception.ErrorInfo;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -121,6 +122,11 @@ public class ResultBody<T> implements Serializable {
     @NotNull
     public static <T> ResultBody<T> error(@NotNull HttpStatus httpStatus) {
         return ResultBody.error(String.valueOf(httpStatus.value()), httpStatus.getReasonPhrase());
+    }
+
+    @NotNull
+    public static <T> ResultBody<T> error(@NotNull ErrorInfo errorInfo) {
+        return ResultBody.error(String.valueOf(errorInfo.getCode()), errorInfo.getMsg());
     }
 
     /**

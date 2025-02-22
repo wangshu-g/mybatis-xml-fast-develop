@@ -2,8 +2,8 @@ package com.wangshu.generate.metadata.model;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
-import com.wangshu.annotation.Model;
 import com.wangshu.annotation.Join;
+import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnFieldInfo;
@@ -45,6 +45,7 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
         this.setDataBaseType(modelAnnotation.dataBaseType());
         this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
         this.setTableName(this.initTableName(moduleInfo, metaData, ignoreJoinFields));
+        this.setSqlStyle(modelAnnotation.sqlStyle());
         this.setModelTitle(modelAnnotation.title());
         this.setModelName(metaData.getSimpleName());
         this.setModelFullName(metaData.getTypeName());

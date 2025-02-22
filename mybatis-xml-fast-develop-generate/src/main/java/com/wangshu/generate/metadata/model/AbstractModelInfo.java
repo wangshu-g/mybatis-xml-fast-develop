@@ -2,6 +2,7 @@ package com.wangshu.generate.metadata.model;
 
 import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
 
@@ -17,6 +18,7 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
     private DataBaseType dataBaseType;
     private String modelDefaultKeyword;
     private String tableName;
+    private SqlStyle sqlStyle;
     private String modelTitle;
     private String modelName;
     private String modelFullName;

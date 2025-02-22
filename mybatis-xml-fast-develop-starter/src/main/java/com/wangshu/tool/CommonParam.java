@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -55,21 +56,28 @@ public class CommonParam {
         return CommonParam.contextPath;
     }
 
-    @NotNull
-    public static HttpServletRequest getRequest() {
+    public static @Nullable HttpServletRequest getRequest() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        assert requestAttributes != null;
+        if (Objects.isNull(requestAttributes)) {
+            return null;
+        }
         return ((ServletRequestAttributes) requestAttributes).getRequest();
     }
 
-    public static HttpServletResponse getResponse() {
+    public static @Nullable HttpServletResponse getResponse() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        assert requestAttributes != null;
+        if (Objects.isNull(requestAttributes)) {
+            return null;
+        }
         return ((ServletRequestAttributes) requestAttributes).getResponse();
     }
 
-    public static HttpSession getSession() {
-        return getRequest().getSession();
+    public static @Nullable HttpSession getSession() {
+        HttpServletRequest request = getRequest();
+        if (Objects.isNull(request)) {
+            return null;
+        }
+        return request.getSession();
     }
 
     public static Set<Class<? extends BaseModel>> modelClazz = new HashSet<>();

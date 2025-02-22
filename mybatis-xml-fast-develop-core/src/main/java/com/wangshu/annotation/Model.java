@@ -1,6 +1,7 @@
 package com.wangshu.annotation;
 
 import com.wangshu.enu.DataBaseType;
+import com.wangshu.enu.SqlStyle;
 
 import java.lang.annotation.*;
 
@@ -15,6 +16,8 @@ import java.lang.annotation.*;
 public @interface Model {
 
     String table() default "";
+
+    SqlStyle sqlStyle() default SqlStyle.lcc;
 
     String modelDefaultKeyword() default "";
 

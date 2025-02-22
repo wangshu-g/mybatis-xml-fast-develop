@@ -3,6 +3,7 @@ package com.wangshu.generate.metadata.model;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
 
@@ -29,6 +30,10 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
 
     default String getTableName() {
         return this.getModelAnnotation().table();
+    }
+
+    default SqlStyle getSqlStyle() {
+        return this.getModelAnnotation().sqlStyle();
     }
 
     default String getModelTitle() {

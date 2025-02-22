@@ -2,6 +2,7 @@ package com.wangshu.exception;
 
 import com.wangshu.base.result.ResultBody;
 import com.wangshu.tool.CommonParam;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.ErrorResponse;
@@ -21,7 +22,10 @@ public class IExceptionHandler {
     @ExceptionHandler(IException.class)
     @ResponseBody
     public String iExceptionHandler(IException e) {
-        log.error("错误接口: {}", Objects.requireNonNull(CommonParam.getRequest()).getServletPath());
+        HttpServletRequest request = CommonParam.getRequest();
+        if (Objects.nonNull(request)) {
+            log.error("错误接口: {}", request.getServletPath());
+        }
         log.error("错误信息", e);
         return ResultBody.error(e.getErrorCode(), e.getMessage()).toJson();
     }
@@ -29,7 +33,10 @@ public class IExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public String exceptionHandler(Exception e) {
-        log.error("错误接口: {}", Objects.requireNonNull(CommonParam.getRequest()).getServletPath());
+        HttpServletRequest request = CommonParam.getRequest();
+        if (Objects.nonNull(request)) {
+            log.error("错误接口: {}", request.getServletPath());
+        }
         log.error("错误信息", e);
         if (e instanceof ErrorResponse errorResponse) {
             return ResultBody.error(String.valueOf(errorResponse.getStatusCode().value()), e.getMessage()).toJsonyMdHms();

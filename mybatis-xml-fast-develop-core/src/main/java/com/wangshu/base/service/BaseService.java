@@ -8,7 +8,7 @@ import java.util.UUID;
  */
 public interface BaseService {
 
-    default String getId() {
+    default String getUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 

@@ -1,7 +1,16 @@
 package com.wangshu.enu
 
-enum class FilterType {
-    NAME, PASSWORD, PHONE, EMAIL, ID_CARD, ADDRESS, ACCOUNT, NULL;
+/**
+ * sql 风格
+ *
+ **/
+enum class SqlStyle {
+
+    //    Lower Camel Case
+    lcc,
+
+    //    Snake Case
+    sc;
 
     companion object {
         @JvmStatic
@@ -10,4 +19,3 @@ enum class FilterType {
         }
     }
 }
-
