@@ -32,7 +32,7 @@ public class IException extends RuntimeException {
     }
 
     public IException(String errorMsg) {
-        this(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), new RuntimeException(errorMsg));
+        this(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), errorMsg, new RuntimeException(errorMsg));
     }
 
     public IException(@NotNull HttpStatus httpStatus) {
@@ -44,7 +44,7 @@ public class IException extends RuntimeException {
     }
 
     public IException(Exception e) {
-        this(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e);
+        this(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getMessage(), e);
     }
 
     @Override

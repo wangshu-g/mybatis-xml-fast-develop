@@ -79,7 +79,7 @@ public class GenerateTableMysql extends GenerateTable {
                 String type = columnsResult.getString("TYPE_NAME");
                 String columnJdbcType = this.getJdbcType(columnInfo);
                 int columnLength = this.getDefaultLength(columnInfo);
-                if (!StrUtil.equals(type, columnJdbcType)) {
+                if (!StrUtil.equals(type.toLowerCase(), columnJdbcType.toLowerCase())) {
                     log.warn("修改列: {}", columnInfo.getName());
                     String sql = this.generateAlterColumn(tableName, columnInfo.getName(), columnJdbcType, columnLength);
                     log.warn("执行sql: {}", sql);
