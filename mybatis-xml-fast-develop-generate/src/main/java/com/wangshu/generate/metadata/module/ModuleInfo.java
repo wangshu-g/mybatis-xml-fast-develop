@@ -59,7 +59,7 @@ public interface ModuleInfo extends Module {
     }
 
     default String getModuleGeneratePath() {
-        return StrUtil.concat(false, this.getModulePath(), "target", File.separator, "ws-generate", File.separator);
+        return StrUtil.concat(false, this.getModulePath(), "target", File.separator, "mybatis-xml-fast-develop-generate", File.separator);
     }
 
     default String getModuleGenerateJavaPath() {
