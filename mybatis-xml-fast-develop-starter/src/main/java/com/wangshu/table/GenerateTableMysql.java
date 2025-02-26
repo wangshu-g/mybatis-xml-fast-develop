@@ -81,14 +81,15 @@ public class GenerateTableMysql extends GenerateTable {
                 String columnJdbcType = this.getJdbcType(columnInfo);
                 int columnLength = this.getDefaultLength(columnInfo);
                 if (!StrUtil.equals(type.toLowerCase(), columnJdbcType.toLowerCase())) {
+                    String columnName = Objects.equals(this.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(columnInfo.getName()) : StrUtil.toUnderlineCase(columnInfo.getName());
                     log.warn("修改列: {}", columnInfo.getName());
-                    String sql = this.generateAlterColumn(tableName, columnInfo.getName(), columnJdbcType, columnLength);
+                    String sql = this.generateAlterColumn(tableName, columnName, columnJdbcType, columnLength);
                     log.warn("执行sql: {}", sql);
                     Statement statement = connection.createStatement();
                     try {
                         statement.execute(sql);
                     } catch (SQLException e) {
-                        log.error("修改列: {},失败", columnInfo.getName());
+                        log.error("修改列: {},失败", columnName);
                         log.error("异常: ", e);
                     }
                 }

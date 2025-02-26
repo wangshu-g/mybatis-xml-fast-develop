@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.enu.Condition;
 import com.wangshu.enu.JoinCondition;
 import com.wangshu.enu.JoinType;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.exception.MessageException;
 import com.wangshu.generate.GenerateInfo;
 import com.wangshu.generate.metadata.field.ColumnInfo;
@@ -442,15 +443,12 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         for (F field : fields) {
             if (field.isClassJoinField() || field.isCollectionJoinField()) {
                 T leftModel = field.getLeftModel();
-                String leftJoinField = field.getLeftJoinField();
+                String leftJoinField = Objects.equals(leftModel.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(field.getLeftJoinField()) : StrUtil.toUnderlineCase(field.getLeftJoinField());
                 String leftTable = leftModel.getTableName();
                 String leftTableAs = this.getJoinLeftTableAsName(field);
 
                 T rightModel = field.getRightModel();
-                String rightJoinField = field.getRightJoinField();
-                if (Objects.isNull(rightModel)) {
-                    throw new RuntimeException("error");
-                }
+                String rightJoinField = Objects.equals(rightModel.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(field.getRightJoinField()) : StrUtil.toUnderlineCase(field.getRightJoinField());
                 String rightTable = rightModel.getTableName();
                 String rightTableAs = this.getJoinRightTableAsName(field);
 
