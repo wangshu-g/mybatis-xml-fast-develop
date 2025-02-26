@@ -17,8 +17,8 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
     private Model modelAnnotation;
     private DataBaseType dataBaseType;
     private String modelDefaultKeyword;
-    private String tableName;
     private SqlStyle sqlStyle;
+    private String tableName;
     private String modelTitle;
     private String modelName;
     private String modelFullName;

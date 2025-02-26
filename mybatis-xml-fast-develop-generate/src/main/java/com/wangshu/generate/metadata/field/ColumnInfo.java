@@ -28,6 +28,8 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
 
     String getName();
 
+    String getSqlStyleName();
+
     String getJavaTypeName();
 
     com.wangshu.annotation.Column getColumn();

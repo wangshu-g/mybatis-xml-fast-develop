@@ -20,6 +20,7 @@
     <modules>
         <module>mybatis-xml-fast-develop-core</module>
         <module>mybatis-xml-fast-develop-generate</module>
+        <module>mybatis-xml-fast-develop-generate-compile-time</module>
         <module>mybatis-xml-fast-develop-starter</module>
     </modules>
 

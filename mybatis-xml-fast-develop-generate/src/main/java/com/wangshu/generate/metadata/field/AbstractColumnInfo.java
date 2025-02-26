@@ -15,6 +15,7 @@ public abstract class AbstractColumnInfo<T, M extends ModelInfo<?, ?>> implement
     private T metaData;
     private M model;
     private String name;
+    private String sqlStyleName;
     private String javaTypeName;
 
     private Column column;

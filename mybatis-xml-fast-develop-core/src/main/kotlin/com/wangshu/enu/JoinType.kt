@@ -5,8 +5,8 @@ enum class JoinType {
 
     companion object {
         @JvmStatic
-        fun fromName(name: String): DataBaseType? {
-            return enumValues<DataBaseType>().find { it.name == name }
+        fun fromName(name: String): JoinType? {
+            return enumValues<JoinType>().find { it.name == name }
         }
     }
 }

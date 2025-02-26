@@ -3,6 +3,7 @@ package com.wangshu.table;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.tool.MysqlTypeMapInfo;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ public class GenerateTableMysql extends GenerateTable {
         DatabaseMetaData databaseMetaData = connection.getMetaData();
         String database = connection.getCatalog();
         ResultSet columnsResult = databaseMetaData.getColumns(database, databaseMetaData.getUserName(), tableName, null);
-        Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap(Field::getName, v -> v));
+        Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap((k) -> Objects.equals(this.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(k.getName()) : StrUtil.toUnderlineCase(k.getName()), v -> v));
         while (columnsResult.next()) {
             String column = columnsResult.getString("COLUMN_NAME");
             Field columnInfo = columnMap.get(column);
@@ -108,7 +109,7 @@ public class GenerateTableMysql extends GenerateTable {
         String sql = StrUtil.concat(false, "create table `", tableName, "` ( ");
         for (int index = 0; index < this.getFields().size(); index++) {
             Field item = this.getFields().get(index);
-            String columnName = StrUtil.concat(false, "`", item.getName(), "`");
+            String columnName = StrUtil.concat(false, "`", Objects.equals(this.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(item.getName()) : StrUtil.toUnderlineCase(item.getName()), "`");
             int length = this.getDefaultLength(item);
             String columnType = StrUtil.concat(false, this.getJdbcType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             boolean defaultNullFlag = this.isDefaultNull(item);

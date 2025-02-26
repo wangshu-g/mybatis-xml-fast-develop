@@ -5,6 +5,7 @@ import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnFieldInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
@@ -44,8 +45,8 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
         this.setModelAnnotation(modelAnnotation);
         this.setDataBaseType(modelAnnotation.dataBaseType());
         this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
-        this.setTableName(this.initTableName(moduleInfo, metaData, ignoreJoinFields));
         this.setSqlStyle(modelAnnotation.sqlStyle());
+        this.setTableName(this.initTableName(moduleInfo, metaData, ignoreJoinFields));
         this.setModelTitle(modelAnnotation.title());
         this.setModelName(metaData.getSimpleName());
         this.setModelFullName(metaData.getTypeName());
@@ -76,15 +77,13 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
     }
 
     private String initTableName(ModuleInfo moduleInfo, @NotNull Class<? extends BaseModel> metaData, boolean ignoreJoinFields) {
-        Model modelAnnotation = metaData.getAnnotation(Model.class);
-        String table = null;
-        if (Objects.nonNull(modelAnnotation)) {
-            this.setModelAnnotation(modelAnnotation);
-            this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
-            table = modelAnnotation.table();
+        if (Objects.nonNull(this.getModelAnnotation()) && StrUtil.isNotBlank(this.getModelAnnotation().table())) {
+            return this.getModelAnnotation().table();
         }
-        if (StrUtil.isBlank(table)) {
-            table = metaData.getSimpleName();
+        String table = metaData.getSimpleName();
+        switch (this.getSqlStyle()) {
+            case SqlStyle.lcc -> table = StrUtil.lowerFirst(table);
+            case SqlStyle.sc -> table = StrUtil.toUnderlineCase(table);
         }
         return table;
     }

@@ -3,6 +3,7 @@ package com.wangshu.table;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Model;
+import com.wangshu.enu.SqlStyle;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -18,7 +19,8 @@ public abstract class ModelInfo {
     private List<Field> fields;
     private List<String> names;
     private Class<?> metadata;
-    private Model model;
+    private Model modelAnnotation;
+    private SqlStyle sqlStyle;
     private String table;
     private String modelName;
     private String modelFullName;
@@ -31,7 +33,8 @@ public abstract class ModelInfo {
     }
 
     public void init(@NotNull Class<?> clazz) {
-        this.model = clazz.getAnnotation(Model.class);
+        this.modelAnnotation = clazz.getAnnotation(Model.class);
+        this.sqlStyle = this.modelAnnotation.sqlStyle();
         this.table = this.initTableName(clazz);
         this.modelName = clazz.getSimpleName();
         this.modelFullName = clazz.getTypeName();
@@ -61,10 +64,16 @@ public abstract class ModelInfo {
 
     public String initTableName(@NotNull Class<?> clazz) {
         Model modelAnnotation = clazz.getAnnotation(Model.class);
-        if (Objects.nonNull(modelAnnotation) && StrUtil.isNotBlank(modelAnnotation.table())) {
+        assert Objects.nonNull(modelAnnotation);
+        if (StrUtil.isNotBlank(modelAnnotation.table())) {
             return modelAnnotation.table();
         }
-        return StrUtil.lowerFirst(clazz.getSimpleName());
+        String table = clazz.getSimpleName();
+        switch (this.getSqlStyle()) {
+            case SqlStyle.lcc -> table = StrUtil.lowerFirst(table);
+            case SqlStyle.sc -> table = StrUtil.toUnderlineCase(table);
+        }
+        return table;
     }
 
 }

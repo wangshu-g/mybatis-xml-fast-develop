@@ -5,10 +5,10 @@ import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
+import com.wangshu.cache.ColumnType;
 import com.wangshu.cache.ControllerCache;
 import com.wangshu.cache.ModelCache;
 import com.wangshu.cache.ServiceCache;
-import com.wangshu.cache.ColumnType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

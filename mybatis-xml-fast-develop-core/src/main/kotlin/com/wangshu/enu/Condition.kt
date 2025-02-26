@@ -9,8 +9,8 @@ enum class Condition {
 
     companion object {
         @JvmStatic
-        fun fromName(name: String): DataBaseType? {
-            return enumValues<DataBaseType>().find { it.name == name }
+        fun fromName(name: String): Condition? {
+            return enumValues<Condition>().find { it.name == name }
         }
     }
 }

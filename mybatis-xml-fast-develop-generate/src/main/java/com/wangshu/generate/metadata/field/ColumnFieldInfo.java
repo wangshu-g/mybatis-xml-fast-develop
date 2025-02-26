@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.model.ModelClazzInfo;
 import com.wangshu.tool.MysqlTypeMapInfo;
 import lombok.EqualsAndHashCode;
@@ -31,6 +32,7 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
 
     public void initBaseInfo(@NotNull Field metaData, ModelClazzInfo model) {
         this.setName(metaData.getName());
+        this.setSqlStyleName(this.initSqlStyleName(metaData, model));
         this.setJavaTypeName(metaData.getType().getTypeName());
     }
 
@@ -108,6 +110,13 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
             return MysqlTypeMapInfo.getDbColumnTypeByField(field);
         }
         return column.jdbcType();
+    }
+
+    private String initSqlStyleName(@NotNull Field metaData, @NotNull ModelClazzInfo model) {
+        if (Objects.equals(model.getSqlStyle(), SqlStyle.sc)) {
+            return StrUtil.toUnderlineCase(this.getName());
+        }
+        return StrUtil.lowerFirst(this.getName());
     }
 
 }
