@@ -26,7 +26,11 @@ public class IExceptionHandler {
         if (Objects.nonNull(request)) {
             log.error("错误接口: {}", request.getServletPath());
         }
-        log.error("错误信息", e);
+        if (Objects.isNull(e.getE())) {
+            log.error("错误信息", e);
+        } else {
+            log.error("错误信息", e.getE());
+        }
         return ResultBody.error(e.getErrorCode(), e.getMessage()).toJson();
     }
 

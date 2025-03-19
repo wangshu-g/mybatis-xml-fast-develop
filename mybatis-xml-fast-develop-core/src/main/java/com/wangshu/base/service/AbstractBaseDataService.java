@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T extends BaseModel> implements BaseDataService<P, M, T> {
 
-    public Logger log = LoggerFactory.getLogger(this.getClass());
+    public Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * <p>获取对应mapper</p>
@@ -42,18 +42,18 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int save(@NotNull T model) {
-        Field modelPrimaryField = this.getModelPrimaryField();
+        Field modelPrimaryField = getModelPrimaryField();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Object primaryValue = model.modelAnyValueByFieldName(modelPrimaryField.getName());
-        if (Objects.nonNull(primaryValue) && Objects.nonNull(this.select(modelPrimaryField.getName(), primaryValue))) {
-            return this.update(model);
+        if (Objects.nonNull(primaryValue) && Objects.nonNull(select(modelPrimaryField.getName(), primaryValue))) {
+            return update(model);
         }
-        model = this.saveParamFilter(model);
-        if (this.saveValidate(model)) {
-            return this.getMapper()._save(model);
+        model = saveParamFilter(model);
+        if (saveValidate(model)) {
+            return getMapper()._save(model);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
     }
@@ -68,24 +68,24 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     public int save(@NotNull Map<String, Object> map) {
         T model;
         try {
-            model = this.getModelClazz().getConstructor().newInstance();
+            model = getModelClazz().getConstructor().newInstance();
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             log.error("获取实体类实例失败,请检查泛型", e);
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         model.setModelValuesFromMapByFieldName(map);
-        return this.save(model);
+        return save(model);
     }
 
     public T saveParamFilter(@NotNull T model) {
-        Field modelPrimaryField = this.getModelPrimaryField();
+        Field modelPrimaryField = getModelPrimaryField();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Object primaryValue = model.modelAnyValueByFieldName(modelPrimaryField.getName());
         if (Objects.isNull(primaryValue) && modelPrimaryField.getType().equals(String.class)) {
-            model.setModelAnyValueByFieldName(modelPrimaryField.getName(), this.getUUID());
+            model.setModelAnyValueByFieldName(modelPrimaryField.getName(), getUUID());
         }
         if (model.fieldIsExist("createdAt") && Objects.isNull(model.modelAnyValueByFieldName("createdAt"))) {
             model.setModelAnyValueByFieldName("createdAt", new Date());
@@ -114,11 +114,11 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     @Transactional
     public int batchSave(@NotNull List<T> modelList) {
         List<T> newModelList = modelList.stream().map(model -> {
-            model = this.saveParamFilter(model);
+            model = saveParamFilter(model);
             return model;
         }).toList();
         if (newModelList.stream().allMatch(this::saveValidate)) {
-            return this.getMapper()._batchSave(modelList);
+            return getMapper()._batchSave(modelList);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
     }
@@ -132,16 +132,16 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delete(@NotNull Map<String, Object> map) {
-        map = this.deleteParamFilter(map);
-        if (this.deleteValidate(map)) {
-            return this.getMapper()._delete(map);
+        map = deleteParamFilter(map);
+        if (deleteValidate(map)) {
+            return getMapper()._delete(map);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public int delete(@NotNull Object... keyValuesArray) {
-        return this.delete(this.keyValuesArrayParamsToMap(keyValuesArray));
+        return delete(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -152,7 +152,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Transactional(rollbackFor = Exception.class)
     public int delete(@NotNull T model) {
-        return this.delete(model.toMap());
+        return delete(model.toMap());
     }
 
     /**
@@ -168,17 +168,17 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         Map<String, Object> map = new HashMap<>(1);
-        Field modelPrimaryField = this.getModelPrimaryField();
+        Field modelPrimaryField = getModelPrimaryField();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         map.put(modelPrimaryField.getName(), id);
-        return this.delete(map);
+        return delete(map);
     }
 
     public Map<String, Object> deleteParamFilter(@NotNull Map<String, Object> map) {
-        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelDeleteMethodPossibleWhereParameterName(this.getModelClazz())::contains)) {
+        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelDeleteMethodPossibleWhereParameterName(getModelClazz())::contains)) {
             log.error("没有合法的删除参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
@@ -205,8 +205,8 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     @Transactional(rollbackFor = Exception.class)
     public int update(@NotNull Map<String, Object> map) {
         map = updateParamFilter(map);
-        if (this.updateValidate(map)) {
-            return this.getMapper()._update(map);
+        if (updateValidate(map)) {
+            return getMapper()._update(map);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
     }
@@ -218,7 +218,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         Map<String, Object> map = new HashMap<>();
-        Field modelPrimaryField = this.getModelPrimaryField();
+        Field modelPrimaryField = getModelPrimaryField();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.BAD_REQUEST);
@@ -227,7 +227,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         if (!column1.startsWith("new")) {
             map.put(StrUtil.concat(false, "new", StrUtil.upperFirst(column1)), newValue);
         }
-        return this.update(map);
+        return update(map);
     }
 
     /**
@@ -239,7 +239,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Transactional(rollbackFor = Exception.class)
     public int update(@NotNull T model) {
-        Field modelPrimaryField = this.getModelPrimaryField();
+        Field modelPrimaryField = getModelPrimaryField();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.BAD_REQUEST);
@@ -254,12 +254,12 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         temp.forEach((k, v) -> param.put(StrUtil.concat(false, "new", StrUtil.upperFirst(k)), v));
         param.put(modelPrimaryField.getName(), primaryValue);
         log.warn("实体类更新.防止更新参数和条件参数冲突,参数强制修改为: {}", param);
-        return this.update(param);
+        return update(param);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public int update(@NotNull Object... keyValuesArray) {
-        return this.update(this.keyValuesArrayParamsToMap(keyValuesArray));
+        return update(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -269,7 +269,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return Map<String, Object>
      **/
     public Map<String, Object> updateParamFilter(@NotNull Map<String, Object> map) {
-        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(this.getModelClazz())::contains)) {
+        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(getModelClazz())::contains)) {
             log.error("没有合法的更新参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
@@ -301,10 +301,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Override
     public @Nullable T select(@NotNull Map<String, Object> map) {
-        map = this.selectParamFilter(map);
-        if (this.selectValidate(map)) {
+        map = selectParamFilter(map);
+        if (selectValidate(map)) {
             try {
-                return this.getMapper()._select(map);
+                return getMapper()._select(map);
             } catch (MyBatisSystemException e) {
                 log.error("异常: ", e);
                 throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -331,7 +331,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return T extends BaseModel
      **/
     public @Nullable T select(@NotNull T model) {
-        return this.select(model.toMap());
+        return select(model.toMap());
     }
 
     /**
@@ -346,13 +346,13 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         Map<String, Object> map = new HashMap<>();
-        Field modelPrimaryField = this.getModelPrimaryField();
+        Field modelPrimaryField = getModelPrimaryField();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         map.put(modelPrimaryField.getName(), id);
-        return this.select(map);
+        return select(map);
     }
 
     /**
@@ -368,11 +368,11 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         Map<String, Object> map = new HashMap<>(1);
         map.put(column1, param1);
         map.put(column2, param2);
-        return this.select(map);
+        return select(map);
     }
 
     public @Nullable T select(@NotNull Object... keyValuesArray) {
-        return this.select(this.keyValuesArrayParamsToMap(keyValuesArray));
+        return select(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -383,9 +383,9 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Override
     public @NotNull List<Map<String, Object>> getList(@NotNull Map<String, Object> map) {
-        map = this.listParamFilter(map);
-        if (this.listValidate(map)) {
-            return this.getMapper()._getList(map);
+        map = listParamFilter(map);
+        if (listValidate(map)) {
+            return getMapper()._getList(map);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
     }
@@ -397,11 +397,11 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return List<Map < String, Object>>
      **/
     public @NotNull List<Map<String, Object>> getListWithOutLimit(@NotNull Map<String, Object> map) {
-        map = this.listParamFilter(map);
-        if (this.listValidate(map)) {
+        map = listParamFilter(map);
+        if (listValidate(map)) {
             map.remove("pageIndex");
             map.remove("pageSize");
-            return this.getMapper()._getList(map);
+            return getMapper()._getList(map);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
     }
@@ -409,15 +409,15 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     public @NotNull List<Map<String, Object>> getListWithOutLimit(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
-        return this.getListWithOutLimit(map);
+        return getListWithOutLimit(map);
     }
 
     public @NotNull List<Map<String, Object>> getListWithOutLimit(@NotNull T model) {
-        return this.getListWithOutLimit(model.toMap());
+        return getListWithOutLimit(model.toMap());
     }
 
     public @NotNull List<Map<String, Object>> getListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return this.getListWithOutLimit(this.keyValuesArrayParamsToMap(keyValuesArray));
+        return getListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -427,7 +427,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return List<Map < String, Object>>
      **/
     public @NotNull List<Map<String, Object>> getList(@NotNull T model) {
-        return this.getList(model.toMap());
+        return getList(model.toMap());
     }
 
     /**
@@ -440,7 +440,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     public @NotNull List<Map<String, Object>> getList(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
-        return this.getList(map);
+        return getList(map);
     }
 
     /**
@@ -458,40 +458,40 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
                     map.put(String.valueOf(keyValues[i]), keyValues[i + 1]);
                 }
             }
-            return this.getList(map);
+            return getList(map);
         }
-        return this.getList(map);
+        return getList(map);
     }
 
     @Override
     public @NotNull List<T> getNestList(@NotNull Map<String, Object> map) {
-        map = this.listParamFilter(map);
-        if (this.listValidate(map)) {
-            return this.getMapper()._getNestList(map);
+        map = listParamFilter(map);
+        if (listValidate(map)) {
+            return getMapper()._getNestList(map);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
     }
 
     public @NotNull List<T> getNestList(@NotNull T model) {
-        return this.getNestList(model.toMap());
+        return getNestList(model.toMap());
     }
 
     public @NotNull List<T> getNestList(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
-        return this.getNestList(map);
+        return getNestList(map);
     }
 
     public @NotNull List<T> getNestList(@NotNull Object... keyValuesArray) {
-        return this.getNestList(this.keyValuesArrayParamsToMap(keyValuesArray));
+        return getNestList(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public @NotNull List<T> getNestListWithOutLimit(@NotNull Map<String, Object> map) {
-        map = this.listParamFilter(map);
-        if (this.listValidate(map)) {
+        map = listParamFilter(map);
+        if (listValidate(map)) {
             map.remove("pageIndex");
             map.remove("pageSize");
-            return this.getMapper()._getNestList(map);
+            return getMapper()._getNestList(map);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
     }
@@ -499,15 +499,15 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     public @NotNull List<T> getNestListWithOutLimit(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
-        return this.getNestListWithOutLimit(map);
+        return getNestListWithOutLimit(map);
     }
 
     public @NotNull List<T> getNestListWithOutLimit(@NotNull T model) {
-        return this.getNestListWithOutLimit(model.toMap());
+        return getNestListWithOutLimit(model.toMap());
     }
 
     public @NotNull List<T> getNestListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return this.getNestListWithOutLimit(this.keyValuesArrayParamsToMap(keyValuesArray));
+        return getNestListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public Map<String, Object> listParamFilter(@NotNull Map<String, Object> map) {
@@ -535,7 +535,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         map.put("pageSize", pageSize);
         String orderColumn = String.valueOf(map.get("orderColumn"));
         if (StrUtil.isNotBlank(orderColumn)) {
-            if (CacheTool.getModelOrderColumnPossibleParameterName(this.getModelClazz()).contains(orderColumn)) {
+            if (CacheTool.getModelOrderColumnPossibleParameterName(getModelClazz()).contains(orderColumn)) {
                 String order = String.valueOf(map.get("order"));
                 if (!StrUtil.equalsIgnoreCase(order, "asc") && !StrUtil.equalsIgnoreCase(order, "desc")) {
                     map.put("order", "asc");
@@ -554,41 +554,41 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Override
     public int getTotal(@NotNull Map<String, Object> map) {
-        return this.getMapper()._getTotal(map);
+        return getMapper()._getTotal(map);
     }
 
     public int getTotal(@NotNull Object... keyValuesArray) {
-        return this.getTotal(this.keyValuesArrayParamsToMap(keyValuesArray));
+        return getTotal(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public int getTotal() {
-        return this.getTotal(Map.of());
+        return getTotal(Map.of());
     }
 
     @SuppressWarnings("unchecked")
     public Class<T> getModelClazz() {
-        return (Class<T>) CacheTool.getServiceModelGeneric(this.getClass());
+        return (Class<T>) CacheTool.getServiceModelGeneric(getClass());
     }
 
     @SuppressWarnings("unchecked")
     public Class<M> getMapperClazz() {
-        return (Class<M>) CacheTool.getServiceMapperGeneric(this.getClass());
+        return (Class<M>) CacheTool.getServiceMapperGeneric(getClass());
     }
 
     public List<Field> getModelFields() {
-        return CacheTool.getServiceModelGenericFields(this.getClass());
+        return CacheTool.getServiceModelGenericFields(getClass());
     }
 
     public List<Field> getModelBaseFields() {
-        return CacheTool.getServiceModelGenericBaseFields(this.getClass());
+        return CacheTool.getServiceModelGenericBaseFields(getClass());
     }
 
     public Map<String, Field> getModelMapBaseFields() {
-        return this.getModelBaseFields().stream().collect(Collectors.toMap(Field::getName, value -> value));
+        return getModelBaseFields().stream().collect(Collectors.toMap(Field::getName, value -> value));
     }
 
     public Field getModelPrimaryField() {
-        return CacheTool.getModelPrimaryField(this.getModelClazz());
+        return CacheTool.getModelPrimaryField(getModelClazz());
     }
 
     public Map<String, Object> keyValuesArrayParamsToMap(@NotNull Object... keyValuesArray) {
