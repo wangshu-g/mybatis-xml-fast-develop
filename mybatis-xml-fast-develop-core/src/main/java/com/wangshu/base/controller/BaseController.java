@@ -16,8 +16,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * @author GSF
- * <p>BaseController</p>
+ * @author wangshu-g
+ * <p>BaseController，生产环境应注意接口权限问题</p>
  */
 public interface BaseController {
 

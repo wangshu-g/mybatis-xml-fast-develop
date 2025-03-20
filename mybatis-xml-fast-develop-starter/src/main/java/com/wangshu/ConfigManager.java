@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @author GSF
+ * @author wangshu-g
  */
 @Slf4j
 public class ConfigManager implements ApplicationContextAware {

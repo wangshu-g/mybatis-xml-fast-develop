@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author GSF
+ * @author wangshu-g
  * <p>BaseMapper,常用方法</p>
  */
 public interface BaseDataMapper<T extends BaseModel> extends BaseMapper {

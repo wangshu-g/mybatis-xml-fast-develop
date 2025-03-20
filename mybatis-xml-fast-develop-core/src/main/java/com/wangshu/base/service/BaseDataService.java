@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author GSF
+ * @author wangshu-g
  * <p>BaseService</p>
  */
 public interface BaseDataService<P, M extends BaseDataMapper<T>, T extends BaseModel> extends BaseService {

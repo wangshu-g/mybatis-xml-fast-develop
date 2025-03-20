@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * 标记model实体类
  *
- * @author GSF
+ * @author wangshu-g
  */
 @Documented
 @Target({ElementType.TYPE})

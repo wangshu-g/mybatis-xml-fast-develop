@@ -58,6 +58,10 @@ public interface ModuleInfo extends Module {
         return StrUtil.concat(false, this.getModulePackagePath(), "controller", File.separator);
     }
 
+    default String getModuleQueryPath() {
+        return StrUtil.concat(false, this.getModulePackagePath(), "query", File.separator);
+    }
+
     default String getModuleGeneratePath() {
         return StrUtil.concat(false, this.getModulePath(), "target", File.separator, "mybatis-xml-fast-develop-generate", File.separator);
     }
@@ -100,6 +104,10 @@ public interface ModuleInfo extends Module {
 
     default String getModuleGenerateControllerPath() {
         return StrUtil.concat(false, this.getModuleGeneratePackagePath(), "controller", File.separator);
+    }
+
+    default String getModuleGenerateQueryPath() {
+        return StrUtil.concat(false, this.getModuleGeneratePackagePath(), "query", File.separator);
     }
 
 }

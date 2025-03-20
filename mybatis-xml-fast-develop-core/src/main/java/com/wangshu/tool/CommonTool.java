@@ -97,6 +97,22 @@ public class CommonTool {
         return model;
     }
 
+    @SuppressWarnings("unchecked")
+    public static @Nullable Class<? extends BaseModel> getQueryModel(@NotNull Class<?> clazz) {
+        Type type = clazz.getGenericSuperclass();
+        while (Objects.nonNull(type) && !(type instanceof ParameterizedType)) {
+            type = ((Class<?>) type).getGenericSuperclass();
+        }
+        if (Objects.isNull(type)) {
+            return null;
+        }
+        List<Type> actualTypeArguments = List.of(((ParameterizedType) type).getActualTypeArguments());
+        if (actualTypeArguments.isEmpty()) {
+            return null;
+        }
+        return (Class<? extends BaseModel>) actualTypeArguments.getFirst();
+    }
+
     public static @NotNull List<Field> getClazzFields(@NotNull Class<?> clazz) {
         Map<String, Field> map = new HashMap<>();
         List<Field> fields = new ArrayList<>();

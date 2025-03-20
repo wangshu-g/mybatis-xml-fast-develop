@@ -4,11 +4,9 @@ import com.wangshu.base.controller.AbstractBaseDataController;
 import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.base.query.Query;
 import com.wangshu.base.service.BaseDataService;
-import com.wangshu.cache.ColumnType;
-import com.wangshu.cache.ControllerCache;
-import com.wangshu.cache.ModelCache;
-import com.wangshu.cache.ServiceCache;
+import com.wangshu.cache.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +19,7 @@ import java.util.Objects;
 public class CacheTool {
 
     public static Map<Class<? extends BaseModel>, ModelCache> modelCacheMap = new HashMap<>();
+    public static Map<Class<? extends Query>, QueryCache> queryCacheMap = new HashMap<>();
     public static Map<Class<? extends BaseDataService>, ServiceCache> serviceCacheMap = new HashMap<>();
     public static Map<Class<? extends BaseDataController>, ControllerCache> controllerCacheMap = new HashMap<>();
 
@@ -66,6 +65,28 @@ public class CacheTool {
     public static @NotNull List<Field> getServiceModelGenericBaseFields(@NotNull Class<? extends BaseDataService> serviceClazz) {
         Class<? extends BaseModel> serviceModelGeneric = getServiceModelGeneric(serviceClazz);
         return getModelBaseFields(serviceModelGeneric);
+    }
+
+    private static @NotNull QueryCache getOrCreateQueryCache(Class<? extends Query> queryClazz) {
+        QueryCache queryCache = queryCacheMap.get(queryClazz);
+        if (Objects.isNull(queryCache)) {
+            queryCache = new QueryCache(queryClazz);
+        }
+        return queryCache;
+    }
+
+    public static @NotNull List<Field> getQueryFields(@NotNull Class<? extends Query> queryClazz) {
+        QueryCache queryCache = getOrCreateQueryCache(queryClazz);
+        return queryCache.fields;
+    }
+
+    public static Class<? extends BaseModel> getQueryModelGeneric(@NotNull Class<? extends Query> queryClazz) {
+        return getOrCreateQueryCache(queryClazz).modelGeneric;
+    }
+
+    public static @NotNull List<Field> getQueryModelGenericFields(@NotNull Class<? extends Query> queryClazz) {
+        Class<? extends BaseModel> queryModelGeneric = getQueryModelGeneric(queryClazz);
+        return getModelFields(queryModelGeneric);
     }
 
     private static @NotNull ModelCache getOrCreateModelCache(Class<? extends BaseModel> modelClazz) {

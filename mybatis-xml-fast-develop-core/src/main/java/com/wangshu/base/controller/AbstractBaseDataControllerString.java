@@ -11,7 +11,7 @@ import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
 
 /**
- * @author GSF
+ * @author wangshu-g
  * <p>基础控制器,所有方法响应数据{@link com.wangshu.base.result.ResultBody}包装后的JSON字符串数据</p>
  */
 public abstract class AbstractBaseDataControllerString<S extends BaseDataService<?, ? extends BaseDataMapper<T>, T>, T extends BaseModel> extends AbstractBaseDataController<S, T> implements Save<S, T>, Delete<S, T>, Update<S, T>, Select<S, T>, List<S, T>, NestList<S, T> {

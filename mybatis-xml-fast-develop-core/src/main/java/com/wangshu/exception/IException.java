@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 
 /**
- * @author GSF
+ * @author wangshu-g
  * <p>全局统一异常</p>
  */
 @Getter

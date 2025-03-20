@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author GSF
+ * @author wangshu-g
  * <p>AbstractBaseDataService implements BaseService</p>
  */
 public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T extends BaseModel> implements BaseDataService<P, M, T> {
@@ -47,7 +47,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        Object primaryValue = model.modelAnyValueByFieldName(modelPrimaryField.getName());
+        Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
         if (Objects.nonNull(primaryValue) && Objects.nonNull(select(modelPrimaryField.getName(), primaryValue))) {
             return update(model);
         }
@@ -83,11 +83,11 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        Object primaryValue = model.modelAnyValueByFieldName(modelPrimaryField.getName());
+        Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
         if (Objects.isNull(primaryValue) && modelPrimaryField.getType().equals(String.class)) {
             model.setModelAnyValueByFieldName(modelPrimaryField.getName(), getUUID());
         }
-        if (model.fieldIsExist("createdAt") && Objects.isNull(model.modelAnyValueByFieldName("createdAt"))) {
+        if (model.fieldIsExist("createdAt") && Objects.isNull(model.safeModelAnyValueByFieldName("createdAt"))) {
             model.setModelAnyValueByFieldName("createdAt", new Date());
         }
         return model;
@@ -141,7 +141,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Transactional(rollbackFor = Exception.class)
     public int delete(@NotNull Object... keyValuesArray) {
-        return delete(keyValuesArrayParamsToMap(keyValuesArray));
+        return delete(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     /**
@@ -152,7 +152,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Transactional(rollbackFor = Exception.class)
     public int delete(@NotNull T model) {
-        return delete(model.toMap());
+        return delete(model.safeToMap());
     }
 
     /**
@@ -244,13 +244,13 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.BAD_REQUEST);
         }
-        Object primaryValue = model.modelAnyValueByFieldName(modelPrimaryField.getName());
+        Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
         if (Objects.isNull(primaryValue) || StrUtil.isBlank(primaryValue.toString())) {
             log.error("使用实体类更新时主键字段不能为空,异常参数: {}", primaryValue);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         Map<String, Object> param = new HashMap<>();
-        Map<String, Object> temp = model.toMap();
+        Map<String, Object> temp = model.safeToMap();
         temp.forEach((k, v) -> param.put(StrUtil.concat(false, "new", StrUtil.upperFirst(k)), v));
         param.put(modelPrimaryField.getName(), primaryValue);
         log.warn("实体类更新.防止更新参数和条件参数冲突,参数强制修改为: {}", param);
@@ -259,7 +259,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Transactional(rollbackFor = Exception.class)
     public int update(@NotNull Object... keyValuesArray) {
-        return update(keyValuesArrayParamsToMap(keyValuesArray));
+        return update(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     /**
@@ -331,7 +331,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return T extends BaseModel
      **/
     public @Nullable T select(@NotNull T model) {
-        return select(model.toMap());
+        return select(model.safeToMap());
     }
 
     /**
@@ -372,7 +372,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @Nullable T select(@NotNull Object... keyValuesArray) {
-        return select(keyValuesArrayParamsToMap(keyValuesArray));
+        return select(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     /**
@@ -413,11 +413,11 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @NotNull List<Map<String, Object>> getListWithOutLimit(@NotNull T model) {
-        return getListWithOutLimit(model.toMap());
+        return getListWithOutLimit(model.safeToMap());
     }
 
     public @NotNull List<Map<String, Object>> getListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return getListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
+        return getListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     /**
@@ -427,7 +427,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return List<Map < String, Object>>
      **/
     public @NotNull List<Map<String, Object>> getList(@NotNull T model) {
-        return getList(model.toMap());
+        return getList(model.safeToMap());
     }
 
     /**
@@ -473,7 +473,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @NotNull List<T> getNestList(@NotNull T model) {
-        return getNestList(model.toMap());
+        return getNestList(model.safeToMap());
     }
 
     public @NotNull List<T> getNestList(String column, Object value) {
@@ -483,7 +483,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @NotNull List<T> getNestList(@NotNull Object... keyValuesArray) {
-        return getNestList(keyValuesArrayParamsToMap(keyValuesArray));
+        return getNestList(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     public @NotNull List<T> getNestListWithOutLimit(@NotNull Map<String, Object> map) {
@@ -503,11 +503,11 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @NotNull List<T> getNestListWithOutLimit(@NotNull T model) {
-        return getNestListWithOutLimit(model.toMap());
+        return getNestListWithOutLimit(model.safeToMap());
     }
 
     public @NotNull List<T> getNestListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return getNestListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
+        return getNestListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     public Map<String, Object> listParamFilter(@NotNull Map<String, Object> map) {
@@ -558,7 +558,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public int getTotal(@NotNull Object... keyValuesArray) {
-        return getTotal(keyValuesArrayParamsToMap(keyValuesArray));
+        return getTotal(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     public int getTotal() {
@@ -591,7 +591,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return CacheTool.getModelPrimaryField(getModelClazz());
     }
 
-    public Map<String, Object> keyValuesArrayParamsToMap(@NotNull Object... keyValuesArray) {
+    public Map<String, Object> keyValuesArrayParamssafeToMap(@NotNull Object... keyValuesArray) {
         Map<String, Object> map = new HashMap<>();
         int length = keyValuesArray.length;
         for (int i = 0; i < keyValuesArray.length; i++) {

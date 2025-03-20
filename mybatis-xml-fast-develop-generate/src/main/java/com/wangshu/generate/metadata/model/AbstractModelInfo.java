@@ -45,6 +45,9 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
     private String controllerName;
     private String controllerFullName;
     private String controllerPackageName;
+    private String queryName;
+    private String queryFullName;
+    private String queryPackageName;
 
     private String apiSave;
     private String apiUpdate;
@@ -52,7 +55,9 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
     private String apiDelete;
     private String apiList;
     private String apiNestList;
+    @Deprecated
     private String apiExport;
+    @Deprecated
     private String apiImport;
 
     public AbstractModelInfo() {
@@ -86,6 +91,9 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
         this.setControllerName(ModelInfo.super.getControllerName());
         this.setControllerFullName(ModelInfo.super.getControllerFullName());
         this.setControllerPackageName(ModelInfo.super.getControllerPackageName());
+        this.setQueryName(ModelInfo.super.getQueryName());
+        this.setQueryFullName(ModelInfo.super.getQueryFullName());
+        this.setQueryPackageName(ModelInfo.super.getQueryPackageName());
     }
 
     public void initApiInfo() {

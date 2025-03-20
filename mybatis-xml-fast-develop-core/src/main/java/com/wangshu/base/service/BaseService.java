@@ -3,7 +3,7 @@ package com.wangshu.base.service;
 import java.util.UUID;
 
 /**
- * @author GSF
+ * @author wangshu-g
  * <p>BaseService</p>
  */
 public interface BaseService {

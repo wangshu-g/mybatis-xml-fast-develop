@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * 标记基础字段
  *
- * @author GSF
+ * @author wangshu-g
  */
 @Documented
 @Target(ElementType.FIELD)

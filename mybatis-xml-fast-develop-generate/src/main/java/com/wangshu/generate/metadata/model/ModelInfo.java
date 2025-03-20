@@ -134,6 +134,18 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
         return this.getControllerFullName().replace(StrUtil.concat(false, ".", this.getControllerName()), "");
     }
 
+    default String getQueryName() {
+        return StrUtil.concat(false, this.getModelName(), "Query");
+    }
+
+    default String getQueryFullName() {
+        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "query.", this.getQueryName()));
+    }
+
+    default String getQueryPackageName() {
+        return this.getQueryFullName().replace(StrUtil.concat(false, ".", this.getQueryName()), "");
+    }
+
     default String getApiSave() {
         return StrUtil.concat(false, "/", this.getModelName(), "/save");
     }
@@ -158,10 +170,12 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
         return StrUtil.concat(false, "/", this.getModelName(), "/getNestList");
     }
 
+    @Deprecated
     default String getApiExport() {
         return StrUtil.concat(false, "/", this.getModelName(), "/exportExcel");
     }
 
+    @Deprecated
     default String getApiImport() {
         return StrUtil.concat(false, "/", this.getModelName(), "/importExcel");
     }
@@ -186,6 +200,10 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
         return StrUtil.concat(false, this.getModuleInfo().getModuleControllerPath(), this.getControllerName(), JAVA_SUFFIX);
     }
 
+    default String getQueryFilePath() {
+        return StrUtil.concat(false, this.getModuleInfo().getModuleQueryPath(), this.getQueryName(), JAVA_SUFFIX);
+    }
+
     default String getXmlFilePath() {
         return StrUtil.concat(false, this.getModuleInfo().getModuleXmlPath(), this.getMapperName(), XML_SUFFIX);
     }
@@ -208,6 +226,10 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
 
     default String getGenerateControllerFilePath() {
         return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateControllerPath(), this.getControllerName(), JAVA_SUFFIX);
+    }
+
+    default String getGenerateQueryFilePath() {
+        return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateQueryPath(), this.getQueryName(), JAVA_SUFFIX);
     }
 
     default String getGenerateXmlFilePath() {

@@ -11,7 +11,7 @@ import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
 
 /**
- * @author GSF
+ * @author wangshu-g
  * <p>BaseControllerImpl</p>
  */
 public abstract class AbstractBaseDataControllerResultTableBody<S extends BaseDataService<?, ? extends BaseDataMapper<T>, T>, T extends BaseModel> implements SaveResultBody<S, T>, DeleteResultBody<S, T>, UpdateResultBody<S, T>, SelectResultBody<S, T>, ListTableResultTableBody<S, T>, NestListResultTableBody<S, T> {

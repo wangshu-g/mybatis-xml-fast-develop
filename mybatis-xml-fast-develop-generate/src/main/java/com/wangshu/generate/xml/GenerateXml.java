@@ -556,13 +556,19 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         this.getIfText(ifElement, isAndStr, table, columnName, condition, testConditionName);
     }
 
+    private final List<Condition> normalConditionList = List.of(Condition.equal, Condition.orEqual, Condition.less, Condition.orLess, Condition.great, Condition.orGreat);
+    private final List<Condition> likeConditionList = List.of(Condition.like, Condition.orLike);
+    private final List<Condition> inConditionList = List.of(Condition.in, Condition.orIn);
+    private final List<Condition> nullConditionList = List.of(Condition.isNull, Condition.orIsNull, Condition.isNotNull, Condition.orIsNotNull);
+    private final List<Condition> isNullConditionList = List.of(Condition.isNull, Condition.orIsNull);
+
     public void getIfText(org.dom4j.Element ifElement, boolean isAndStr, String table, String columnName, Condition condition, String testConditionName) {
         String ifText = null;
-        if (List.of(Condition.equal, Condition.orEqual, Condition.less, Condition.orLess, Condition.great, Condition.orGreat).contains(condition)) {
+        if (normalConditionList.contains(condition)) {
             ifText = this.getNormalIfText(table, columnName, this.getConditionStr(condition), testConditionName, isAndStr);
-        } else if (List.of(Condition.like, Condition.orLike).contains(condition)) {
+        } else if (likeConditionList.contains(condition)) {
             ifText = this.getLikeIfText(table, columnName, testConditionName, isAndStr);
-        } else if (List.of(Condition.in, Condition.orIn).contains(condition)) {
+        } else if (inConditionList.contains(condition)) {
             String orAndStr = condition.name().indexOf("or") == 0 ? "or " : "and ";
             String itemText = StrUtil.concat(false, testConditionName, "Item");
             org.dom4j.Element forEachElement = this.getForEachElement(testConditionName, itemText, null, "(", ")", null);
@@ -572,8 +578,8 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             ifElement.addText(StrUtil.concat(false, CommonStaticField.WRAP, orAndStr, this.getBackQuoteStr(table), ".", this.getBackQuoteStr(columnName), " in", CommonStaticField.WRAP));
             ifElement.add(forEachElement);
             return;
-        } else if (List.of(Condition.isNull, Condition.orIsNull, Condition.isNotNull, Condition.orIsNotNull).contains(condition)) {
-            boolean isNull = List.of(Condition.isNull, Condition.orIsNull).contains(condition);
+        } else if (nullConditionList.contains(condition)) {
+            boolean isNull = isNullConditionList.contains(condition);
             ifText = this.getNullIfText(table, columnName, isAndStr, isNull);
         }
         ifElement.addText(ifText);

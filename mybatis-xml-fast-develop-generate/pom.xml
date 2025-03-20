@@ -17,8 +17,8 @@
 
     <licenses>
         <license>
-            <name>The Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <name>The MIT License</name>
+            <url>https://mit-license.org</url>
         </license>
     </licenses>
 
@@ -63,24 +63,5 @@
         </dependency>
 
     </dependencies>
-
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <configuration>-->
-<!--                    <source>${java.version}</source>-->
-<!--                    <target>${java.version}</target>-->
-<!--                    <encoding>UTF-8</encoding>-->
-<!--                    <compilerArgs>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED</arg>-->
-<!--                    </compilerArgs>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
 
 </project>

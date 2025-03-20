@@ -10,6 +10,7 @@ import com.wangshu.base.controller.AbstractBaseDataControllerString;
 import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.base.query.CommonQueryParam;
 import com.wangshu.base.service.AbstractBaseDataService;
 import com.wangshu.base.service.BaseDataService;
 import com.wangshu.enu.Condition;
@@ -24,6 +25,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,9 +39,14 @@ import java.util.function.Consumer;
 
 import static com.wangshu.tool.CommonStaticField.*;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>MMSCD model mapper service serviceImpl controller query</p>
+ **/
 @EqualsAndHashCode(callSuper = true)
 @lombok.Data
-public class GenerateJavaMMSC<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateJava {
+public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateJava {
 
     private T model;
     private Consumer<MessageException> message;
@@ -50,13 +57,14 @@ public class GenerateJavaMMSC<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
     private String serviceCode;
     private String serviceImplCode;
     private String controllerCode;
+    private String queryCode;
 
-    public GenerateJavaMMSC(T model, Consumer<MessageException> message) {
+    public GenerateJavaMMSSCQ(T model, Consumer<MessageException> message) {
         this.model = model;
         this.message = message;
     }
 
-    public GenerateJavaMMSC(T model) {
+    public GenerateJavaMMSSCQ(T model) {
         this.model = model;
     }
 
@@ -204,6 +212,90 @@ public class GenerateJavaMMSC<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
                 .replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
     }
 
+    private final List<Condition> nullConditionList = List.of(Condition.isNull, Condition.orIsNull, Condition.isNotNull, Condition.orIsNotNull);
+
+    public String generateQueryClass() throws IOException {
+
+        TypeName booleanTypeName = TypeName.get(Boolean.class);
+
+        ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(CommonQueryParam.class, BaseModel.class);
+        TypeSpec.Builder typeSpec = TypeSpec.classBuilder(this.getModel().getQueryName())
+                .addModifiers(Modifier.PUBLIC)
+                .superclass(parameterizedTypeName);
+
+        for (F item : this.getModel().getFields()) {
+            if (item.isBaseField()) {
+                List<Condition> conditions = item.getConditions();
+                if (conditions.getFirst().equals(Condition.all)) {
+                    conditions = Condition.getEntries();
+                }
+                for (Condition condition : conditions) {
+                    try {
+                        Class<?> clazz = Class.forName(item.getJavaTypeName());
+                        TypeName itemTypeName = TypeName.get(clazz);
+                        if (condition.equals(Condition.equal)) {
+                            FieldSpec.Builder fieldSpec = GenerateJavaUtil.generateFieldBuilder(itemTypeName, item.getName(), Modifier.PRIVATE);
+                            typeSpec.addField(fieldSpec.build());
+                        } else {
+                            if (!condition.equals(Condition.all)) {
+                                String name = StrUtil.concat(false, item.getName(), StringUtils.capitalize(condition.name()));
+                                FieldSpec.Builder fieldSpec;
+                                if (nullConditionList.contains(condition)) {
+                                    fieldSpec = GenerateJavaUtil.generateFieldBuilder(booleanTypeName, name, Modifier.PRIVATE);
+                                } else {
+                                    fieldSpec = GenerateJavaUtil.generateFieldBuilder(itemTypeName, name, Modifier.PRIVATE);
+                                }
+                                typeSpec.addField(fieldSpec.build());
+                            }
+                        }
+                    } catch (ClassNotFoundException e) {
+                        this.printError(StrUtil.concat(false, "加载类: ", item.getJavaTypeName(), " 失败"));
+                    }
+                }
+            } else {
+                T leftModel = item.getLeftModel();
+                List<F> baseFields = leftModel.getBaseFields();
+                List<String> leftSelectFieldNames = item.getLeftSelectFieldNames();
+                if (!StrUtil.equals(leftSelectFieldNames.getFirst(), "*")) {
+                    baseFields = baseFields.stream().filter(field -> leftSelectFieldNames.contains(field.getName())).toList();
+                }
+                baseFields.forEach(field -> {
+                    List<Condition> conditions = field.getConditions();
+                    if (conditions.getFirst().equals(Condition.all)) {
+                        conditions = Condition.getEntries();
+                    }
+                    for (Condition condition : conditions) {
+                        try {
+                            Class<?> clazz = Class.forName(field.getJavaTypeName());
+                            TypeName fieldTypeName = TypeName.get(clazz);
+                            if (condition.equals(Condition.equal)) {
+                                String name = StrUtil.concat(false, item.getName(), item.getInfix(), StringUtils.capitalize(field.getName()));
+                                FieldSpec.Builder fieldSpec = GenerateJavaUtil.generateFieldBuilder(fieldTypeName, name, Modifier.PRIVATE);
+                                typeSpec.addField(fieldSpec.build());
+                            } else {
+                                if (!condition.equals(Condition.all)) {
+                                    String name = StrUtil.concat(false, item.getName(), item.getInfix(), StringUtils.capitalize(field.getName()), StringUtils.capitalize(condition.name()));
+                                    FieldSpec.Builder fieldSpec;
+                                    if (nullConditionList.contains(condition)) {
+                                        fieldSpec = GenerateJavaUtil.generateFieldBuilder(booleanTypeName, name, Modifier.PRIVATE);
+                                    } else {
+                                        fieldSpec = GenerateJavaUtil.generateFieldBuilder(fieldTypeName, name, Modifier.PRIVATE);
+                                    }
+                                    typeSpec.addField(fieldSpec.build());
+                                }
+                            }
+                        } catch (ClassNotFoundException e) {
+                            this.printError(StrUtil.concat(false, "加载类: ", item.getJavaTypeName(), " 失败"));
+                        }
+                    }
+                });
+            }
+        }
+        return GenerateJavaUtil.getJavaCode(this.getModel().getQueryPackageName(), typeSpec.build())
+                .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName())
+                .replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
+    }
+
     @Override
     public Consumer<MessageException> getMessage() {
         return this.message;
@@ -274,7 +366,20 @@ public class GenerateJavaMMSC<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
         return true;
     }
 
-    public String generateModelCode() {
+    public boolean writeQuery(String path) {
+        if (StrUtil.isBlank(this.getQueryCode())) {
+            this.generateQueryCode();
+        }
+        if (StrUtil.isBlank(this.getQueryCode())) {
+            return false;
+        }
+        File file = FileUtil.touch(path);
+        file.deleteOnExit();
+        FileUtil.writeString(this.getQueryCode(), file, StandardCharsets.UTF_8);
+        return true;
+    }
+
+    public void generateModelCode() {
         try {
             String modelCode = this.generateModelClass()
                     .replaceAll(StrUtil.concat(false, "package ", this.getModel().getModelFullName()), StrUtil.concat(false, "package ", this.getModel().getModelPackageName()));
@@ -290,66 +395,65 @@ public class GenerateJavaMMSC<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
                 }
             }
             this.setModelCode(modelCode);
-            return modelCode;
         } catch (IOException e) {
             this.printError(StrUtil.concat(false, "写入model失败:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
         }
-        return null;
     }
 
-    public String generateMapperCode() {
+    public void generateMapperCode() {
         try {
             String mapperCode = this.generateMapperInterface()
                     .replaceAll(StrUtil.concat(false, "package ", this.getModel().getMapperFullName()), StrUtil.concat(false, "package ", this.getModel().getMapperPackageName()))
                     .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName()).replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
             this.setMapperCode(mapperCode);
-            return mapperCode;
         } catch (IOException e) {
             this.printError(StrUtil.concat(false, "获取mapper失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
         }
-        return null;
     }
 
-    public String generateServiceCode() {
+    public void generateServiceCode() {
         try {
             String serviceCode = this.generateServiceClass()
                     .replaceAll(StrUtil.concat(false, "package ", this.getModel().getServiceFullName()), StrUtil.concat(false, "package ", this.getModel().getServicePackageName()))
                     .replaceAll(BASE_MAPPER_PACKAGE_NAME, this.getModel().getMapperFullName()).replaceAll(BASE_MAPPER_CLAZZ_SIMPLE_NAME, this.getModel().getMapperName())
                     .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName()).replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
             this.setServiceCode(serviceCode);
-            return serviceCode;
         } catch (IOException e) {
             this.printError(StrUtil.concat(false, "获取service失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
         } catch (ClassNotFoundException e) {
             this.printError(StrUtil.concat(false, "主键类型异常,对应的model类是:", this.getModel().getModelName()));
             this.printError(StrUtil.concat(false, "获取service失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
         }
-        return null;
     }
 
-    public String generateServiceImplCode() {
+    public void generateServiceImplCode() {
         try {
             String serviceImplCode = this.generateServiceImplClass();
             this.setServiceImplCode(serviceImplCode);
-            return serviceImplCode;
         } catch (IOException e) {
             this.printError(StrUtil.concat(false, "获取serviceImpl失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
         } catch (ClassNotFoundException e) {
             this.printError(StrUtil.concat(false, "主键类型异常,对应的model类是:", this.getModel().getModelName()));
             this.printError(StrUtil.concat(false, "获取serviceImpl失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
         }
-        return null;
     }
 
-    public String generateControllerCode() {
+    public void generateControllerCode() {
         try {
             String controllerCode = this.generateControllerClass();
             this.setControllerCode(controllerCode);
-            return controllerCode;
         } catch (IOException e) {
             this.printWarn(StrUtil.concat(false, "写入controller失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()));
         }
-        return null;
+    }
+
+    public void generateQueryCode() {
+        try {
+            String queryCode = this.generateQueryClass();
+            this.setQueryCode(queryCode);
+        } catch (IOException e) {
+            this.printWarn(StrUtil.concat(false, "写入query失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()));
+        }
     }
 
     @Override
@@ -375,6 +479,11 @@ public class GenerateJavaMMSC<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
     @Override
     public boolean writeController() {
         return this.writeController(this.getModel().getGenerateControllerFilePath());
+    }
+
+    @Override
+    public boolean writeQuery() {
+        return this.writeQuery(this.getModel().getGenerateQueryFilePath());
     }
 
 }

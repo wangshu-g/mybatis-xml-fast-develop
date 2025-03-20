@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @author GSF
+ * @author wangshu-g
  */
 @EqualsAndHashCode(callSuper = true)
 @lombok.Data

@@ -14,7 +14,7 @@ import java.lang.annotation.*;
  * <p>from currentModel</p>
  * <p>left join leftTable on (左) leftTable.leftJoinField = rightTable.rightJoinField (右)</p>
  *
- * @author GSF
+ * @author wangshu-g
  */
 @Documented
 @Target(ElementType.FIELD)

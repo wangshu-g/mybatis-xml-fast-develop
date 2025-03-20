@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * @author GSF
+ * @author wangshu-g
  */
 @Slf4j
 public class CommonParam {

@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 /**
- * @author GSF
+ * @author wangshu-g
  * <p>返回给表格用的数据格式</p>
  */
 @EqualsAndHashCode(callSuper = true)

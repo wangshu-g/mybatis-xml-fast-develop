@@ -4,7 +4,7 @@ import com.wangshu.enu.MessageType;
 import lombok.EqualsAndHashCode;
 
 /**
- * @author GSF
+ * @author wangshu-g
  */
 @EqualsAndHashCode(callSuper = true)
 @lombok.Data

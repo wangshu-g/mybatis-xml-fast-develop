@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 /**
- * @author GSF
+ * @author wangshu-g
  */
 @EqualsAndHashCode(callSuper = true)
 @lombok.Data

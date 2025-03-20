@@ -10,7 +10,7 @@ import javax.tools.JavaFileObject;
 import java.io.IOException;
 
 /**
- * @author GSF
+ * @author wangshu-g
  */
 public class GenerateJavaUtil {
 

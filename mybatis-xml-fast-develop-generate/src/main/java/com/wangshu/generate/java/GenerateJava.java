@@ -22,4 +22,6 @@ public abstract class GenerateJava implements GenerateInfo {
 
     public abstract boolean writeController();
 
+    public abstract boolean writeQuery();
+
 }
