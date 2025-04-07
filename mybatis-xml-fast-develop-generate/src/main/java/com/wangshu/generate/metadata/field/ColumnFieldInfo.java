@@ -4,9 +4,12 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.model.ModelClazzInfo;
+import com.wangshu.tool.MssqlTypeMapInfo;
 import com.wangshu.tool.MysqlTypeMapInfo;
+import com.wangshu.tool.PostgresqlTypeMapInfo;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -106,10 +109,17 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
     }
 
     private String initJdbcType(@NotNull Field field, @NotNull Column column) {
-        if (StrUtil.isBlank(column.jdbcType())) {
-            return MysqlTypeMapInfo.getDbColumnTypeByField(field);
+        String jdbcType = column.jdbcType();
+        if (StrUtil.isBlank(jdbcType)) {
+            switch (this.getModel().getDataBaseType()) {
+                case mysql -> jdbcType = MysqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
+                case postgresql -> jdbcType = PostgresqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
+                case mssql -> jdbcType = MssqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
+//                TODO 添加对应处理
+                default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
+            }
         }
-        return column.jdbcType();
+        return jdbcType;
     }
 
     private String initSqlStyleName(@NotNull Field metaData, @NotNull ModelClazzInfo model) {

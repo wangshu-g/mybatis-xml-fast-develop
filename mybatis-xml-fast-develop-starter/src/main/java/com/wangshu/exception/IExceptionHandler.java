@@ -26,11 +26,7 @@ public class IExceptionHandler {
         if (Objects.nonNull(request)) {
             log.error("错误接口: {}", request.getServletPath());
         }
-        if (Objects.isNull(e.getE())) {
-            log.error("错误信息", e);
-        } else {
-            log.error("错误信息", e.getE());
-        }
+        log.error("错误信息: ", e);
         return ResultBody.error(e.getErrorCode(), e.getMessage()).toJson();
     }
 
@@ -41,7 +37,7 @@ public class IExceptionHandler {
         if (Objects.nonNull(request)) {
             log.error("错误接口: {}", request.getServletPath());
         }
-        log.error("错误信息", e);
+        log.error("错误信息: ", e);
         if (e instanceof ErrorResponse errorResponse) {
             return ResultBody.error(String.valueOf(errorResponse.getStatusCode().value()), e.getMessage()).toJsonyMdHms();
         }

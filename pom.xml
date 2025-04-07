@@ -13,13 +13,14 @@
 
     <groupId>io.github.wangshu-g</groupId>
     <artifactId>mybatis-xml-fast-develop</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 
     <packaging>pom</packaging>
 
     <modules>
         <module>mybatis-xml-fast-develop-core</module>
         <module>mybatis-xml-fast-develop-generate</module>
+        <module>mybatis-xml-fast-develop-generate-compile-time</module>
         <module>mybatis-xml-fast-develop-starter</module>
     </modules>
 
