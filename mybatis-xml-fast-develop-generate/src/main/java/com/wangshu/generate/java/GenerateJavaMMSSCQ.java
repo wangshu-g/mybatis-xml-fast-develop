@@ -174,7 +174,7 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
 
         Class<?> primaryFieldClazz = Class.forName(this.getModel().getPrimaryField().getJavaTypeName());
 
-        ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(BaseDataService.class, primaryFieldClazz, BaseDataMapper.class, BaseModel.class);
+        ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(BaseDataService.class, primaryFieldClazz, BaseModel.class);
         TypeSpec.Builder typeSpec = TypeSpec.interfaceBuilder(this.getModel().getServiceName()).addModifiers(Modifier.PUBLIC).addSuperinterface(parameterizedTypeName);
 
         return GenerateJavaUtil.getJavaCode(this.getModel().getServicePackageName(), typeSpec.build());
@@ -235,6 +235,7 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
     }
 
     private final List<Condition> nullConditionList = List.of(Condition.isNull, Condition.orIsNull, Condition.isNotNull, Condition.orIsNotNull);
+    private final List<Condition> inConditionList = List.of(Condition.in, Condition.orIn);
 
     public String generateQueryClass() throws IOException {
 
@@ -264,6 +265,9 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                                 FieldSpec.Builder fieldSpec;
                                 if (nullConditionList.contains(condition)) {
                                     fieldSpec = GenerateJavaUtil.generateFieldBuilder(booleanTypeName, name, Modifier.PRIVATE);
+                                } else if (inConditionList.contains(condition)) {
+                                    ParameterizedTypeName listTypeName = ParameterizedTypeName.get(List.class, clazz);
+                                    fieldSpec = GenerateJavaUtil.generateFieldBuilder(listTypeName, name, Modifier.PRIVATE);
                                 } else {
                                     fieldSpec = GenerateJavaUtil.generateFieldBuilder(itemTypeName, name, Modifier.PRIVATE);
                                 }
@@ -281,7 +285,7 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                 if (!StrUtil.equals(leftSelectFieldNames.getFirst(), "*")) {
                     baseFields = baseFields.stream().filter(field -> leftSelectFieldNames.contains(field.getName())).toList();
                 }
-                baseFields.forEach(field -> {
+                for (F field : baseFields) {
                     List<Condition> conditions = field.getConditions();
                     if (conditions.getFirst().equals(Condition.all)) {
                         conditions = Condition.getEntries();
@@ -300,6 +304,9 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                                     FieldSpec.Builder fieldSpec;
                                     if (nullConditionList.contains(condition)) {
                                         fieldSpec = GenerateJavaUtil.generateFieldBuilder(booleanTypeName, name, Modifier.PRIVATE);
+                                    } else if (inConditionList.contains(condition)) {
+                                        ParameterizedTypeName listTypeName = ParameterizedTypeName.get(List.class, clazz);
+                                        fieldSpec = GenerateJavaUtil.generateFieldBuilder(listTypeName, name, Modifier.PRIVATE);
                                     } else {
                                         fieldSpec = GenerateJavaUtil.generateFieldBuilder(fieldTypeName, name, Modifier.PRIVATE);
                                     }
@@ -310,7 +317,7 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                             this.printError(StrUtil.concat(false, "加载类: ", item.getJavaTypeName(), " 失败"));
                         }
                     }
-                });
+                }
             }
         }
         return GenerateJavaUtil.getJavaCode(this.getModel().getQueryPackageName(), typeSpec.build())
@@ -437,7 +444,6 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
         try {
             String serviceCode = this.generateServiceClass()
                     .replaceAll(StrUtil.concat(false, "package ", this.getModel().getServiceFullName()), StrUtil.concat(false, "package ", this.getModel().getServicePackageName()))
-                    .replaceAll(BASE_MAPPER_PACKAGE_NAME, this.getModel().getMapperFullName()).replaceAll(BASE_MAPPER_CLAZZ_SIMPLE_NAME, this.getModel().getMapperName())
                     .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName()).replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
             this.setServiceCode(serviceCode);
         } catch (IOException e) {

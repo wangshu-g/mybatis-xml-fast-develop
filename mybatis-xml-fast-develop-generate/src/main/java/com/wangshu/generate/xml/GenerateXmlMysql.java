@@ -37,5 +37,4 @@ public class GenerateXmlMysql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
     public GenerateXmlMysql(T model, Consumer<MessageException> message) {
         super(model, message);
     }
-
 }
