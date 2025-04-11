@@ -26,27 +26,39 @@
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-core</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-starter</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate-compile-time</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
+        <!--对于项目中存在某些动态编译场景，这里很重要（编译不会引入该依赖）-->
+        <scoppe>provider</scoppe>
     </dependency>
 
 </dependencys>
 
 ```
+
+## 联系我
+
+备注来意哦
+
+![author-qq-qrcode.jpg](author-qq-qrcode.jpg)
+
+
+
+
