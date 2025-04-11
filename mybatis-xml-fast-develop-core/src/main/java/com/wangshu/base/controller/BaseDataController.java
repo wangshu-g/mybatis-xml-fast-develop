@@ -22,11 +22,10 @@ package com.wangshu.base.controller;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
 
-public interface BaseDataController<S extends BaseDataService<?, ? extends BaseDataMapper<T>, T>, T extends BaseModel> extends BaseController {
+public interface BaseDataController<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseController {
 
     S getService();
 

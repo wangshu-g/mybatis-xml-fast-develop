@@ -36,6 +36,6 @@ import com.wangshu.base.service.BaseDataService;
  * @author wangshu-g
  * <p>基础控制器,所有方法响应数据{@link com.wangshu.base.result.ResultBody}包装后的数据</p>
  */
-public abstract class AbstractBaseDataControllerResultBody<S extends BaseDataService<?, ? extends BaseDataMapper<T>, T>, T extends BaseModel> extends AbstractBaseDataController<S, T> implements SaveResultBody<S, T>, DeleteResultBody<S, T>, UpdateResultBody<S, T>, SelectResultBody<S, T>, ListResultBody<S, T>, NestListResultBody<S, T> {
+public abstract class AbstractBaseDataControllerResultBody<S extends BaseDataService<?, T>, T extends BaseModel> extends AbstractBaseDataController<S, T> implements SaveResultBody<S, T>, DeleteResultBody<S, T>, UpdateResultBody<S, T>, SelectResultBody<S, T>, ListResultBody<S, T>, NestListResultBody<S, T> {
 
 }

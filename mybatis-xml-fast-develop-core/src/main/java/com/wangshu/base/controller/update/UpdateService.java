@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 
-public interface UpdateService<S extends BaseDataService<?, ? extends BaseDataMapper<T>, T>, T extends BaseModel> extends BaseDataController<S, T> {
+public interface UpdateService<S extends BaseDataService<?,  T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**
      * <p>查询一条</p>

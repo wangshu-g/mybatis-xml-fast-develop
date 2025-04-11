@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.IOException;
 import java.util.List;
 
-public interface NestListResultBody<S extends BaseDataService<?, ? extends BaseDataMapper<T>, T>, T extends BaseModel> extends BaseDataController<S, T> {
+public interface NestListResultBody<S extends BaseDataService<?,  T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**
      * <p>查询列表</p>

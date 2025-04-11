@@ -22,10 +22,9 @@ package com.wangshu.base.controller;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
 
-public abstract class AbstractBaseDataController<S extends BaseDataService<?, ? extends BaseDataMapper<T>, T>, T extends BaseModel> implements BaseDataController<S, T> {
+public abstract class AbstractBaseDataController<S extends BaseDataService<?, T>, T extends BaseModel> implements BaseDataController<S, T> {
 
 }

@@ -36,6 +36,6 @@ import com.wangshu.base.service.BaseDataService;
  * @author wangshu-g
  * <p>基础控制器,不经过任何包装,直接响应Service的结果</p>
  */
-public abstract class AbstractBaseDataControllerService<S extends BaseDataService<?, ? extends BaseDataMapper<T>, T>, T extends BaseModel> extends AbstractBaseDataController<S, T> implements SaveService<S, T>, DeleteService<S, T>, UpdateService<S, T>, SelectService<S, T>, ListService<S, T>, NestListService<S, T> {
+public abstract class AbstractBaseDataControllerService<S extends BaseDataService<?,  T>, T extends BaseModel> extends AbstractBaseDataController<S, T> implements SaveService<S, T>, DeleteService<S, T>, UpdateService<S, T>, SelectService<S, T>, ListService<S, T>, NestListService<S, T> {
 
 }

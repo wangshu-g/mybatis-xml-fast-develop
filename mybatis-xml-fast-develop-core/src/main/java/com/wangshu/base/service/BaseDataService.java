@@ -32,7 +32,7 @@ import java.util.Map;
  * @author wangshu-g
  * <p>BaseService</p>
  */
-public interface BaseDataService<P, M extends BaseDataMapper<T>, T extends BaseModel> extends BaseService {
+public interface BaseDataService<P, T extends BaseModel> extends BaseService {
 
     /**
      * <p>保存</p>

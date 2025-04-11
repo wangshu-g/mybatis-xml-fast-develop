@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author wangshu-g
  *
- * <p>查询参数，参数合法性和规范性问题</p>
+ * <p>查询参数，参数合法性和规范性问题？hhc</p>
  **/
 public class Query<T extends BaseModel> extends EntityTool {
 
