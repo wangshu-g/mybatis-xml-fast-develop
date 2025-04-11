@@ -7,6 +7,11 @@ import lombok.Data;
 
 import java.util.Objects;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>编译期配置，读取对应模块 resources 下的 application.yml 文件配置</p>
+ **/
 @Data
 public class GenerateConfig {
 
@@ -31,7 +36,16 @@ public class GenerateConfig {
         }
     }
 
+    /**
+     * <p>
+     * 和默认扫描 java 文件冲突，二者选其一（简单来说，默认是扫描未被编译的，开启这个是扫描已编译的，对于模块化分层开发会用到，解耦 model 模块）。
+     * 该值为 true 时，必须指定 {@link GenerateConfig#scanClassFileModelPackage}，注意这里 {@link com.wangshu.annotation.Model} 对于包名的要求
+     * </p>
+     **/
     private boolean scanClassFile = false;
+    /**
+     * <p>你的模型务必要放在 com.xxx.model 下，{@link com.wangshu.annotation.Model}</p>
+     **/
     private String scanClassFileModelPackage;
     private boolean xml = true;
     private boolean mapper = true;
