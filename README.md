@@ -51,8 +51,8 @@
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate-compile-time</artifactId>
         <version>1.2.0</version>
-        <!--对于项目中存在某些动态编译场景，这里很重要（编译不会引入该依赖）-->
-        <scoppe>provider</scoppe>
+        <!--对于项目中存在某些动态编译场景，这里很重要哦！！！（编译不会引入该依赖）-->
+        <scoppe>provided</scoppe>
     </dependency>
 
 </dependencys>
