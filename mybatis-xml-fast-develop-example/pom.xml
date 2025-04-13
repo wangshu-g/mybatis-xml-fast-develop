@@ -37,19 +37,19 @@
             <dependency>
                 <groupId>io.github.wangshu-g</groupId>
                 <artifactId>mybatis-xml-fast-develop-core</artifactId>
-                <version>1.2.0</version>
+                <version>${mybatis-xml-fast-develop.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.wangshu-g</groupId>
                 <artifactId>mybatis-xml-fast-develop-starter</artifactId>
-                <version>1.2.0</version>
+                <version>${mybatis-xml-fast-develop.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.wangshu-g</groupId>
                 <artifactId>mybatis-xml-fast-develop-generate-compile-time</artifactId>
-                <version>1.2.0</version>
+                <version>${mybatis-xml-fast-develop.version}</version>
                 <!--对于项目中存在某些动态编译场景，这里很重要哦！！！-->
                 <scope>provided</scope>
             </dependency>
