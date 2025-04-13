@@ -30,6 +30,29 @@
         <mybatis-xml-fast-develop.version>1.3.0</mybatis-xml-fast-develop.version>
     </properties>
 
+    <url>https://github.com/wangshu-g/mybatis-xml-fast-develop</url>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>https://mit-license.org</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>wangshu-g</name>
+            <url>https://github.com/wangshu-g</url>
+            <email>2560334673@qq.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/Aftersoil/ws-dep-manage.git</connection>
+        <developerConnection>scm:git:https://github.com/Aftersoil/ws-dep-manage.git</developerConnection>
+        <url>https://github.com/Aftersoil/ws-dep-manage</url>
+    </scm>
+
     <dependencyManagement>
 
         <dependencies>
