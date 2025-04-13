@@ -14,21 +14,25 @@
 
 ## 模块简介
 
-+ mybatis-xml-fast-develop-core 
-  + 基本功能，基类、字段、注解关联关系标识
-+ mybatis-xml-fast-develop-starter 
-  + 启动自动建表，异常控制
-+ mybatis-xml-fast-develop-generate 
-  + 主要代码生成模块
-+ mybatis-xml-fast-develop-generate-compile-time 
-  + 以上的是子弹，这个就是全自动步枪。
-  + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
++ mybatis-xml-fast-develop-core
+    + 基本功能，基类、字段、注解关联关系标识
++ mybatis-xml-fast-develop-starter
+    + 启动自动建表，异常控制
++ mybatis-xml-fast-develop-generate
+    + 主要代码生成模块
++ mybatis-xml-fast-develop-generate-compile-time
+    + 以上的是子弹，这个就是全自动步枪。
+    + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
 
 ## 为什么是 mybatis-xml
 
 **直观**
 
 ## 如何使用
+
+maven 仓库链接:
+
+https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-develop
 
 ```xml
 
