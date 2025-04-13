@@ -16,7 +16,7 @@
 
 + mybatis-xml-fast-develop-core 
   + 基本功能，基类、字段、注解关联关系标识
-+ mybatis-xml-fast-develop-starter
++ mybatis-xml-fast-develop-starter 
   + 启动自动建表，异常控制
 + mybatis-xml-fast-develop-generate 
   + 主要代码生成模块
