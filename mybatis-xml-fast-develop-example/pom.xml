@@ -27,7 +27,7 @@
         <mysql.version>8.3.0</mysql.version>
         <mybatis.version>3.5.14</mybatis.version>
         <druid.version>1.2.23</druid.version>
-        <mybatis-xml-fast-develop.version>1.2.0</mybatis-xml-fast-develop.version>
+        <mybatis-xml-fast-develop.version>1.3.0</mybatis-xml-fast-develop.version>
     </properties>
 
     <dependencyManagement>

@@ -2,7 +2,7 @@
 
 ## 介绍
 
-一个 mybatis-xml、spring boot 快速开发集合
+一个 mybatis-xml、spring boot 快速开发集合、插件。
 
 引入依赖、注解后，仅需实体，无需其他代码，直接一键启动
 
@@ -37,26 +37,26 @@
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-core</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-starter</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
     </dependency>
 
     <!--这个一般引入 mybatis-xml-fast-develop-generate-compile-time 就不需要自己调用生成了-->
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate-compile-time</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <!--对于项目中存在某些动态编译场景，这里很重要哦！！！（编译不会引入该依赖）-->
         <scoppe>provided</scoppe>
     </dependency>
@@ -70,7 +70,3 @@
 备注来意哦
 
 ![author-qq-qrcode.jpg](author-qq-qrcode.jpg)
-
-
-
-
