@@ -26,10 +26,15 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
+import com.wangshu.exception.MessageException;
+import com.wangshu.generate.java.GenerateJava;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
+import com.wangshu.generate.xml.GenerateXml;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.wangshu.tool.CommonStaticField.JAVA_SUFFIX;
 import static com.wangshu.tool.CommonStaticField.XML_SUFFIX;
@@ -257,5 +262,9 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
     default String getGenerateXmlFilePath() {
         return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateXmlPath(), this.getMapperName(), XML_SUFFIX);
     }
+
+    public GenerateJava getGenerateJava(@Nullable Consumer<MessageException> messageExceptionConsumer);
+
+    public GenerateXml<? extends ModelInfo, ? extends ColumnInfo> getGenerateXml(@Nullable Consumer<MessageException> messageExceptionConsumer);
 
 }

@@ -26,6 +26,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.exception.MessageException;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -35,7 +36,7 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
         super(model);
     }
 
-    public GenerateXmlPostgresql(T model, Consumer<MessageException> message) {
+    public GenerateXmlPostgresql(T model, @Nullable Consumer<MessageException> message) {
         super(model, message);
     }
 

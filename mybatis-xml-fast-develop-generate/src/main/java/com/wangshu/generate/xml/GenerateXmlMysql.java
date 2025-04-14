@@ -25,6 +25,7 @@ package com.wangshu.generate.xml;
 import com.wangshu.exception.MessageException;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -34,7 +35,7 @@ public class GenerateXmlMysql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
         super(model);
     }
 
-    public GenerateXmlMysql(T model, Consumer<MessageException> message) {
-        super(model, message);
+    public GenerateXmlMysql(T model, @Nullable Consumer<MessageException> messageExceptionConsumer) {
+        super(model, messageExceptionConsumer);
     }
 }

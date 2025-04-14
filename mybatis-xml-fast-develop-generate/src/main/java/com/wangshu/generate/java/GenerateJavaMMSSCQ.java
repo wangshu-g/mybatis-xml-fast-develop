@@ -43,9 +43,11 @@ import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.tool.GenerateJavaUtil;
 import jakarta.annotation.Resource;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.apache.ibatis.annotations.Mapper;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,7 +58,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static com.wangshu.tool.CommonStaticField.*;
@@ -67,7 +68,7 @@ import static com.wangshu.tool.CommonStaticField.*;
  * <p>MMSCD model mapper service serviceImpl controller query</p>
  **/
 @EqualsAndHashCode(callSuper = true)
-@lombok.Data
+@Data
 public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateJava {
 
     private T model;
@@ -81,22 +82,24 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
     private String controllerCode;
     private String queryCode;
 
-    public GenerateJavaMMSSCQ(T model, Consumer<MessageException> message) {
+    public GenerateJavaMMSSCQ(T model, @Nullable Consumer<MessageException> messageExceptionConsumer) {
         this.model = model;
-        this.message = message;
+        this.message = messageExceptionConsumer;
     }
 
     public GenerateJavaMMSSCQ(T model) {
         this.model = model;
     }
 
-    public String generateModelClass() throws IOException {
+    public void generateModel() {
+        String modelCode = "";
+
         TypeSpec.Builder typeSpec = TypeSpec.classBuilder(this.getModel().getModelName()).addModifiers(Modifier.PUBLIC).superclass(BaseModel.class);
 
         AnnotationSpec dataAnnotation = GenerateJavaUtil.generateAnnotationSpec(Model.class);
         typeSpec.addAnnotation(dataAnnotation);
 
-        AnnotationSpec lombokDataAnnotation = GenerateJavaUtil.generateAnnotationSpec(lombok.Data.class);
+        AnnotationSpec lombokDataAnnotation = GenerateJavaUtil.generateAnnotationSpec(Data.class);
         typeSpec.addAnnotation(lombokDataAnnotation);
 
         AnnotationSpec.Builder accessorsAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Accessors.class);
@@ -109,10 +112,10 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
 
         typeSpec.addAnnotation(equalsAndHashCodeAnnotation.build());
 
-        for (F item : this.getModel().getFields()) {
-            FieldSpec.Builder fieldSpec = null;
-            if (item.isBaseField()) {
-                try {
+        try {
+            for (F item : this.getModel().getFields()) {
+                FieldSpec.Builder fieldSpec;
+                if (item.isBaseField()) {
                     Class<?> clazz = Class.forName(item.getJavaTypeName());
                     fieldSpec = GenerateJavaUtil.generateFieldBuilder(TypeName.get(clazz), item.getName(), Modifier.PRIVATE);
                     AnnotationSpec.Builder columnAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Column.class);
@@ -121,44 +124,58 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                     columnAnnotation.addMember("conditions", "$T.all", Condition.class);
                     columnAnnotation.addMember("primary", "$L", item.isPrimaryField());
                     fieldSpec.addAnnotation(columnAnnotation.build());
-                } catch (ClassNotFoundException e) {
-                    this.printError(StrUtil.concat(false, "加载类: ", item.getJavaTypeName(), " 失败"));
+                } else if (item.isCollectionJoinField()) {
+                    ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(List.class, BaseModel.class);
+                    fieldSpec = GenerateJavaUtil.generateFieldBuilder(parameterizedTypeName, item.getName(), Modifier.PRIVATE);
+                    AnnotationSpec.Builder joinAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Join.class);
+                    joinAnnotation.addMember("leftTable", "$S.class", item.getLeftModel().getModelName());
+                    joinAnnotation.addMember("leftJoinField", "$S", item.getLeftJoinField());
+                    joinAnnotation.addMember("leftSelectFields", "{$S}", "*");
+                    joinAnnotation.addMember("rightTable", "$S.class", item.getRightModel().getModelName());
+                    joinAnnotation.addMember("rightJoinField", "$S", item.getRightJoinField());
+                    joinAnnotation.addMember("joinType", "$T.$L", JoinType.class, item.getJoinType().name());
+                    joinAnnotation.addMember("joinCondition", "$T.$L", JoinCondition.class, item.getJoinCondition().name());
+                    joinAnnotation.addMember("infix", "$S", item.getInfix());
+                    fieldSpec.addAnnotation(joinAnnotation.build());
+                } else {
+                    fieldSpec = GenerateJavaUtil.generateFieldBuilder(TypeName.get(BaseModel.class), item.getName(), Modifier.PRIVATE);
+                    AnnotationSpec.Builder joinAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Join.class);
+                    joinAnnotation.addMember("leftTable", "$S.class", item.getLeftModel().getModelName());
+                    joinAnnotation.addMember("leftJoinField", "$S", item.getLeftJoinField());
+                    joinAnnotation.addMember("leftSelectFields", "{$S}", "*");
+                    joinAnnotation.addMember("rightTable", "$S.class", item.getRightModel().getModelName());
+                    joinAnnotation.addMember("rightJoinField", "$S", item.getRightJoinField());
+                    joinAnnotation.addMember("joinType", "$T.$L", JoinType.class, item.getJoinType().name());
+                    joinAnnotation.addMember("joinCondition", "$T.$L", JoinCondition.class, item.getJoinCondition().name());
+                    joinAnnotation.addMember("infix", "$S", item.getInfix());
+                    fieldSpec.addAnnotation(joinAnnotation.build());
                 }
-            } else if (item.isCollectionJoinField()) {
-                ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(List.class, BaseModel.class);
-                fieldSpec = GenerateJavaUtil.generateFieldBuilder(parameterizedTypeName, item.getName(), Modifier.PRIVATE);
-                AnnotationSpec.Builder joinAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Join.class);
-                joinAnnotation.addMember("leftTable", "$S.class", item.getLeftModel().getModelName());
-                joinAnnotation.addMember("leftJoinField", "$S", item.getLeftJoinField());
-                joinAnnotation.addMember("leftSelectFields", "{$S}", "*");
-                joinAnnotation.addMember("rightTable", "$S.class", item.getRightModel().getModelName());
-                joinAnnotation.addMember("rightJoinField", "$S", item.getRightJoinField());
-                joinAnnotation.addMember("joinType", "$T.$L", JoinType.class, item.getJoinType().name());
-                joinAnnotation.addMember("joinCondition", "$T.$L", JoinCondition.class, item.getJoinCondition().name());
-                joinAnnotation.addMember("infix", "$S", item.getInfix());
-                fieldSpec.addAnnotation(joinAnnotation.build());
-            } else {
-                fieldSpec = GenerateJavaUtil.generateFieldBuilder(TypeName.get(BaseModel.class), item.getName(), Modifier.PRIVATE);
-                AnnotationSpec.Builder joinAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Join.class);
-                joinAnnotation.addMember("leftTable", "$S.class", item.getLeftModel().getModelName());
-                joinAnnotation.addMember("leftJoinField", "$S", item.getLeftJoinField());
-                joinAnnotation.addMember("leftSelectFields", "{$S}", "*");
-                joinAnnotation.addMember("rightTable", "$S.class", item.getRightModel().getModelName());
-                joinAnnotation.addMember("rightJoinField", "$S", item.getRightJoinField());
-                joinAnnotation.addMember("joinType", "$T.$L", JoinType.class, item.getJoinType().name());
-                joinAnnotation.addMember("joinCondition", "$T.$L", JoinCondition.class, item.getJoinCondition().name());
-                joinAnnotation.addMember("infix", "$S", item.getInfix());
-                fieldSpec.addAnnotation(joinAnnotation.build());
-            }
-            if (Objects.nonNull(fieldSpec)) {
                 typeSpec.addField(fieldSpec.build());
             }
+            modelCode = GenerateJavaUtil.getJavaCode(this.getModel().getModelPackageName(), typeSpec.build());
+            modelCode = modelCode.replaceAll(StrUtil.concat(false, "package ", this.getModel().getModelFullName()), StrUtil.concat(false, "package ", this.getModel().getModelPackageName()));
+            for (F item : this.getModel().getFields()) {
+                if (item.isCollectionJoinField()) {
+                    modelCode = modelCode.replace(StrUtil.concat(false, "\"", item.getLeftModel().getModelName(), "\""), item.getLeftModel().getModelName());
+                    modelCode = modelCode.replace(StrUtil.concat(false, "\"", item.getRightModel().getModelName(), "\""), item.getRightModel().getModelName());
+                    modelCode = modelCode.replace(StrUtil.concat(false, "List<BaseModel> ", item.getName()), StrUtil.concat(false, "List<", item.getLeftModel().getModelName(), "> ", item.getName()));
+                } else if (item.isClassJoinField()) {
+                    modelCode = modelCode.replace(StrUtil.concat(false, "\"", item.getLeftModel().getModelName(), "\""), item.getLeftModel().getModelName());
+                    modelCode = modelCode.replace(StrUtil.concat(false, "\"", item.getRightModel().getModelName(), "\""), item.getRightModel().getModelName());
+                    modelCode = modelCode.replace(StrUtil.concat(false, "BaseModel ", item.getName()), StrUtil.concat(false, item.getLeftModel().getModelName(), " ", item.getName()));
+                }
+            }
+            this.setModelCode(modelCode);
+        } catch (ClassNotFoundException e) {
+            this.printError("动态加载类失败", e);
+        } catch (IOException e) {
+            this.printError("JavaFileObject 操作异常", e);
         }
-
-        return GenerateJavaUtil.getJavaCode(this.getModel().getModelPackageName(), typeSpec.build());
     }
 
-    public String generateMapperInterface() throws IOException {
+    public void generateMapperInterface() {
+        String mapperCode = "";
+
         TypeSpec.Builder typeSpec = TypeSpec.interfaceBuilder(this.getModel().getMapperName()).addModifiers(Modifier.PUBLIC);
 
         ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(BaseDataMapper.class, BaseModel.class);
@@ -167,46 +184,74 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
         AnnotationSpec mapperAnnotation = GenerateJavaUtil.generateAnnotationSpec(Mapper.class);
         typeSpec.addAnnotation(mapperAnnotation);
 
-        return GenerateJavaUtil.getJavaCode(this.getModel().getMapperPackageName(), typeSpec.build());
+        try {
+            mapperCode = GenerateJavaUtil.getJavaCode(this.getModel().getMapperPackageName(), typeSpec.build());
+            mapperCode = mapperCode.replaceAll(StrUtil.concat(false, "package ", this.getModel().getMapperFullName()), StrUtil.concat(false, "package ", this.getModel().getMapperPackageName()))
+                    .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName()).replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
+            this.setMapperCode(mapperCode);
+        } catch (IOException e) {
+            this.printError("JavaFileObject 操作异常", e);
+        }
     }
 
-    public String generateServiceClass() throws IOException, ClassNotFoundException {
+    public void generateService() {
+        String serviceCode = "";
 
-        Class<?> primaryFieldClazz = Class.forName(this.getModel().getPrimaryField().getJavaTypeName());
+        try {
+            Class<?> primaryFieldClazz = Class.forName(this.getModel().getPrimaryField().getJavaTypeName());
 
-        ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(BaseDataService.class, primaryFieldClazz, BaseModel.class);
-        TypeSpec.Builder typeSpec = TypeSpec.interfaceBuilder(this.getModel().getServiceName()).addModifiers(Modifier.PUBLIC).addSuperinterface(parameterizedTypeName);
+            ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(BaseDataService.class, primaryFieldClazz, BaseModel.class);
+            TypeSpec.Builder typeSpec = TypeSpec.interfaceBuilder(this.getModel().getServiceName()).addModifiers(Modifier.PUBLIC).addSuperinterface(parameterizedTypeName);
 
-        return GenerateJavaUtil.getJavaCode(this.getModel().getServicePackageName(), typeSpec.build());
+            serviceCode = GenerateJavaUtil.getJavaCode(this.getModel().getServicePackageName(), typeSpec.build());
+            serviceCode = serviceCode.replaceAll(StrUtil.concat(false, "package ", this.getModel().getServiceFullName()), StrUtil.concat(false, "package ", this.getModel().getServicePackageName()))
+                    .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName()).replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
+            this.setServiceCode(serviceCode);
+        } catch (ClassNotFoundException e) {
+            this.printError("动态加载类失败", e);
+        } catch (IOException e) {
+            this.printError("JavaFileObject 操作异常", e);
+        }
     }
 
-    public String generateServiceImplClass() throws ClassNotFoundException, IOException {
-        Class<?> primaryFieldClazz = Class.forName(this.getModel().getPrimaryField().getJavaTypeName());
+    public void generateServiceImpl() {
+        String serviceImplCode = "";
 
-        ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(AbstractBaseDataService.class, primaryFieldClazz, BaseDataMapper.class, BaseModel.class);
-        TypeSpec.Builder typeSpec = TypeSpec.classBuilder(this.getModel().getServiceImplName()).addModifiers(Modifier.PUBLIC).superclass(parameterizedTypeName).addSuperinterface(BaseDataService.class);
+        try {
+            Class<?> primaryFieldClazz = Class.forName(this.getModel().getPrimaryField().getJavaTypeName());
 
-        String mapper = StrUtil.concat(false, this.getModel().getMapperName().substring(0, 1).toLowerCase(), this.getModel().getMapperName().substring(1));
+            ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(AbstractBaseDataService.class, primaryFieldClazz, BaseDataMapper.class, BaseModel.class);
+            TypeSpec.Builder typeSpec = TypeSpec.classBuilder(this.getModel().getServiceImplName()).addModifiers(Modifier.PUBLIC).superclass(parameterizedTypeName).addSuperinterface(BaseDataService.class);
 
-        FieldSpec clazzDeclare = GenerateJavaUtil.generateFieldBuilder(TypeName.get(BaseDataMapper.class), mapper, Modifier.PUBLIC).addAnnotation(Resource.class).build();
-        typeSpec.addField(clazzDeclare);
+            String mapper = StrUtil.concat(false, this.getModel().getMapperName().substring(0, 1).toLowerCase(), this.getModel().getMapperName().substring(1));
 
-        MethodSpec getMapperMethod = GenerateJavaUtil.generateMethodBuilder("getMapper", TypeName.get(BaseDataMapper.class), Override.class, Modifier.PUBLIC).addCode(StrUtil.concat(false, "return ", mapper, ";")).build();
-        typeSpec.addMethod(getMapperMethod);
+            FieldSpec clazzDeclare = GenerateJavaUtil.generateFieldBuilder(TypeName.get(BaseDataMapper.class), mapper, Modifier.PUBLIC).addAnnotation(Resource.class).build();
+            typeSpec.addField(clazzDeclare);
 
-        AnnotationSpec serviceAnnotation = GenerateJavaUtil.generateAnnotationSpec(Service.class);
-        typeSpec.addAnnotation(serviceAnnotation);
+            MethodSpec getMapperMethod = GenerateJavaUtil.generateMethodBuilder("getMapper", TypeName.get(BaseDataMapper.class), Override.class, Modifier.PUBLIC).addCode(StrUtil.concat(false, "return ", mapper, ";")).build();
+            typeSpec.addMethod(getMapperMethod);
 
-        return GenerateJavaUtil.getJavaCode(this.getModel().getServiceImplPackageName(), typeSpec.build())
-                .replaceAll(BASE_MAPPER_PACKAGE_NAME, this.getModel().getMapperFullName())
-                .replaceAll(BASE_MAPPER_CLAZZ_SIMPLE_NAME, this.getModel().getMapperName())
-                .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName())
-                .replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName())
-                .replaceAll(BASE_DATA_SERVICE_CLAZZ_PACKAGE_NAME, this.getModel().getServiceFullName())
-                .replaceAll(StrUtil.concat(false, "implements ", BASE_DATA_SERVICE_CLAZZ_SIMPLE_NAME), StrUtil.concat(false, "implements ", this.getModel().getServiceName()));
+            AnnotationSpec serviceAnnotation = GenerateJavaUtil.generateAnnotationSpec(Service.class);
+            typeSpec.addAnnotation(serviceAnnotation);
+
+            serviceImplCode = GenerateJavaUtil.getJavaCode(this.getModel().getServiceImplPackageName(), typeSpec.build());
+            serviceImplCode = serviceImplCode.replaceAll(BASE_MAPPER_PACKAGE_NAME, this.getModel().getMapperFullName())
+                    .replaceAll(BASE_MAPPER_CLAZZ_SIMPLE_NAME, this.getModel().getMapperName())
+                    .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName())
+                    .replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName())
+                    .replaceAll(BASE_DATA_SERVICE_CLAZZ_PACKAGE_NAME, this.getModel().getServiceFullName())
+                    .replaceAll(StrUtil.concat(false, "implements ", BASE_DATA_SERVICE_CLAZZ_SIMPLE_NAME), StrUtil.concat(false, "implements ", this.getModel().getServiceName()));
+            this.setServiceImplCode(serviceImplCode);
+        } catch (ClassNotFoundException e) {
+            this.printError("动态加载类失败", e);
+        } catch (IOException e) {
+            this.printError("JavaFileObject 操作异常", e);
+        }
     }
 
-    public String generateControllerClass() throws IOException {
+    public void generateController() {
+        String controllerCode = "";
+
         TypeSpec.Builder typeSpec = TypeSpec.classBuilder(this.getModel().getControllerName()).addModifiers(Modifier.PUBLIC).superclass(ParameterizedTypeName.get(controllerSuperClazz, AbstractBaseDataService.class, BaseModel.class));
 
         String service = StrUtil.concat(false, this.getModel().getServiceName().substring(0, 1).toLowerCase(), this.getModel().getServiceName().substring(1));
@@ -227,17 +272,23 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
         requestMappingAnnotation.addMember("value", "$S", StrUtil.concat(false, "/", this.getModel().getModelName()));
         typeSpec.addAnnotation(requestMappingAnnotation.build());
 
-        return GenerateJavaUtil.getJavaCode(this.getModel().getControllerPackageName(), typeSpec.build())
-                .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName())
-                .replaceAll(ABSTRACT_BASE_DATA_SERVICE_PACKAGE_NAME, this.getModel().getServiceFullName())
-                .replaceAll(ABSTRACT_BASE_DATA_SERVICE_CLAZZ_SIMPLE_NAME, this.getModel().getServiceName())
-                .replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
+        try {
+            controllerCode = GenerateJavaUtil.getJavaCode(this.getModel().getControllerPackageName(), typeSpec.build());
+            controllerCode = controllerCode.replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName())
+                    .replaceAll(ABSTRACT_BASE_DATA_SERVICE_PACKAGE_NAME, this.getModel().getServiceFullName())
+                    .replaceAll(ABSTRACT_BASE_DATA_SERVICE_CLAZZ_SIMPLE_NAME, this.getModel().getServiceName())
+                    .replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
+            this.setControllerCode(controllerCode);
+        } catch (IOException e) {
+            this.printError("JavaFileObject 操作异常", e);
+        }
     }
 
     private final List<Condition> nullConditionList = List.of(Condition.isNull, Condition.orIsNull, Condition.isNotNull, Condition.orIsNotNull);
     private final List<Condition> inConditionList = List.of(Condition.in, Condition.orIn);
 
-    public String generateQueryClass() throws IOException {
+    public void generateQuery() {
+        String queryCode = "";
 
         TypeName booleanTypeName = TypeName.get(Boolean.class);
 
@@ -320,9 +371,15 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                 }
             }
         }
-        return GenerateJavaUtil.getJavaCode(this.getModel().getQueryPackageName(), typeSpec.build())
-                .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName())
-                .replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
+        try {
+            queryCode = GenerateJavaUtil.getJavaCode(this.getModel().getQueryPackageName(), typeSpec.build());
+            queryCode = queryCode.replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName())
+                    .replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
+        } catch (IOException e) {
+            this.printError("JavaFileObject 操作异常", e);
+        }
+
+        this.setQueryCode(queryCode);
     }
 
     @Override
@@ -330,188 +387,55 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
         return this.message;
     }
 
-    public boolean writeModel(String path) {
+    @Override
+    public void generate() {
         if (StrUtil.isBlank(this.getModelCode())) {
-            this.generateModelCode();
-        }
-        if (StrUtil.isBlank(this.getModelCode())) {
-            return false;
-        }
-        File file = FileUtil.touch(path);
-        file.deleteOnExit();
-        FileUtil.writeString(this.getModelCode(), file, StandardCharsets.UTF_8);
-        return true;
-    }
-
-    public boolean writeMapper(String path) {
-        if (StrUtil.isBlank(this.getMapperCode())) {
-            this.generateMapperCode();
+            this.generateModel();
         }
         if (StrUtil.isBlank(this.getMapperCode())) {
-            return false;
-        }
-        File file = FileUtil.touch(path);
-        file.deleteOnExit();
-        FileUtil.writeString(this.getMapperCode(), file, StandardCharsets.UTF_8);
-        return true;
-    }
-
-    public boolean writeService(String path) {
-        if (StrUtil.isBlank(this.getServiceCode())) {
-            this.generateServiceCode();
+            this.generateMapperInterface();
         }
         if (StrUtil.isBlank(this.getServiceCode())) {
-            return false;
-        }
-        File file = FileUtil.touch(path);
-        file.deleteOnExit();
-        FileUtil.writeString(this.getServiceCode(), file, StandardCharsets.UTF_8);
-        return true;
-    }
-
-    public boolean writeServiceImpl(String path) {
-        if (StrUtil.isBlank(this.getServiceImplCode())) {
-            this.generateServiceImplCode();
+            this.generateService();
         }
         if (StrUtil.isBlank(this.getServiceImplCode())) {
-            return false;
-        }
-        File file = FileUtil.touch(path);
-        file.deleteOnExit();
-        FileUtil.writeString(this.getServiceImplCode(), file, StandardCharsets.UTF_8);
-        return true;
-    }
-
-    public boolean writeController(String path) {
-        if (StrUtil.isBlank(this.getControllerCode())) {
-            this.generateControllerCode();
+            this.generateServiceImpl();
         }
         if (StrUtil.isBlank(this.getControllerCode())) {
-            return false;
-        }
-        File file = FileUtil.touch(path);
-        file.deleteOnExit();
-        FileUtil.writeString(this.getControllerCode(), file, StandardCharsets.UTF_8);
-        return true;
-    }
-
-    public boolean writeQuery(String path) {
-        if (StrUtil.isBlank(this.getQueryCode())) {
-            this.generateQueryCode();
+            this.generateController();
         }
         if (StrUtil.isBlank(this.getQueryCode())) {
+            this.generateQuery();
+        }
+    }
+
+    @Override
+    public boolean writeJava() {
+        this.generate();
+        try {
+            File modelFile = FileUtil.touch(this.getModel().getGenerateModelFilePath());
+            modelFile.deleteOnExit();
+            FileUtil.writeString(this.getModelCode(), modelFile, StandardCharsets.UTF_8);
+            File mapperInterfaceFile = FileUtil.touch(this.getModel().getGenerateMapperFilePath());
+            mapperInterfaceFile.deleteOnExit();
+            FileUtil.writeString(this.getMapperCode(), mapperInterfaceFile, StandardCharsets.UTF_8);
+            File serviceFile = FileUtil.touch(this.getModel().getGenerateServiceFilePath());
+            serviceFile.deleteOnExit();
+            FileUtil.writeString(this.getServiceCode(), serviceFile, StandardCharsets.UTF_8);
+            File serviceImplFile = FileUtil.touch(this.getModel().getGenerateServiceImplFilePath());
+            serviceImplFile.deleteOnExit();
+            FileUtil.writeString(this.getServiceImplCode(), serviceImplFile, StandardCharsets.UTF_8);
+            File controllerFile = FileUtil.touch(this.getModel().getGenerateControllerFilePath());
+            controllerFile.deleteOnExit();
+            FileUtil.writeString(this.getControllerCode(), controllerFile, StandardCharsets.UTF_8);
+            File queryFile = FileUtil.touch(this.getModel().getGenerateQueryFilePath());
+            queryFile.deleteOnExit();
+            FileUtil.writeString(this.getQueryCode(), queryFile, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            this.printError("导出 java 文件异常", e);
             return false;
         }
-        File file = FileUtil.touch(path);
-        file.deleteOnExit();
-        FileUtil.writeString(this.getQueryCode(), file, StandardCharsets.UTF_8);
         return true;
-    }
-
-    public void generateModelCode() {
-        try {
-            String modelCode = this.generateModelClass()
-                    .replaceAll(StrUtil.concat(false, "package ", this.getModel().getModelFullName()), StrUtil.concat(false, "package ", this.getModel().getModelPackageName()));
-            for (F item : this.getModel().getFields()) {
-                if (item.isCollectionJoinField()) {
-                    modelCode = modelCode.replace(StrUtil.concat(false, "\"", item.getLeftModel().getModelName(), "\""), item.getLeftModel().getModelName());
-                    modelCode = modelCode.replace(StrUtil.concat(false, "\"", item.getRightModel().getModelName(), "\""), item.getRightModel().getModelName());
-                    modelCode = modelCode.replace(StrUtil.concat(false, "List<BaseModel> ", item.getName()), StrUtil.concat(false, "List<", item.getLeftModel().getModelName(), "> ", item.getName()));
-                } else if (item.isClassJoinField()) {
-                    modelCode = modelCode.replace(StrUtil.concat(false, "\"", item.getLeftModel().getModelName(), "\""), item.getLeftModel().getModelName());
-                    modelCode = modelCode.replace(StrUtil.concat(false, "\"", item.getRightModel().getModelName(), "\""), item.getRightModel().getModelName());
-                    modelCode = modelCode.replace(StrUtil.concat(false, "BaseModel ", item.getName()), StrUtil.concat(false, item.getLeftModel().getModelName(), " ", item.getName()));
-                }
-            }
-            this.setModelCode(modelCode);
-        } catch (IOException e) {
-            this.printError(StrUtil.concat(false, "写入model失败:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
-        }
-    }
-
-    public void generateMapperCode() {
-        try {
-            String mapperCode = this.generateMapperInterface()
-                    .replaceAll(StrUtil.concat(false, "package ", this.getModel().getMapperFullName()), StrUtil.concat(false, "package ", this.getModel().getMapperPackageName()))
-                    .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName()).replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
-            this.setMapperCode(mapperCode);
-        } catch (IOException e) {
-            this.printError(StrUtil.concat(false, "获取mapper失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
-        }
-    }
-
-    public void generateServiceCode() {
-        try {
-            String serviceCode = this.generateServiceClass()
-                    .replaceAll(StrUtil.concat(false, "package ", this.getModel().getServiceFullName()), StrUtil.concat(false, "package ", this.getModel().getServicePackageName()))
-                    .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName()).replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
-            this.setServiceCode(serviceCode);
-        } catch (IOException e) {
-            this.printError(StrUtil.concat(false, "获取service失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
-        } catch (ClassNotFoundException e) {
-            this.printError(StrUtil.concat(false, "主键类型异常,对应的model类是:", this.getModel().getModelName()));
-            this.printError(StrUtil.concat(false, "获取service失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
-        }
-    }
-
-    public void generateServiceImplCode() {
-        try {
-            String serviceImplCode = this.generateServiceImplClass();
-            this.setServiceImplCode(serviceImplCode);
-        } catch (IOException e) {
-            this.printError(StrUtil.concat(false, "获取serviceImpl失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
-        } catch (ClassNotFoundException e) {
-            this.printError(StrUtil.concat(false, "主键类型异常,对应的model类是:", this.getModel().getModelName()));
-            this.printError(StrUtil.concat(false, "获取serviceImpl失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()), e);
-        }
-    }
-
-    public void generateControllerCode() {
-        try {
-            String controllerCode = this.generateControllerClass();
-            this.setControllerCode(controllerCode);
-        } catch (IOException e) {
-            this.printWarn(StrUtil.concat(false, "写入controller失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()));
-        }
-    }
-
-    public void generateQueryCode() {
-        try {
-            String queryCode = this.generateQueryClass();
-            this.setQueryCode(queryCode);
-        } catch (IOException e) {
-            this.printWarn(StrUtil.concat(false, "写入query失败,对应的model类是:", this.getModel().getModelName(), ",失败原因: ", e.getMessage()));
-        }
-    }
-
-    @Override
-    public boolean writeModel() {
-        return this.writeModel(this.getModel().getGenerateModelFilePath());
-    }
-
-    @Override
-    public boolean writeMapper() {
-        return this.writeMapper(this.getModel().getGenerateMapperFilePath());
-    }
-
-    @Override
-    public boolean writeService() {
-        return this.writeService(this.getModel().getGenerateServiceFilePath());
-    }
-
-    @Override
-    public boolean writeServiceImpl() {
-        return this.writeServiceImpl(this.getModel().getGenerateServiceImplFilePath());
-    }
-
-    @Override
-    public boolean writeController() {
-        return this.writeController(this.getModel().getGenerateControllerFilePath());
-    }
-
-    @Override
-    public boolean writeQuery() {
-        return this.writeQuery(this.getModel().getGenerateQueryFilePath());
     }
 
 }

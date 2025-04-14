@@ -40,6 +40,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -62,38 +63,38 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         this.message = null;
     }
 
-    public GenerateXml(@NotNull T model, Consumer<MessageException> message) {
+    public GenerateXml(@NotNull T model, @Nullable Consumer<MessageException> message) {
         this.model = model;
         this.message = message;
     }
 
-    public boolean writeXml() {
-        return writeXml(this.getModel().getGenerateXmlFilePath());
-    }
-
-    public boolean writeXml(String path) {
+    public void generate() {
         if (Objects.isNull(this.getMapperDocument())) {
             this.generateMapperDocument();
         }
+    }
+
+    public boolean writeXml() {
+        this.generate();
         try {
             OutputFormat format = OutputFormat.createPrettyPrint();
             format.setTrimText(false);
             format.setSuppressDeclaration(true);
             format.setEncoding(this.getMapperDocument().getXMLEncoding());
-            File file = FileUtil.touch(path);
+            File file = FileUtil.touch(this.getModel().getGenerateXmlFilePath());
             file.deleteOnExit();
             XMLWriter writer = new XMLWriter(new FileWriter(file), format);
             writer.write(this.getMapperDocument());
             writer.flush();
             writer.close();
-            return true;
         } catch (Exception e) {
-            this.printWarn("导出xml出现异常", e);
+            this.printWarn("导出 xml 文件异常", e);
+            return false;
         }
-        return false;
+        return true;
     }
 
-    public Document generateMapperDocument() {
+    public void generateMapperDocument() {
         Document document = DocumentHelper.createDocument();
         document.setXMLEncoding("UTF-8");
         document.setName(this.getModel().getMapperName());
@@ -129,7 +130,6 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         rootElement.add(getTotalElement);
         document.setRootElement(rootElement);
         this.setMapperDocument(document);
-        return document;
     }
 
     public org.dom4j.Element createXmlElement(String elementName) {

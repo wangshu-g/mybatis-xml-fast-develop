@@ -27,6 +27,7 @@ import com.wangshu.exception.MessageException;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import org.dom4j.Element;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -36,7 +37,7 @@ public class GenerateXmlMssql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
         super(model);
     }
 
-    public GenerateXmlMssql(T model, Consumer<MessageException> message) {
+    public GenerateXmlMssql(T model, @Nullable Consumer<MessageException> message) {
         super(model, message);
     }
 

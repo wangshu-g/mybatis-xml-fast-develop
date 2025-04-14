@@ -25,10 +25,20 @@ package com.wangshu.generate.metadata.model;
 import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
+import com.wangshu.exception.MessageException;
+import com.wangshu.generate.java.GenerateJava;
+import com.wangshu.generate.java.GenerateJavaMMSSCQ;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
+import com.wangshu.generate.xml.GenerateXml;
+import com.wangshu.generate.xml.GenerateXmlMssql;
+import com.wangshu.generate.xml.GenerateXmlMysql;
+import com.wangshu.generate.xml.GenerateXmlPostgresql;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @lombok.Data
 public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implements ModelInfo<T, F> {
@@ -127,6 +137,20 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
         this.setApiNestList(ModelInfo.super.getApiNestList());
         this.setApiExport(ModelInfo.super.getApiExport());
         this.setApiImport(ModelInfo.super.getApiImport());
+    }
+
+    public @NotNull GenerateJava getGenerateJava(@Nullable Consumer<MessageException> messageExceptionConsumer) {
+        return new GenerateJavaMMSSCQ(this, messageExceptionConsumer);
+    }
+
+    public @Nullable GenerateXml<? extends ModelInfo, ? extends ColumnInfo> getGenerateXml(@Nullable Consumer<MessageException> messageExceptionConsumer) {
+        GenerateXml<? extends ModelInfo, ? extends ColumnInfo> generateXml = null;
+        switch (this.getDataBaseType()) {
+            case mysql -> generateXml = new GenerateXmlMysql<>((ModelInfo) this, messageExceptionConsumer);
+            case postgresql -> generateXml = new GenerateXmlPostgresql<>((ModelInfo) this, messageExceptionConsumer);
+            case mssql -> generateXml = new GenerateXmlMssql<>((ModelInfo) this, messageExceptionConsumer);
+        }
+        return generateXml;
     }
 
 }
