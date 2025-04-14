@@ -31,16 +31,11 @@ import com.wangshu.base.model.BaseModel;
 import com.wangshu.exception.MessageException;
 import com.wangshu.generate.config.GenerateConfig;
 import com.wangshu.generate.java.GenerateJavaMMSSCQ;
-import com.wangshu.generate.metadata.field.ColumnElementInfo;
-import com.wangshu.generate.metadata.field.ColumnFieldInfo;
 import com.wangshu.generate.metadata.model.ModelClazzInfo;
 import com.wangshu.generate.metadata.model.ModelElementInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.generate.metadata.module.ModuleTemplateInfo;
 import com.wangshu.generate.xml.GenerateXml;
-import com.wangshu.generate.xml.GenerateXmlMssql;
-import com.wangshu.generate.xml.GenerateXmlMysql;
-import com.wangshu.generate.xml.GenerateXmlPostgresql;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.processing.*;
@@ -127,20 +122,11 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
                     for (Class<?> clazz : ClassUtil.scanPackage(generateConfig.getScanClassFileModelPackage())) {
                         if (clazz.isAnnotationPresent(Model.class) && BaseModel.class.isAssignableFrom(clazz)) {
                             if (Objects.isNull(moduleTemplateInfo)) {
-                                String modulePackageName = clazz.getName().replace(StrUtil.concat(false, ".model.", clazz.getSimpleName()), "");
-                                moduleTemplateInfo = new ModuleTemplateInfo(moduleName, modulePackageName, modulePath);
+                                moduleTemplateInfo = this.getModuleTemplateInfo(clazz.getName(), clazz.getSimpleName());
                                 FileUtil.del(moduleTemplateInfo.getModuleGeneratePath());
                             }
                             ModelClazzInfo modelClazzInfo = new ModelClazzInfo(moduleTemplateInfo, (Class<? extends BaseModel>) clazz);
-                            GenerateJavaMMSSCQ<ModelClazzInfo, ColumnFieldInfo> generateJava = new GenerateJavaMMSSCQ<>(modelClazzInfo, messageExceptionConsumer);
-                            GenerateXml<ModelClazzInfo, ColumnFieldInfo> generateXml = null;
-                            switch (modelClazzInfo.getDataBaseType()) {
-                                case mysql -> generateXml = new GenerateXmlMysql<>(modelClazzInfo, messageExceptionConsumer);
-                                case postgresql -> generateXml = new GenerateXmlPostgresql<>(modelClazzInfo, messageExceptionConsumer);
-                                case mssql -> generateXml = new GenerateXmlMssql<>(modelClazzInfo, messageExceptionConsumer);
-                                default -> printError("暂未支持的数据库类型");
-                            }
-                            writeGenerateFile(modelClazzInfo, generateJava, generateXml, generateConfig);
+                            writeGenerateFile(modelClazzInfo, generateConfig);
                         }
                     }
                 }
@@ -148,23 +134,11 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
                 for (Element element : roundEnv.getElementsAnnotatedWith(Model.class)) {
                     if (element instanceof TypeElement temp) {
                         if (Objects.isNull(moduleTemplateInfo)) {
-                            String modulePackageName = element.asType().toString().replace(StrUtil.concat(false, ".model.", element.getSimpleName().toString()), "");
-                            moduleTemplateInfo = new ModuleTemplateInfo(moduleName, modulePackageName, modulePath);
+                            moduleTemplateInfo = this.getModuleTemplateInfo(element.asType().toString(), element.getSimpleName().toString());
                             FileUtil.del(moduleTemplateInfo.getModuleGeneratePath());
                         }
-                        Model model = element.getAnnotation(Model.class);
-                        if (Objects.nonNull(model)) {
-                            ModelElementInfo modelElementInfo = new ModelElementInfo(moduleTemplateInfo, temp, typeUtils);
-                            GenerateJavaMMSSCQ<ModelElementInfo, ColumnElementInfo> generateJava = new GenerateJavaMMSSCQ<>(modelElementInfo, messageExceptionConsumer);
-                            GenerateXml<ModelElementInfo, ColumnElementInfo> generateXml = null;
-                            switch (modelElementInfo.getDataBaseType()) {
-                                case mysql -> generateXml = new GenerateXmlMysql<>(modelElementInfo, messageExceptionConsumer);
-                                case postgresql -> generateXml = new GenerateXmlPostgresql<>(modelElementInfo, messageExceptionConsumer);
-                                case mssql -> generateXml = new GenerateXmlMssql<>(modelElementInfo, messageExceptionConsumer);
-                                default -> printError("暂未支持的数据库类型");
-                            }
-                            writeGenerateFile(modelElementInfo, generateJava, generateXml, generateConfig);
-                        }
+                        ModelElementInfo modelElementInfo = new ModelElementInfo(moduleTemplateInfo, temp, typeUtils);
+                        writeGenerateFile(modelElementInfo, generateConfig);
                     }
                 }
             }
@@ -180,31 +154,35 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void writeGenerateFile(ModelInfo<?, ?> modelInfo, GenerateJavaMMSSCQ<?, ?> generateJavaMMSSCQ, GenerateXml<?, ?> generateXml, GenerateConfig generateConfig) throws IOException {
-        if (Objects.nonNull(generateXml)) {
-            if (!FileUtil.exist(modelInfo.getMapperFilePath()) && generateConfig.isMapper()) {
-                generateJavaMMSSCQ.writeMapper();
-                writeJavaSourceFile(modelInfo.getMapperFullName(), generateJavaMMSSCQ.getMapperCode());
-            }
-            if (!FileUtil.exist(modelInfo.getServiceFilePath()) && generateConfig.isService()) {
-                generateJavaMMSSCQ.writeService();
-                writeJavaSourceFile(modelInfo.getServiceFullName(), generateJavaMMSSCQ.getServiceCode());
-            }
-            if (!FileUtil.exist(modelInfo.getServiceImplFilePath()) && generateConfig.isServiceImpl()) {
-                generateJavaMMSSCQ.writeServiceImpl();
-                writeJavaSourceFile(modelInfo.getServiceImplFullName(), generateJavaMMSSCQ.getServiceImplCode());
-            }
-            if (!FileUtil.exist(modelInfo.getControllerFilePath()) && generateConfig.isController()) {
-                generateJavaMMSSCQ.writeController();
-                writeJavaSourceFile(modelInfo.getControllerFullName(), generateJavaMMSSCQ.getControllerCode());
-            }
-            if (!FileUtil.exist(modelInfo.getQueryFilePath()) && generateConfig.isQuery()) {
-                generateJavaMMSSCQ.writeQuery();
-                writeJavaSourceFile(modelInfo.getQueryFullName(), generateJavaMMSSCQ.getQueryCode());
-            }
-            if (!FileUtil.exist(modelInfo.getXmlFilePath()) && generateConfig.isXml()) {
-                generateXml.writeXml();
-            }
+    public ModuleTemplateInfo getModuleTemplateInfo(@NotNull String modelFullName, String modelSimpleName) {
+        String modulePackageName = modelFullName.replace(StrUtil.concat(false, ".model.", modelSimpleName), "");
+        return new ModuleTemplateInfo(moduleName, modulePackageName, modulePath);
+    }
+
+    private void writeGenerateFile(@NotNull ModelInfo<?, ?> modelInfo, GenerateConfig generateConfig) throws IOException {
+        GenerateXml generateXml = modelInfo.getGenerateXml(this.messageExceptionConsumer);
+        GenerateJavaMMSSCQ generateJava = (GenerateJavaMMSSCQ) modelInfo.getGenerateJava(this.messageExceptionConsumer);
+        if (Objects.isNull(generateXml)) {
+            this.printError("暂未支持的数据库类型");
+            return;
+        }
+        assert generateJava != null;
+        generateXml.writeXml();
+        generateJava.writeJava();
+        if (!FileUtil.exist(modelInfo.getMapperFilePath()) && generateConfig.isMapper()) {
+            writeJavaSourceFile(modelInfo.getMapperFullName(), generateJava.getMapperCode());
+        }
+        if (!FileUtil.exist(modelInfo.getServiceFilePath()) && generateConfig.isService()) {
+            writeJavaSourceFile(modelInfo.getServiceFullName(), generateJava.getServiceCode());
+        }
+        if (!FileUtil.exist(modelInfo.getServiceImplFilePath()) && generateConfig.isServiceImpl()) {
+            writeJavaSourceFile(modelInfo.getServiceImplFullName(), generateJava.getServiceImplCode());
+        }
+        if (!FileUtil.exist(modelInfo.getControllerFilePath()) && generateConfig.isController()) {
+            writeJavaSourceFile(modelInfo.getControllerFullName(), generateJava.getControllerCode());
+        }
+        if (!FileUtil.exist(modelInfo.getQueryFilePath()) && generateConfig.isQuery()) {
+            writeJavaSourceFile(modelInfo.getQueryFullName(), generateJava.getQueryCode());
         }
     }
 
