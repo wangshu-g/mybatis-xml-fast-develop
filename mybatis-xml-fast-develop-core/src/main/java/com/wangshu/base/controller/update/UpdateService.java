@@ -23,7 +23,6 @@ package com.wangshu.base.controller.update;
 // SOFTWARE.
 
 import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +41,7 @@ public interface UpdateService<S extends BaseDataService<?,  T>, T extends BaseM
     @PostMapping("/update")
     @ResponseBody
     public default int update(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
-        return this.getService().update(this.getRequestParams(request));
+        return this.getService()._update(this.getRequestParams(request));
     }
 
 }

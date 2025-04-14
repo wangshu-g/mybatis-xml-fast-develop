@@ -23,7 +23,6 @@ package com.wangshu.base.controller.update;
 // SOFTWARE.
 
 import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
 import com.wangshu.base.service.BaseDataService;
@@ -43,7 +42,7 @@ public interface Update<S extends BaseDataService<?,  T>, T extends BaseModel> e
     @PostMapping(value = "/update")
     @ResponseBody
     public default String update(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
-        int line = this.getService().update(this.getRequestParams(request));
+        int line = this.getService()._update(this.getRequestParams(request));
         return line > 0 ? ResultBody.success(line).toJson() : ResultBody.error("更新失败").toJson();
     }
 

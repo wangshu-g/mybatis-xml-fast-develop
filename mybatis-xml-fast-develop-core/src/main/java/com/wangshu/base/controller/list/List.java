@@ -23,7 +23,6 @@ package com.wangshu.base.controller.list;
 // SOFTWARE.
 
 import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
 import com.wangshu.base.service.BaseDataService;
@@ -43,7 +42,7 @@ public interface List<S extends BaseDataService<?,  T>, T extends BaseModel> ext
     @PostMapping("/getList")
     @ResponseBody
     public default String getList(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
-        return ResultBody.success(this.getService().getList(this.getRequestParams(request))).toJsonyMdHms();
+        return ResultBody.success(this.getService()._getList(this.getRequestParams(request))).toJsonyMdHms();
     }
 
 }

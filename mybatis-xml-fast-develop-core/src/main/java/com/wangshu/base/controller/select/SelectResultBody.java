@@ -23,7 +23,6 @@ package com.wangshu.base.controller.select;
 // SOFTWARE.
 
 import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
 import com.wangshu.base.service.BaseDataService;
@@ -43,7 +42,7 @@ public interface SelectResultBody<S extends BaseDataService<?,  T>, T extends Ba
     @PostMapping("/select")
     @ResponseBody
     public default ResultBody<T> select(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
-        return ResultBody.success(this.getService().select(this.getRequestParams(request)));
+        return ResultBody.success(this.getService()._select(this.getRequestParams(request)));
     }
 
 }

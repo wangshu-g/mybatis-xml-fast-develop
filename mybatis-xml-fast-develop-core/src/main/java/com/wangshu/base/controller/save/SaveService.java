@@ -23,7 +23,6 @@ package com.wangshu.base.controller.save;
 // SOFTWARE.
 
 import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +39,7 @@ public interface SaveService<S extends BaseDataService<?,  T>, T extends BaseMod
     @PostMapping("/save")
     @ResponseBody
     public default int save(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
-        return this.getService().save(this.getRequestParams(request));
+        return this.getService()._save(this.getRequestParams(request));
     }
 
 }

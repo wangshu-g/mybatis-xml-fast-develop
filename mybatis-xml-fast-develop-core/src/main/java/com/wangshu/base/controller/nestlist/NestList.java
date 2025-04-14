@@ -23,7 +23,6 @@ package com.wangshu.base.controller.nestlist;
 // SOFTWARE.
 
 import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
 import com.wangshu.base.service.BaseDataService;
@@ -44,7 +43,7 @@ public interface NestList<S extends BaseDataService<?,  T>, T extends BaseModel>
     @PostMapping("/getNestList")
     @ResponseBody
     public default String getNestList(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
-        return ResultBody.success(this.getService().getNestList(this.getRequestParams(request))).toJsonyMdHms();
+        return ResultBody.success(this.getService()._getNestList(this.getRequestParams(request))).toJsonyMdHms();
     }
 
 

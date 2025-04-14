@@ -63,15 +63,15 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int save(@NotNull T model) {
+    public int _save(@NotNull T model) {
         Field modelPrimaryField = getModelPrimaryField();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
-        if (Objects.nonNull(primaryValue) && Objects.nonNull(select(modelPrimaryField.getName(), primaryValue))) {
-            return update(model);
+        if (Objects.nonNull(primaryValue) && Objects.nonNull(_select(modelPrimaryField.getName(), primaryValue))) {
+            return _update(model);
         }
         model = saveParamFilter(model);
         if (saveValidate(model)) {
@@ -87,7 +87,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return int
      **/
     @Transactional(rollbackFor = Exception.class)
-    public int save(@NotNull Map<String, Object> map) {
+    public int _save(@NotNull Map<String, Object> map) {
         T model;
         try {
             model = getModelClazz().getConstructor().newInstance();
@@ -96,7 +96,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         model.setModelValuesFromMapByFieldName(map);
-        return save(model);
+        return _save(model);
     }
 
     public T saveParamFilter(@NotNull T model) {
@@ -134,7 +134,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Override
     @Transactional
-    public int batchSave(@NotNull List<T> modelList) {
+    public int _batchSave(@NotNull List<T> modelList) {
         List<T> newModelList = modelList.stream().map(model -> {
             model = saveParamFilter(model);
             return model;
@@ -153,7 +153,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int delete(@NotNull Map<String, Object> map) {
+    public int _delete(@NotNull Map<String, Object> map) {
         map = deleteParamFilter(map);
         if (deleteValidate(map)) {
             return getMapper()._delete(map);
@@ -162,8 +162,8 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public int delete(@NotNull Object... keyValuesArray) {
-        return delete(keyValuesArrayParamssafeToMap(keyValuesArray));
+    public int _delete(@NotNull Object... keyValuesArray) {
+        return _delete(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     /**
@@ -173,8 +173,8 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return int
      **/
     @Transactional(rollbackFor = Exception.class)
-    public int delete(@NotNull T model) {
-        return delete(model.safeToMap());
+    public int _delete(@NotNull T model) {
+        return _delete(model.safeToMap());
     }
 
     /**
@@ -184,7 +184,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return int
      **/
     @Transactional(rollbackFor = Exception.class)
-    public int delete(P id) {
+    public int _delete(P id) {
         if (Objects.isNull(id) || StrUtil.isBlank(id.toString())) {
             log.error("根据主键字段删除时主键字段不能为空,异常参数: {}", id);
             throw new IException(HttpStatus.BAD_REQUEST);
@@ -196,7 +196,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         map.put(modelPrimaryField.getName(), id);
-        return delete(map);
+        return _delete(map);
     }
 
     public Map<String, Object> deleteParamFilter(@NotNull Map<String, Object> map) {
@@ -225,7 +225,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int update(@NotNull Map<String, Object> map) {
+    public int _update(@NotNull Map<String, Object> map) {
         map = updateParamFilter(map);
         if (updateValidate(map)) {
             return getMapper()._update(map);
@@ -234,7 +234,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public int update(P id, @NotNull String column1, Object newValue) {
+    public int _update(P id, @NotNull String column1, Object newValue) {
         if (Objects.isNull(id) || StrUtil.isBlank(id.toString())) {
             log.error("根据主键字段更新时主键字段不能为空,异常参数: {}", id);
             throw new IException(HttpStatus.BAD_REQUEST);
@@ -249,7 +249,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         if (!column1.startsWith("new")) {
             map.put(StrUtil.concat(false, "new", StrUtil.upperFirst(column1)), newValue);
         }
-        return update(map);
+        return _update(map);
     }
 
     /**
@@ -260,7 +260,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return int
      **/
     @Transactional(rollbackFor = Exception.class)
-    public int update(@NotNull T model) {
+    public int _update(@NotNull T model) {
         Field modelPrimaryField = getModelPrimaryField();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
@@ -276,12 +276,12 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         temp.forEach((k, v) -> param.put(StrUtil.concat(false, "new", StrUtil.upperFirst(k)), v));
         param.put(modelPrimaryField.getName(), primaryValue);
         log.warn("实体类更新.防止更新参数和条件参数冲突,参数强制修改为: {}", param);
-        return update(param);
+        return _update(param);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public int update(@NotNull Object... keyValuesArray) {
-        return update(keyValuesArrayParamssafeToMap(keyValuesArray));
+    public int _update(@NotNull Object... keyValuesArray) {
+        return _update(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     /**
@@ -322,7 +322,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return T extends BaseModel
      **/
     @Override
-    public @Nullable T select(@NotNull Map<String, Object> map) {
+    public @Nullable T _select(@NotNull Map<String, Object> map) {
         map = selectParamFilter(map);
         if (selectValidate(map)) {
             try {
@@ -352,8 +352,8 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @param model extends BaseModel
      * @return T extends BaseModel
      **/
-    public @Nullable T select(@NotNull T model) {
-        return select(model.safeToMap());
+    public @Nullable T _select(@NotNull T model) {
+        return _select(model.safeToMap());
     }
 
     /**
@@ -362,7 +362,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @param id id
      * @return T extends BaseModel
      **/
-    public @Nullable T select(P id) {
+    public @Nullable T _select(P id) {
         if (Objects.isNull(id) || StrUtil.isBlank(id.toString())) {
             log.error("根据主键字段查询时主键字段不能为空,异常参数: {}", id);
             throw new IException(HttpStatus.BAD_REQUEST);
@@ -374,7 +374,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         map.put(modelPrimaryField.getName(), id);
-        return select(map);
+        return _select(map);
     }
 
     /**
@@ -386,15 +386,15 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @param param2  value
      * @return T extends BaseModel
      **/
-    public @Nullable T select(String column1, Object param1, String column2, Object param2) {
+    public @Nullable T _select(String column1, Object param1, String column2, Object param2) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column1, param1);
         map.put(column2, param2);
-        return select(map);
+        return _select(map);
     }
 
-    public @Nullable T select(@NotNull Object... keyValuesArray) {
-        return select(keyValuesArrayParamssafeToMap(keyValuesArray));
+    public @Nullable T _select(@NotNull Object... keyValuesArray) {
+        return _select(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     /**
@@ -404,7 +404,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return List<Map < String, Object>>
      **/
     @Override
-    public @NotNull List<Map<String, Object>> getList(@NotNull Map<String, Object> map) {
+    public @NotNull List<Map<String, Object>> _getList(@NotNull Map<String, Object> map) {
         map = listParamFilter(map);
         if (listValidate(map)) {
             return getMapper()._getList(map);
@@ -418,7 +418,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @param map {conditionName : value}
      * @return List<Map < String, Object>>
      **/
-    public @NotNull List<Map<String, Object>> getListWithOutLimit(@NotNull Map<String, Object> map) {
+    public @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Map<String, Object> map) {
         map = listParamFilter(map);
         if (listValidate(map)) {
             map.remove("pageIndex");
@@ -428,18 +428,18 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         throw new IException(HttpStatus.BAD_REQUEST);
     }
 
-    public @NotNull List<Map<String, Object>> getListWithOutLimit(String column, Object value) {
+    public @NotNull List<Map<String, Object>> _getListWithOutLimit(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
-        return getListWithOutLimit(map);
+        return _getListWithOutLimit(map);
     }
 
-    public @NotNull List<Map<String, Object>> getListWithOutLimit(@NotNull T model) {
-        return getListWithOutLimit(model.safeToMap());
+    public @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull T model) {
+        return _getListWithOutLimit(model.safeToMap());
     }
 
-    public @NotNull List<Map<String, Object>> getListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return getListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
+    public @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Object... keyValuesArray) {
+        return _getListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     /**
@@ -448,8 +448,8 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @param model extends BaseModel
      * @return List<Map < String, Object>>
      **/
-    public @NotNull List<Map<String, Object>> getList(@NotNull T model) {
-        return getList(model.safeToMap());
+    public @NotNull List<Map<String, Object>> _getList(@NotNull T model) {
+        return _getList(model.safeToMap());
     }
 
     /**
@@ -459,10 +459,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @param value  value
      * @return List<Map < String, Object>>
      **/
-    public @NotNull List<Map<String, Object>> getList(String column, Object value) {
+    public @NotNull List<Map<String, Object>> _getList(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
-        return getList(map);
+        return _getList(map);
     }
 
     /**
@@ -471,7 +471,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @param keyValues 键值对,偶数长度。key, value, key, value...
      * @return List<Map < String, Object>>
      **/
-    public @NotNull List<Map<String, Object>> getList(@NotNull Object... keyValues) {
+    public @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValues) {
         Map<String, Object> map = new HashMap<>();
         if (keyValues.length > 0) {
             int length = keyValues.length;
@@ -480,13 +480,13 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
                     map.put(String.valueOf(keyValues[i]), keyValues[i + 1]);
                 }
             }
-            return getList(map);
+            return _getList(map);
         }
-        return getList(map);
+        return _getList(map);
     }
 
     @Override
-    public @NotNull List<T> getNestList(@NotNull Map<String, Object> map) {
+    public @NotNull List<T> _getNestList(@NotNull Map<String, Object> map) {
         map = listParamFilter(map);
         if (listValidate(map)) {
             return getMapper()._getNestList(map);
@@ -494,21 +494,21 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         throw new IException(HttpStatus.BAD_REQUEST);
     }
 
-    public @NotNull List<T> getNestList(@NotNull T model) {
-        return getNestList(model.safeToMap());
+    public @NotNull List<T> _getNestList(@NotNull T model) {
+        return _getNestList(model.safeToMap());
     }
 
-    public @NotNull List<T> getNestList(String column, Object value) {
+    public @NotNull List<T> _getNestList(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
-        return getNestList(map);
+        return _getNestList(map);
     }
 
-    public @NotNull List<T> getNestList(@NotNull Object... keyValuesArray) {
-        return getNestList(keyValuesArrayParamssafeToMap(keyValuesArray));
+    public @NotNull List<T> _getNestList(@NotNull Object... keyValuesArray) {
+        return _getNestList(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
-    public @NotNull List<T> getNestListWithOutLimit(@NotNull Map<String, Object> map) {
+    public @NotNull List<T> _getNestListWithOutLimit(@NotNull Map<String, Object> map) {
         map = listParamFilter(map);
         if (listValidate(map)) {
             map.remove("pageIndex");
@@ -518,18 +518,18 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         throw new IException(HttpStatus.BAD_REQUEST);
     }
 
-    public @NotNull List<T> getNestListWithOutLimit(String column, Object value) {
+    public @NotNull List<T> _getNestListWithOutLimit(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
-        return getNestListWithOutLimit(map);
+        return _getNestListWithOutLimit(map);
     }
 
-    public @NotNull List<T> getNestListWithOutLimit(@NotNull T model) {
-        return getNestListWithOutLimit(model.safeToMap());
+    public @NotNull List<T> _getNestListWithOutLimit(@NotNull T model) {
+        return _getNestListWithOutLimit(model.safeToMap());
     }
 
-    public @NotNull List<T> getNestListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return getNestListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
+    public @NotNull List<T> _getNestListWithOutLimit(@NotNull Object... keyValuesArray) {
+        return _getNestListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
     public Map<String, Object> listParamFilter(@NotNull Map<String, Object> map) {
@@ -575,16 +575,16 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     @Override
-    public int getTotal(@NotNull Map<String, Object> map) {
+    public int _getTotal(@NotNull Map<String, Object> map) {
         return getMapper()._getTotal(map);
     }
 
-    public int getTotal(@NotNull Object... keyValuesArray) {
-        return getTotal(keyValuesArrayParamssafeToMap(keyValuesArray));
+    public int _getTotal(@NotNull Object... keyValuesArray) {
+        return _getTotal(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
-    public int getTotal() {
-        return getTotal(Map.of());
+    public int _getTotal() {
+        return _getTotal(Map.of());
     }
 
     @SuppressWarnings("unchecked")

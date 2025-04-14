@@ -23,7 +23,6 @@ package com.wangshu.base.controller.save;
 // SOFTWARE.
 
 import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
 import com.wangshu.base.service.BaseDataService;
@@ -41,7 +40,7 @@ public interface SaveResultBody<S extends BaseDataService<?, T>, T extends BaseM
     @PostMapping("/save")
     @ResponseBody
     public default ResultBody<Object> save(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
-        int line = this.getService().save(this.getRequestParams(request));
+        int line = this.getService()._save(this.getRequestParams(request));
         return line > 0 ? ResultBody.success(line) : ResultBody.error("保存失败");
     }
 

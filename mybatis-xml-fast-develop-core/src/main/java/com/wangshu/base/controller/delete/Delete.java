@@ -23,7 +23,6 @@ package com.wangshu.base.controller.delete;
 // SOFTWARE.
 
 import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
 import com.wangshu.base.service.BaseDataService;
@@ -44,7 +43,7 @@ public interface Delete<S extends BaseDataService<?,  T>, T extends BaseModel> e
     @ResponseBody
     public default String delete(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
         Map<String, Object> map = this.getRequestParams(request);
-        int line = this.getService().delete(map);
+        int line = this.getService()._delete(map);
         return line > 0 ? ResultBody.success().toJson() : ResultBody.error("记录不存在").toJsonyMdHms();
     }
 
