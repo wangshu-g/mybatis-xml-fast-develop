@@ -20,7 +20,9 @@ show databases;
 
 exit;
 
-cd mybatis-xml-fast-develop-example
+git clone https://github.com/wangshu-g/mybatis-xml-fast-develop
+
+cd mybatis-xml-fast-develop/mybatis-xml-fast-develop-example
 
 mvn clean package
 

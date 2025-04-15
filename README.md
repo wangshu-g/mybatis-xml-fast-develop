@@ -23,6 +23,8 @@
 + mybatis-xml-fast-develop-generate-compile-time
     + 以上的是子弹，这个就是全自动步枪。
     + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
++ mybatis-xml-fast-develop-example
+    + 使用案例
 
 ## 为什么是 mybatis-xml
 
