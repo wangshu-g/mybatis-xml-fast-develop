@@ -28,6 +28,10 @@
 
 **直观**
 
+对于团队和开发人员，它可以是 **零心智负担、侵入**
+
+你也可以通过配置仅使用 xml 产物
+
 ## 如何使用
 
 maven 仓库链接:
@@ -73,4 +77,6 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
 
 备注来意哦
 
-![author-qq-qrcode.jpg](author-qq-qrcode.jpg)
+<center>
+  <img alt="author-qq-qrcode.jpg" height="1158" src="author-qq-qrcode.jpg" width="588"/>
+</center>
