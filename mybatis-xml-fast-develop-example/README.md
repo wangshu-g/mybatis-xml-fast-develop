@@ -51,5 +51,5 @@ curl -X POST http://localhost:8080/Article/getNestList
 + module2
 + public-module
     + data-service 内部数据操作，可以在这里统一数据清洗、校验、缓存
-    + dubbo-api dubbo 接口
+    + dubbo-api dubbo 共享服务接口
     + model 模型
