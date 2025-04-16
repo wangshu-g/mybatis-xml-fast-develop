@@ -23,8 +23,11 @@
 + mybatis-xml-fast-develop-generate-compile-time
     + 以上的是子弹，这个就是全自动步枪。
     + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
+    + 如果没有被触发，这是因为 IDEA 编辑器的编译策略导致，手动 Build --> Rebuild Module 'xxx'(Ctrl Shift F9)
 + mybatis-xml-fast-develop-example
-    + 使用案例
+    + 最佳实践案例
+    + mybatis-xml-fast-develop-single-example 单体应用案例
+    + mybatis-xml-fast-develop-multiple-module-example 多模块应用案例
 
 ## 为什么是 mybatis-xml
 
