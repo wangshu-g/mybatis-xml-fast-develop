@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.wangshu-g</groupId>
+        <artifactId>public-module</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>data-service</artifactId>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>module1-data-service</module>
+        <module>module2-data-service</module>
+    </modules>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>io.github.wangshu-g</groupId>
+            <artifactId>mybatis-xml-fast-develop-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.wangshu-g</groupId>
+            <artifactId>mybatis-xml-fast-develop-generate-compile-time</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

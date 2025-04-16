@@ -1,0 +1,11 @@
+mybatis-xml-fast-develop:
+  generate-compile-time:
+    scan-class-file: true
+    scan-class-file-model-package: com.module2.model
+    force-cover-xml: true
+    controller: false
+    mapper: true
+    service: true
+    service-impl: true
+    query: true
+    xml: true
