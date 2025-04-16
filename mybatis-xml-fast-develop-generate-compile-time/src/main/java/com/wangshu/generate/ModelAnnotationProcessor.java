@@ -29,7 +29,7 @@ import com.google.auto.service.AutoService;
 import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.exception.MessageException;
-import com.wangshu.generate.config.GenerateConfig;
+import com.wangshu.generate.config.GenerateConfigCompileTime;
 import com.wangshu.generate.java.GenerateJavaMMSSCQ;
 import com.wangshu.generate.metadata.model.ModelClazzInfo;
 import com.wangshu.generate.metadata.model.ModelElementInfo;
@@ -69,7 +69,7 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
     private Consumer<MessageException> messageExceptionConsumer;
     private String modulePath;
     private String moduleName;
-    private GenerateConfig generateConfig;
+    private GenerateConfigCompileTime generateJavaConfigCompileTime;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -96,7 +96,7 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
         String[] dirNamePath = modulePath.replaceFirst("/", "").split("/");
         moduleName = dirNamePath[dirNamePath.length - 1];
         String applicationYmlFilePath = StrUtil.concat(false, moduleClassesPath, File.separator, "application.yml");
-        generateConfig = new GenerateConfig(applicationYmlFilePath);
+        generateJavaConfigCompileTime = new GenerateConfigCompileTime(applicationYmlFilePath);
     }
 
     @Override
@@ -115,18 +115,18 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
         }
         try {
             ModuleTemplateInfo moduleTemplateInfo = null;
-            if (generateConfig.isScanClassFile()) {
-                if (StrUtil.isBlank(generateConfig.getScanClassFileModelPackage())) {
+            if (generateJavaConfigCompileTime.isScanClassFile()) {
+                if (StrUtil.isBlank(generateJavaConfigCompileTime.getScanClassFileModelPackage())) {
                     printError("使用 scan-class-file 必须配置 scan-class-file-model-package");
                 } else {
-                    for (Class<?> clazz : ClassUtil.scanPackage(generateConfig.getScanClassFileModelPackage())) {
+                    for (Class<?> clazz : ClassUtil.scanPackage(generateJavaConfigCompileTime.getScanClassFileModelPackage())) {
                         if (clazz.isAnnotationPresent(Model.class) && BaseModel.class.isAssignableFrom(clazz)) {
                             if (Objects.isNull(moduleTemplateInfo)) {
                                 moduleTemplateInfo = this.getModuleTemplateInfo(clazz.getName(), clazz.getSimpleName());
                                 FileUtil.del(moduleTemplateInfo.getModuleGeneratePath());
                             }
                             ModelClazzInfo modelClazzInfo = new ModelClazzInfo(moduleTemplateInfo, (Class<? extends BaseModel>) clazz);
-                            writeGenerateFile(modelClazzInfo, generateConfig);
+                            writeGenerateFile(modelClazzInfo, generateJavaConfigCompileTime);
                         }
                     }
                 }
@@ -138,13 +138,14 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
                             FileUtil.del(moduleTemplateInfo.getModuleGeneratePath());
                         }
                         ModelElementInfo modelElementInfo = new ModelElementInfo(moduleTemplateInfo, temp, typeUtils);
-                        writeGenerateFile(modelElementInfo, generateConfig);
+                        writeGenerateFile(modelElementInfo, generateJavaConfigCompileTime);
                     }
                 }
             }
             if (Objects.nonNull(moduleTemplateInfo)) {
                 copyFolderToFolder(new File(moduleTemplateInfo.getModuleGeneratePath()).getAbsolutePath(), new File(moduleTemplateInfo.getModulePath()).getAbsolutePath(), false);
-                copyFolderToFolder(new File(moduleTemplateInfo.getModuleGenerateXmlPath()).getAbsolutePath(), new File(moduleTemplateInfo.getModuleCompileClassesXmlPath()).getAbsolutePath(), false);
+                copyFolderToFolder(new File(moduleTemplateInfo.getModuleGenerateXmlPath()).getAbsolutePath(), new File(moduleTemplateInfo.getModuleXmlPath()).getAbsolutePath(), generateJavaConfigCompileTime.isForceOverwriteXml());
+                copyFolderToFolder(new File(moduleTemplateInfo.getModuleGenerateXmlPath()).getAbsolutePath(), new File(moduleTemplateInfo.getModuleCompileClassesXmlPath()).getAbsolutePath(), generateJavaConfigCompileTime.isForceOverwriteXml());
             }
         } catch (Exception e) {
             printError("生成失败");
@@ -159,9 +160,9 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
         return new ModuleTemplateInfo(moduleName, modulePackageName, modulePath);
     }
 
-    private void writeGenerateFile(@NotNull ModelInfo<?, ?> modelInfo, GenerateConfig generateConfig) throws IOException {
+    private void writeGenerateFile(@NotNull ModelInfo<?, ?> modelInfo, GenerateConfigCompileTime generateJavaConfigCompileTime) throws IOException {
         GenerateXml generateXml = modelInfo.getGenerateXml(this.messageExceptionConsumer);
-        GenerateJavaMMSSCQ generateJava = (GenerateJavaMMSSCQ) modelInfo.getGenerateJava(this.messageExceptionConsumer);
+        GenerateJavaMMSSCQ generateJava = (GenerateJavaMMSSCQ) modelInfo.getGenerateJava(generateJavaConfigCompileTime, this.messageExceptionConsumer);
         if (Objects.isNull(generateXml)) {
             this.printError("暂未支持的数据库类型");
             return;
@@ -169,19 +170,19 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
         assert generateJava != null;
         generateXml.writeXml();
         generateJava.writeJava();
-        if (!FileUtil.exist(modelInfo.getMapperFilePath()) && generateConfig.isMapper()) {
+        if (!FileUtil.exist(modelInfo.getMapperFilePath()) && generateJavaConfigCompileTime.isMapper()) {
             writeJavaSourceFile(modelInfo.getMapperFullName(), generateJava.getMapperCode());
         }
-        if (!FileUtil.exist(modelInfo.getServiceFilePath()) && generateConfig.isService()) {
+        if (!FileUtil.exist(modelInfo.getServiceFilePath()) && generateJavaConfigCompileTime.isService()) {
             writeJavaSourceFile(modelInfo.getServiceFullName(), generateJava.getServiceCode());
         }
-        if (!FileUtil.exist(modelInfo.getServiceImplFilePath()) && generateConfig.isServiceImpl()) {
+        if (!FileUtil.exist(modelInfo.getServiceImplFilePath()) && generateJavaConfigCompileTime.isServiceImpl()) {
             writeJavaSourceFile(modelInfo.getServiceImplFullName(), generateJava.getServiceImplCode());
         }
-        if (!FileUtil.exist(modelInfo.getControllerFilePath()) && generateConfig.isController()) {
+        if (!FileUtil.exist(modelInfo.getControllerFilePath()) && generateJavaConfigCompileTime.isController()) {
             writeJavaSourceFile(modelInfo.getControllerFullName(), generateJava.getControllerCode());
         }
-        if (!FileUtil.exist(modelInfo.getQueryFilePath()) && generateConfig.isQuery()) {
+        if (!FileUtil.exist(modelInfo.getQueryFilePath()) && generateJavaConfigCompileTime.isQuery()) {
             writeJavaSourceFile(modelInfo.getQueryFullName(), generateJava.getQueryCode());
         }
     }
