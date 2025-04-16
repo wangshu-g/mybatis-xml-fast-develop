@@ -42,6 +42,10 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
 
     int _save(Map<String, Object> map);
 
+    int _saveUnCheckExist(T model);
+
+    int _saveUnCheckExist(Map<String, Object> map);
+
     /**
      * <p>批量保存</p>
      *

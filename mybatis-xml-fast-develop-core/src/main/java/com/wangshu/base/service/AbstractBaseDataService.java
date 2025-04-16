@@ -70,7 +70,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
-        if (Objects.nonNull(primaryValue) && Objects.nonNull(_select(modelPrimaryField.getName(), primaryValue))) {
+        if (!StrUtil.isBlankIfStr(primaryValue) && Objects.nonNull(_select(modelPrimaryField.getName(), primaryValue))) {
             return _update(model);
         }
         model = saveParamFilter(model);
@@ -97,6 +97,39 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         model.setModelValuesFromMapByFieldName(map);
         return _save(model);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int _saveUnCheckExist(T model) {
+        Field modelPrimaryField = getModelPrimaryField();
+        if (Objects.isNull(modelPrimaryField)) {
+            log.error("实体类需要指定主键字段");
+            throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
+        if (!StrUtil.isBlankIfStr(primaryValue)) {
+            return _update(model);
+        }
+        model = saveParamFilter(model);
+        if (saveValidate(model)) {
+            return getMapper()._save(model);
+        }
+        throw new IException(HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int _saveUnCheckExist(@NotNull Map<String, Object> map) {
+        T model;
+        try {
+            model = getModelClazz().getConstructor().newInstance();
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            log.error("获取实体类实例失败,请检查泛型", e);
+            throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        model.setModelValuesFromMapByFieldName(map);
+        return _saveUnCheckExist(model);
     }
 
     public T saveParamFilter(@NotNull T model) {
