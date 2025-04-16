@@ -22,8 +22,15 @@ mybatis:
     map-underscore-to-camel-case: true
     call-setters-on-nulls: true
   mapper-locations:
+    # 不会被覆盖
     - classpath:mapper/*.xml
+    # 强制覆盖
     - classpath:mybatis-xml-fast-develop-single-example-mapper/*.xml
+
+mybatis-xml-fast-develop:
+  generate-compile-time:
+    # 强制覆盖 resources/xxx-module-mapper
+    force-overwrite-xml: true
 
 logging:
   level:
