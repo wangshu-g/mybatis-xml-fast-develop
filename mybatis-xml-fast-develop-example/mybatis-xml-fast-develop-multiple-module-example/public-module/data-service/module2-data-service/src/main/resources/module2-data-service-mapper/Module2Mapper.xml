@@ -1,0 +1,126 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.module2.mapper.Module2Mapper">
+ 
+  <resultMap id="Module2" type="com.module2.model.Module2">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="deletedAt" jdbcType="VARCHAR" property="deletedAt"/>
+    <result column="updatedAt" jdbcType="VARCHAR" property="updatedAt"/>
+    <result column="createdAt" jdbcType="VARCHAR" property="createdAt"/>
+  </resultMap>
+ 
+  <insert id="_save" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+insert into `module2`(`deletedAt`,`updatedAt`,`createdAt`) values (#{deletedAt},#{updatedAt},#{createdAt});
+</insert>
+ 
+  <insert id="_batchSave" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+insert into `module2`(`deletedAt`,`updatedAt`,`createdAt`) values
+ 
+    <foreach collection="list" item="item" index="index" separator=",">(#{item.deletedAt},#{item.updatedAt},#{item.createdAt})</foreach>
+  </insert>
+ 
+  <delete id="_delete" parameterType="Map">
+delete from `module2`
+    <where>
+      <if test="id != null">and `module2`.`id` = #{id}</if>
+      <if test="deletedAt != null">and `module2`.`deletedAt` = #{deletedAt}</if>
+      <if test="updatedAt != null">and `module2`.`updatedAt` = #{updatedAt}</if>
+      <if test="createdAt != null">and `module2`.`createdAt` = #{createdAt}</if>
+      <if test="enableOr != null">and (0 = 1)</if>
+    </where>
+  </delete>
+ 
+  <update id="_update" parameterType="Map">
+update `module2`
+ 
+    <set>
+      <if test="newId != null">`id` = #{newId},</if>
+      <if test="setIdNull != null">`id` = null,</if>
+      <if test="newDeletedAt != null">`deletedAt` = #{newDeletedAt},</if>
+      <if test="setDeletedAtNull != null">`deletedAt` = null,</if>
+      <if test="newUpdatedAt != null">`updatedAt` = #{newUpdatedAt},</if>
+      <if test="setUpdatedAtNull != null">`updatedAt` = null,</if>
+      <if test="newCreatedAt != null">`createdAt` = #{newCreatedAt},</if>
+      <if test="setCreatedAtNull != null">`createdAt` = null,</if>
+    </set>
+    <where>
+      <if test="id != null">and `module2`.`id` = #{id}</if>
+      <if test="deletedAt != null">and `module2`.`deletedAt` = #{deletedAt}</if>
+      <if test="updatedAt != null">and `module2`.`updatedAt` = #{updatedAt}</if>
+      <if test="createdAt != null">and `module2`.`createdAt` = #{createdAt}</if>
+      <if test="enableOr != null">and (0 = 1)</if>
+    </where>
+  </update>
+ 
+  <select id="_select" parameterType="Map" resultType="com.module2.model.Module2" resultMap="Module2">
+select 
+`module2`.`id`,
+`module2`.`deletedAt`,
+`module2`.`updatedAt`,
+`module2`.`createdAt`
+from `module2`
+
+    <where>
+      <if test="id != null">and `module2`.`id` = #{id}</if>
+      <if test="deletedAt != null">and `module2`.`deletedAt` = #{deletedAt}</if>
+      <if test="updatedAt != null">and `module2`.`updatedAt` = #{updatedAt}</if>
+      <if test="createdAt != null">and `module2`.`createdAt` = #{createdAt}</if>
+      <if test="enableOr != null">and (0 = 1)</if>
+      <if test="enableForUpdate != null">for update</if>
+    </where>
+  </select>
+ 
+  <select id="_getList" parameterType="Map" resultType="Map">
+select 
+`module2`.`id`,
+`module2`.`deletedAt`,
+`module2`.`updatedAt`,
+`module2`.`createdAt`
+from `module2`
+
+    <where>
+      <if test="id != null">and `module2`.`id` = #{id}</if>
+      <if test="deletedAt != null">and `module2`.`deletedAt` = #{deletedAt}</if>
+      <if test="updatedAt != null">and `module2`.`updatedAt` = #{updatedAt}</if>
+      <if test="createdAt != null">and `module2`.`createdAt` = #{createdAt}</if>
+      <if test="enableOr != null">and (0 = 1)</if>
+    </where>
+ 
+    <if test="orderColumn != null">order by `${orderColumn}` ${order}</if>
+ 
+    <if test="pageIndex != null and pageSize != null">limit #{pageIndex},#{pageSize}</if>
+  </select>
+ 
+  <select id="_getNestList" parameterType="Map" resultType="com.module2.model.Module2" resultMap="Module2">
+select 
+`module2`.`id`,
+`module2`.`deletedAt`,
+`module2`.`updatedAt`,
+`module2`.`createdAt`
+from `module2`
+
+    <where>
+      <if test="id != null">and `module2`.`id` = #{id}</if>
+      <if test="deletedAt != null">and `module2`.`deletedAt` = #{deletedAt}</if>
+      <if test="updatedAt != null">and `module2`.`updatedAt` = #{updatedAt}</if>
+      <if test="createdAt != null">and `module2`.`createdAt` = #{createdAt}</if>
+      <if test="enableOr != null">and (0 = 1)</if>
+    </where>
+ 
+    <if test="orderColumn != null">order by `${orderColumn}` ${order}</if>
+ 
+    <if test="pageIndex != null and pageSize != null">limit #{pageIndex},#{pageSize}</if>
+  </select>
+ 
+  <select id="_getTotal" parameterType="Map" resultType="Integer">
+select count(`module2`.`id`) from `module2`
+
+    <where>
+      <if test="id != null">and `module2`.`id` = #{id}</if>
+      <if test="deletedAt != null">and `module2`.`deletedAt` = #{deletedAt}</if>
+      <if test="updatedAt != null">and `module2`.`updatedAt` = #{updatedAt}</if>
+      <if test="createdAt != null">and `module2`.`createdAt` = #{createdAt}</if>
+      <if test="enableOr != null">and (0 = 1)</if>
+    </where>
+  </select>
+</mapper>
