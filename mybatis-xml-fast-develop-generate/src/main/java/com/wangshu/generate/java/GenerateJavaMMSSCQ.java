@@ -39,6 +39,7 @@ import com.wangshu.enu.Condition;
 import com.wangshu.enu.JoinCondition;
 import com.wangshu.enu.JoinType;
 import com.wangshu.exception.MessageException;
+import com.wangshu.generate.config.GenerateConfig;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.tool.GenerateJavaUtil;
@@ -47,6 +48,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.apache.ibatis.annotations.Mapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -58,6 +60,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static com.wangshu.tool.CommonStaticField.*;
@@ -72,6 +75,7 @@ import static com.wangshu.tool.CommonStaticField.*;
 public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateJava {
 
     private T model;
+    private GenerateConfig generateConfig;
     private Consumer<MessageException> message;
     private Class<? extends BaseDataController> controllerSuperClazz = AbstractBaseDataControllerString.class;
 
@@ -82,13 +86,21 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
     private String controllerCode;
     private String queryCode;
 
-    public GenerateJavaMMSSCQ(T model, @Nullable Consumer<MessageException> messageExceptionConsumer) {
+    public GenerateJavaMMSSCQ(@NotNull T model, @Nullable GenerateConfig generateConfig, @Nullable Consumer<MessageException> messageExceptionConsumer) {
         this.model = model;
+        this.generateConfig = Objects.isNull(generateConfig) ? new GenerateConfig() : generateConfig;
         this.message = messageExceptionConsumer;
     }
 
-    public GenerateJavaMMSSCQ(T model) {
+    public GenerateJavaMMSSCQ(@NotNull T model, @Nullable Consumer<MessageException> messageExceptionConsumer) {
         this.model = model;
+        this.generateConfig = new GenerateConfig();
+        this.message = messageExceptionConsumer;
+    }
+
+    public GenerateJavaMMSSCQ(@NotNull T model) {
+        this.model = model;
+        this.generateConfig = new GenerateConfig();
     }
 
     public void generateModel() {
@@ -389,22 +401,22 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
 
     @Override
     public void generate() {
-        if (StrUtil.isBlank(this.getModelCode())) {
+        if (StrUtil.isBlank(this.getModelCode()) && this.generateConfig.isModel()) {
             this.generateModel();
         }
-        if (StrUtil.isBlank(this.getMapperCode())) {
+        if (StrUtil.isBlank(this.getMapperCode()) && this.generateConfig.isMapper()) {
             this.generateMapperInterface();
         }
-        if (StrUtil.isBlank(this.getServiceCode())) {
+        if (StrUtil.isBlank(this.getServiceCode()) && this.generateConfig.isService()) {
             this.generateService();
         }
-        if (StrUtil.isBlank(this.getServiceImplCode())) {
+        if (StrUtil.isBlank(this.getServiceImplCode()) && this.generateConfig.isServiceImpl()) {
             this.generateServiceImpl();
         }
-        if (StrUtil.isBlank(this.getControllerCode())) {
+        if (StrUtil.isBlank(this.getControllerCode()) && this.generateConfig.isController()) {
             this.generateController();
         }
-        if (StrUtil.isBlank(this.getQueryCode())) {
+        if (StrUtil.isBlank(this.getQueryCode()) && this.generateConfig.isQuery()) {
             this.generateQuery();
         }
     }
@@ -413,24 +425,36 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
     public boolean writeJava() {
         this.generate();
         try {
-            File modelFile = FileUtil.touch(this.getModel().getGenerateModelFilePath());
-            modelFile.deleteOnExit();
-            FileUtil.writeString(this.getModelCode(), modelFile, StandardCharsets.UTF_8);
-            File mapperInterfaceFile = FileUtil.touch(this.getModel().getGenerateMapperFilePath());
-            mapperInterfaceFile.deleteOnExit();
-            FileUtil.writeString(this.getMapperCode(), mapperInterfaceFile, StandardCharsets.UTF_8);
-            File serviceFile = FileUtil.touch(this.getModel().getGenerateServiceFilePath());
-            serviceFile.deleteOnExit();
-            FileUtil.writeString(this.getServiceCode(), serviceFile, StandardCharsets.UTF_8);
-            File serviceImplFile = FileUtil.touch(this.getModel().getGenerateServiceImplFilePath());
-            serviceImplFile.deleteOnExit();
-            FileUtil.writeString(this.getServiceImplCode(), serviceImplFile, StandardCharsets.UTF_8);
-            File controllerFile = FileUtil.touch(this.getModel().getGenerateControllerFilePath());
-            controllerFile.deleteOnExit();
-            FileUtil.writeString(this.getControllerCode(), controllerFile, StandardCharsets.UTF_8);
-            File queryFile = FileUtil.touch(this.getModel().getGenerateQueryFilePath());
-            queryFile.deleteOnExit();
-            FileUtil.writeString(this.getQueryCode(), queryFile, StandardCharsets.UTF_8);
+            if (this.generateConfig.isModel()) {
+                File modelFile = FileUtil.touch(this.getModel().getGenerateModelFilePath());
+                modelFile.deleteOnExit();
+                FileUtil.writeString(this.getModelCode(), modelFile, StandardCharsets.UTF_8);
+            }
+            if (this.generateConfig.isMapper()) {
+                File mapperInterfaceFile = FileUtil.touch(this.getModel().getGenerateMapperFilePath());
+                mapperInterfaceFile.deleteOnExit();
+                FileUtil.writeString(this.getMapperCode(), mapperInterfaceFile, StandardCharsets.UTF_8);
+            }
+            if (this.generateConfig.isService()) {
+                File serviceFile = FileUtil.touch(this.getModel().getGenerateServiceFilePath());
+                serviceFile.deleteOnExit();
+                FileUtil.writeString(this.getServiceCode(), serviceFile, StandardCharsets.UTF_8);
+            }
+            if (this.generateConfig.isServiceImpl()) {
+                File serviceImplFile = FileUtil.touch(this.getModel().getGenerateServiceImplFilePath());
+                serviceImplFile.deleteOnExit();
+                FileUtil.writeString(this.getServiceImplCode(), serviceImplFile, StandardCharsets.UTF_8);
+            }
+            if (this.generateConfig.isController()) {
+                File controllerFile = FileUtil.touch(this.getModel().getGenerateControllerFilePath());
+                controllerFile.deleteOnExit();
+                FileUtil.writeString(this.getControllerCode(), controllerFile, StandardCharsets.UTF_8);
+            }
+            if (this.generateConfig.isQuery()) {
+                File queryFile = FileUtil.touch(this.getModel().getGenerateQueryFilePath());
+                queryFile.deleteOnExit();
+                FileUtil.writeString(this.getQueryCode(), queryFile, StandardCharsets.UTF_8);
+            }
         } catch (Exception e) {
             this.printError("导出 java 文件异常", e);
             return false;

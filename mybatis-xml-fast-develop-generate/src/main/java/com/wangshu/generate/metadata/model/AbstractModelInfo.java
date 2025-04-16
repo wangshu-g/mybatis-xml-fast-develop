@@ -26,6 +26,7 @@ import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.exception.MessageException;
+import com.wangshu.generate.config.GenerateConfig;
 import com.wangshu.generate.java.GenerateJava;
 import com.wangshu.generate.java.GenerateJavaMMSSCQ;
 import com.wangshu.generate.metadata.field.ColumnInfo;
@@ -139,8 +140,8 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
         this.setApiImport(ModelInfo.super.getApiImport());
     }
 
-    public @NotNull GenerateJava getGenerateJava(@Nullable Consumer<MessageException> messageExceptionConsumer) {
-        return new GenerateJavaMMSSCQ(this, messageExceptionConsumer);
+    public @NotNull GenerateJava getGenerateJava(@Nullable GenerateConfig generateConfig, @Nullable Consumer<MessageException> messageExceptionConsumer) {
+        return new GenerateJavaMMSSCQ(this, generateConfig, messageExceptionConsumer);
     }
 
     public @Nullable GenerateXml<? extends ModelInfo, ? extends ColumnInfo> getGenerateXml(@Nullable Consumer<MessageException> messageExceptionConsumer) {

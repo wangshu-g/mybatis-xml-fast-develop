@@ -27,6 +27,7 @@ import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.exception.MessageException;
+import com.wangshu.generate.config.GenerateConfig;
 import com.wangshu.generate.java.GenerateJava;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
@@ -263,7 +264,7 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
         return StrUtil.concat(false, this.getModuleInfo().getModuleGenerateXmlPath(), this.getMapperName(), XML_SUFFIX);
     }
 
-    public GenerateJava getGenerateJava(@Nullable Consumer<MessageException> messageExceptionConsumer);
+    public GenerateJava getGenerateJava(@Nullable GenerateConfig generateConfig, @Nullable Consumer<MessageException> messageExceptionConsumer);
 
     public GenerateXml<? extends ModelInfo, ? extends ColumnInfo> getGenerateXml(@Nullable Consumer<MessageException> messageExceptionConsumer);
 
