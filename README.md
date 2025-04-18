@@ -51,26 +51,26 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-core</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-starter</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0</version>
     </dependency>
 
     <!--这个一般引入 mybatis-xml-fast-develop-generate-compile-time 就不需要自己调用生成了-->
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate-compile-time</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0</version>
         <!--对于项目中存在某些动态编译场景，这里很重要哦！！！（编译不会引入该依赖）-->
         <scoppe>provided</scoppe>
     </dependency>
