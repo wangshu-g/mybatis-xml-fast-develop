@@ -2,7 +2,7 @@
 
 ## 介绍
 
-一个 mybatis-xml、spring boot 快速开发集合、插件。
+一个 mybatis-xml、spring boot 快速开发集合、mybatis-xml 编译期插件。
 
 引入依赖、注解后，仅需实体，无需其他代码，直接一键启动
 
@@ -24,7 +24,7 @@
     + 以上的是子弹，这个就是全自动步枪。
     + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
     + 该组件解决使用 mybatis 及其相关组件进行开发时，sql、结构体映射等 xml 编写复杂耗时等问题，连表仅需在 model 基类字段添加注解即可
-    + 如果没有被触发，这是因为 IDEA 编辑器的编译策略导致，手动 Build --> Rebuild Module 'xxx'(Ctrl Shift F9)
+    + 如果没有被触发，这是因为 IDEA 编辑器的编译变更策略导致，手动 Build --> Rebuild Module 'xxx'(Ctrl Shift F9)
 + mybatis-xml-fast-develop-example
     + 最佳实践案例
     + mybatis-xml-fast-develop-single-example 单体应用案例
