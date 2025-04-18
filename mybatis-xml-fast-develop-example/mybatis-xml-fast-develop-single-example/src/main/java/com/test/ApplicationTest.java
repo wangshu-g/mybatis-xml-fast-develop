@@ -17,7 +17,7 @@ public class ApplicationTest implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("args: {}", Arrays.asList(args));
+//        log.info("args: {}", Arrays.asList(args));
     }
 
     public static void main(String[] args) {

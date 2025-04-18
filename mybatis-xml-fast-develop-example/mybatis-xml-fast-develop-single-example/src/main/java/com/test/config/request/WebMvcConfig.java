@@ -46,7 +46,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void extendMessageConverters(@NotNull List<HttpMessageConverter<?>> converters) {
-        log.info("已注册消息转换器: {}", converters.stream().map(item -> item.getClass().getTypeName()).toList());
+//        log.info("已注册消息转换器: {}", converters.stream().map(item -> item.getClass().getTypeName()).toList());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         supportedMediaTypes.add(MediaType.TEXT_HTML);
         fastJsonHttpMessageConverter.setSupportedMediaTypes(supportedMediaTypes);
         fastJsonHttpMessageConverter.setFastJsonConfig(getFastJsonConfig());
-        log.info("注册fastJson消息转换器: {}", FastJsonHttpMessageConverter.class.getTypeName());
+//        log.info("注册fastJson消息转换器: {}", FastJsonHttpMessageConverter.class.getTypeName());
         converters.add(fastJsonHttpMessageConverter);
     }
 
