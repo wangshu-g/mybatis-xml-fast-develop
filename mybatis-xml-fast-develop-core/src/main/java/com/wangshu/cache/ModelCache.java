@@ -23,12 +23,11 @@ package com.wangshu.cache;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
-import com.wangshu.annotation.Column;
-import com.wangshu.annotation.Join;
-import com.wangshu.annotation.Model;
+import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import com.wangshu.tool.CommonTool;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.StringUtils;
@@ -40,12 +39,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @lombok.Data
+@Slf4j
 public class ModelCache {
 
     public List<Field> fields;
     public Map<String, Field> fieldsMap;
     public List<Field> baseFields;
     public Field primaryField;
+    public Field createdField;
+    public Field updatedField;
+    public Field deletedField;
     public List<ColumnType> columnTypes;
     /**
      * <p>用于可能的${orderColumn}注入的安全校验</p>
@@ -64,22 +67,50 @@ public class ModelCache {
         this.fields = CommonTool.getClazzFields(modelClazz);
         this.fieldsMap = this.fields.stream().collect(Collectors.toMap(Field::getName, value -> value));
         this.baseFields = this.fields.stream().filter(field -> Objects.nonNull(field.getAnnotation(Column.class))).toList();
-        this.primaryField = modelPrimaryField();
+        this.initCriticalFields();
         this.columnTypes = modelColumnType(modelClazz);
         this.orderColumnPossibleParameterName = orderColumnPossibleParameterName(modelClazz);
         this.deleteMethodPossibleWhereParameterName = deleteMethodPossibleWhereParameterName(modelClazz);
         this.updateMethodPossibleWhereParameterName = this.deleteMethodPossibleWhereParameterName;
     }
 
-    private @Nullable Field modelPrimaryField() {
-        List<Field> list = this.baseFields.stream().filter(field -> {
-            Column columnAnnotation = field.getAnnotation(Column.class);
+    private void initCriticalFields() {
+        for (Field baseField : this.baseFields) {
+            Column columnAnnotation = baseField.getAnnotation(Column.class);
             if (Objects.nonNull(columnAnnotation)) {
-                return columnAnnotation.primary();
+                if (columnAnnotation.primary()) {
+                    if (Objects.isNull(primaryField)) {
+                        this.primaryField = baseField;
+                    } else {
+                        log.warn("存在多个主键字段");
+                    }
+                }
+                CreatedAt createdAtAnnotation = baseField.getAnnotation(CreatedAt.class);
+                if (Objects.nonNull(createdAtAnnotation)) {
+                    if (Objects.isNull(this.createdField)) {
+                        this.createdField = baseField;
+                    } else {
+                        log.warn("存在多个CreatedAt标识字段");
+                    }
+                }
+                UpdatedAt updatedAtAnnotation = baseField.getAnnotation(UpdatedAt.class);
+                if (Objects.nonNull(updatedAtAnnotation)) {
+                    if (Objects.isNull(this.updatedField)) {
+                        this.updatedField = baseField;
+                    } else {
+                        log.warn("存在多个UpdatedAt标识字段");
+                    }
+                }
+                DeletedAt deletedAtAnnotation = baseField.getAnnotation(DeletedAt.class);
+                if (Objects.nonNull(deletedAtAnnotation)) {
+                    if (Objects.isNull(this.deletedField)) {
+                        this.deletedField = baseField;
+                    } else {
+                        log.warn("存在多个DeletedAt标识字段");
+                    }
+                }
             }
-            return false;
-        }).toList();
-        return list.isEmpty() ? null : list.getFirst();
+        }
     }
 
     private @NotNull List<ColumnType> modelColumnType(@NotNull Class<? extends BaseModel> modelClazz) {
