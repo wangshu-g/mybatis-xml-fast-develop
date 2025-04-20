@@ -13,6 +13,7 @@
 **/repo/**
 **/open-nlp-model/**
 **/log/**
+**/mybatis-xml-fast-develop-test/**
 
 #file
 *.class
