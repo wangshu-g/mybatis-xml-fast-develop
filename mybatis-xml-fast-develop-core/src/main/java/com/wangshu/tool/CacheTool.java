@@ -131,6 +131,18 @@ public class CacheTool {
         return getOrCreateModelCache(modelClazz).primaryField;
     }
 
+    public static @Nullable Field getModelCreatedAtField(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).createdField;
+    }
+
+    public static @Nullable Field getModelUpdatedField(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).updatedField;
+    }
+
+    public static @Nullable Field getModelDeletedField(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).deletedField;
+    }
+
     public static @NotNull List<ColumnType> getModelColumnTypes(@NotNull Class<? extends BaseModel> modelClazz) {
         return getOrCreateModelCache(modelClazz).columnTypes;
     }
