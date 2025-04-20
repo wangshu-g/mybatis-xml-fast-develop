@@ -26,6 +26,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.exception.MessageException;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
+import org.dom4j.Element;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -49,5 +50,13 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
     @Override
     public String getBackQuoteStr(String str) {
         return StrUtil.concat(false, "\"", str, "\"");
+    }
+
+    @Override
+    public Element getLimit() {
+        org.dom4j.Element ifElement = this.createXmlElement("if");
+        ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
+        ifElement.addText(StrUtil.concat(false, "limit ", this.getPreCompileStr("pageSize"), " offset ", this.getPreCompileStr("pageIndex")));
+        return ifElement;
     }
 }
