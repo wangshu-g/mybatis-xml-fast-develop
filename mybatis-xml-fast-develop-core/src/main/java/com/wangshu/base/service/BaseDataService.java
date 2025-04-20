@@ -80,6 +80,20 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
     int _update(Object... keyValuesArray);
 
     /**
+     * <p>软删除</p>
+     *
+     * @param map {conditionName : value}
+     * @return int
+     **/
+    int _softDelete(Map<String, Object> map);
+
+    int _softDelete(P id);
+
+    int _softDelete(T model);
+
+    int _softDelete(Object... keyValuesArray);
+
+    /**
      * <p>查询1条</p>
      *
      * @param map {columnName : value}

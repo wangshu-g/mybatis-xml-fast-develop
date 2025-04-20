@@ -142,8 +142,9 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         if (Objects.isNull(primaryValue) && modelPrimaryField.getType().equals(String.class)) {
             model.setModelAnyValueByFieldName(modelPrimaryField.getName(), getUUID());
         }
-        if (model.fieldIsExist("createdAt") && Objects.isNull(model.safeModelAnyValueByFieldName("createdAt"))) {
-            model.setModelAnyValueByFieldName("createdAt", new Date());
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        if (Objects.nonNull(modelCreatedAtField)) {
+            model.setModelAnyValueByFieldName(modelCreatedAtField.getName(), new Date());
         }
         return model;
     }
@@ -251,6 +252,93 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     /**
+     * <p>软删除</p>
+     *
+     * @param map {conditionName : value}
+     * @return int
+     **/
+    public int _softDelete(@NotNull Map<String, Object> map) {
+        map = softDeleteParamFilter(map);
+        if (softDeleteValidate(map)) {
+            return getMapper()._update(map);
+        }
+        throw new IException(HttpStatus.BAD_REQUEST);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public int _softDelete(P id) {
+        if (Objects.isNull(id) || StrUtil.isBlank(id.toString())) {
+            log.error("根据主键字段更新时主键字段不能为空,异常参数: {}", id);
+            throw new IException(HttpStatus.BAD_REQUEST);
+        }
+        Field modelPrimaryField = getModelPrimaryField();
+        if (Objects.isNull(modelPrimaryField)) {
+            log.error("实体类需要指定主键字段");
+            throw new IException(HttpStatus.BAD_REQUEST);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put(modelPrimaryField.getName(), id);
+        return _softDelete(map);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @SuppressWarnings("unchecked")
+    public int _softDelete(@NotNull T model) {
+        Field modelPrimaryField = getModelPrimaryField();
+        if (Objects.isNull(modelPrimaryField)) {
+            log.error("实体类需要指定主键字段");
+            throw new IException(HttpStatus.BAD_REQUEST);
+        }
+        Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
+        if (Objects.isNull(primaryValue) || StrUtil.isBlank(primaryValue.toString())) {
+            log.error("使用实体类更新时主键字段不能为空,异常参数: {}", primaryValue);
+            throw new IException(HttpStatus.BAD_REQUEST);
+        }
+        return _softDelete((P) primaryValue);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public int _softDelete(@NotNull Object... keyValuesArray) {
+        return _softDelete(keyValuesArrayParamssafeToMap(keyValuesArray));
+    }
+
+    public Map<String, Object> softDeleteParamFilter(@NotNull Map<String, Object> map) {
+        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(getModelClazz())::contains)) {
+            log.error("没有合法的软删除参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
+            throw new IException(HttpStatus.BAD_REQUEST);
+        }
+        Field modelDeletedField = CacheTool.getModelDeletedField(getModelClazz());
+        if (Objects.isNull(modelDeletedField)) {
+            log.error("未找到DeletedAt标注的字段");
+            throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        String newDeletedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeletedField.getName()));
+        if (Objects.isNull(map.get(newDeletedAtName))) {
+            map.put(newDeletedAtName, new Date());
+        }
+        Field modelUpdatedField = CacheTool.getModelUpdatedField(getModelClazz());
+        if (Objects.nonNull(modelUpdatedField)) {
+            String newUpdatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelUpdatedField.getName()));
+            if (Objects.isNull(map.get(newUpdatedAtName))) {
+                map.put(newUpdatedAtName, new Date());
+            }
+        }
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        if (Objects.nonNull(modelCreatedAtField)) {
+            String newCreatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelCreatedAtField.getName()));
+            map.remove(newCreatedAtName);
+        }
+        return map;
+    }
+
+    public boolean softDeleteValidate(@NotNull Map<String, Object> map) {
+        if (map.keySet().stream().filter(key -> !key.startsWith("new")).toList().isEmpty()) {
+            log.warn("更新条件参数没有有效新值,注意检查相关代码,详细参数: {}", map);
+        }
+        return true;
+    }
+
+    /**
      * <p>更新</p>
      *
      * @param map {conditionName : value}
@@ -328,10 +416,18 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             log.error("没有合法的更新参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
-        if (Objects.isNull(map.get("newUpdatedAt"))) {
-            map.put("newUpdatedAt", new Date());
+        Field modelUpdatedField = CacheTool.getModelUpdatedField(getModelClazz());
+        if (Objects.nonNull(modelUpdatedField)) {
+            String newUpdatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelUpdatedField.getName()));
+            if (Objects.isNull(map.get(newUpdatedAtName))) {
+                map.put(newUpdatedAtName, new Date());
+            }
         }
-        map.remove("newCreatedAt");
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        if (Objects.nonNull(modelCreatedAtField)) {
+            String newCreatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelCreatedAtField.getName()));
+            map.remove(newCreatedAtName);
+        }
         return map;
     }
 
