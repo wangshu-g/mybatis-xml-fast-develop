@@ -47,12 +47,6 @@
         </developer>
     </developers>
 
-    <scm>
-        <connection>scm:git:https://github.com/Aftersoil/ws-dep-manage.git</connection>
-        <developerConnection>scm:git:https://github.com/Aftersoil/ws-dep-manage.git</developerConnection>
-        <url>https://github.com/Aftersoil/ws-dep-manage</url>
-    </scm>
-
     <dependencyManagement>
 
         <dependencies>
