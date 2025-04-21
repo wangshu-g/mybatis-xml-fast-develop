@@ -46,7 +46,7 @@ public class MssqlTypeMapInfo {
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Float.class.getName(), "REAL");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Double.class.getName(), "FLOAT");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Boolean.class.getName(), "BIT");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Character.class.getName(), "CHAR");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Character.class.getName(), "NCHAR");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(BigDecimal.class.getName(), "DECIMAL");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(String.class.getName(), "NVARCHAR");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.util.Date.class.getName(), "DATETIME");
