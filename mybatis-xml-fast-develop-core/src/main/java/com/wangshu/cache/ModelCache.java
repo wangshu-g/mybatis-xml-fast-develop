@@ -26,6 +26,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
+import com.wangshu.enu.DataBaseType;
 import com.wangshu.tool.CommonTool;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +51,7 @@ public class ModelCache {
     public Field updatedField;
     public Field deletedField;
     public List<ColumnType> columnTypes;
+    public DataBaseType dataBaseType;
     /**
      * <p>用于可能的${orderColumn}注入的安全校验</p>
      **/
@@ -72,6 +74,7 @@ public class ModelCache {
         this.orderColumnPossibleParameterName = orderColumnPossibleParameterName(modelClazz);
         this.deleteMethodPossibleWhereParameterName = deleteMethodPossibleWhereParameterName(modelClazz);
         this.updateMethodPossibleWhereParameterName = this.deleteMethodPossibleWhereParameterName;
+        this.dataBaseType = modelClazz.getAnnotation(Model.class).dataBaseType();
     }
 
     private void initCriticalFields() {
