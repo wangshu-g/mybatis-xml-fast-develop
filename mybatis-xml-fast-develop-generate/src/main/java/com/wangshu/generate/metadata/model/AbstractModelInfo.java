@@ -31,10 +31,7 @@ import com.wangshu.generate.java.GenerateJava;
 import com.wangshu.generate.java.GenerateJavaMMSSCQ;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
-import com.wangshu.generate.xml.GenerateXml;
-import com.wangshu.generate.xml.GenerateXmlMssql;
-import com.wangshu.generate.xml.GenerateXmlMysql;
-import com.wangshu.generate.xml.GenerateXmlPostgresql;
+import com.wangshu.generate.xml.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -147,9 +144,10 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
     public @Nullable GenerateXml<? extends ModelInfo, ? extends ColumnInfo> getGenerateXml(@Nullable Consumer<MessageException> messageExceptionConsumer) {
         GenerateXml<? extends ModelInfo, ? extends ColumnInfo> generateXml = null;
         switch (this.getDataBaseType()) {
-            case mysql -> generateXml = new GenerateXmlMysql<>((ModelInfo) this, messageExceptionConsumer);
-            case postgresql -> generateXml = new GenerateXmlPostgresql<>((ModelInfo) this, messageExceptionConsumer);
+            case oracle -> generateXml = new GenerateXmlOracle<>((ModelInfo) this, messageExceptionConsumer);
             case mssql -> generateXml = new GenerateXmlMssql<>((ModelInfo) this, messageExceptionConsumer);
+            case postgresql -> generateXml = new GenerateXmlPostgresql<>((ModelInfo) this, messageExceptionConsumer);
+            case mysql -> generateXml = new GenerateXmlMysql<>((ModelInfo) this, messageExceptionConsumer);
         }
         return generateXml;
     }

@@ -30,6 +30,7 @@ import com.wangshu.enu.JoinType;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.tool.MssqlTypeMapInfo;
 import com.wangshu.tool.MysqlTypeMapInfo;
+import com.wangshu.tool.OracleTypeMapInfo;
 import com.wangshu.tool.PostgresqlTypeMapInfo;
 import org.apache.ibatis.type.JdbcType;
 import org.jetbrains.annotations.NotNull;
@@ -87,10 +88,11 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
     default @NotNull JdbcType getMybatisJdbcType() {
         JdbcType mybatisJdbcType;
         switch (this.getModel().getDataBaseType()) {
-            case mysql -> mybatisJdbcType = MysqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
-            case postgresql -> mybatisJdbcType = PostgresqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
+//            case oracle -> mybatisJdbcType = OracleTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
             case mssql -> mybatisJdbcType = MssqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
-//            TODO 添加对应处理
+            case postgresql -> mybatisJdbcType = PostgresqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
+            case mysql -> mybatisJdbcType = MysqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
+//                TODO 添加对应处理
             default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
         }
         return mybatisJdbcType;
