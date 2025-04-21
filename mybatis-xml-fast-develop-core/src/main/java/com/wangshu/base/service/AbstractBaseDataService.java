@@ -25,6 +25,7 @@ package com.wangshu.base.service;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.DataBaseType;
 import com.wangshu.exception.IException;
 import com.wangshu.tool.CacheTool;
 import org.jetbrains.annotations.NotNull;
@@ -684,10 +685,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);
-        String orderColumn = String.valueOf(map.get("orderColumn"));
+        String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? "" : map.get("orderColumn"));
         if (StrUtil.isNotBlank(orderColumn)) {
             if (CacheTool.getModelOrderColumnPossibleParameterName(getModelClazz()).contains(orderColumn)) {
-                String order = String.valueOf(map.get("order"));
+                String order = String.valueOf(Objects.isNull(map.get("order")) ? "" : map.get("order"));
                 if (!StrUtil.equalsIgnoreCase(order, "asc") && !StrUtil.equalsIgnoreCase(order, "desc")) {
                     map.put("order", "asc");
                 }
