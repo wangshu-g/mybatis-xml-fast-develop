@@ -29,6 +29,7 @@ import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.query.Query;
 import com.wangshu.base.service.BaseDataService;
 import com.wangshu.cache.*;
+import com.wangshu.enu.DataBaseType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,6 +68,7 @@ public class CacheTool {
         ServiceCache serviceCache = serviceCacheMap.get(serviceClazz);
         if (Objects.isNull(serviceCache)) {
             serviceCache = new ServiceCache(serviceClazz);
+            serviceCacheMap.put(serviceClazz, serviceCache);
         }
         return serviceCache;
     }
@@ -93,6 +95,7 @@ public class CacheTool {
         QueryCache queryCache = queryCacheMap.get(queryClazz);
         if (Objects.isNull(queryCache)) {
             queryCache = new QueryCache(queryClazz);
+            queryCacheMap.put(queryClazz, queryCache);
         }
         return queryCache;
     }
@@ -115,6 +118,7 @@ public class CacheTool {
         ModelCache modelCache = modelCacheMap.get(modelClazz);
         if (Objects.isNull(modelCache)) {
             modelCache = new ModelCache(modelClazz);
+            modelCacheMap.put(modelClazz, modelCache);
         }
         return modelCache;
     }
@@ -143,6 +147,10 @@ public class CacheTool {
         return getOrCreateModelCache(modelClazz).deletedField;
     }
 
+    public static @NotNull DataBaseType getModelDataBaseType(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).dataBaseType;
+    }
+
     public static @NotNull List<ColumnType> getModelColumnTypes(@NotNull Class<? extends BaseModel> modelClazz) {
         return getOrCreateModelCache(modelClazz).columnTypes;
     }
@@ -163,6 +171,7 @@ public class CacheTool {
         ControllerCache controllerCache = controllerCacheMap.get(controllerClazz);
         if (Objects.isNull(controllerCache)) {
             controllerCache = new ControllerCache(controllerClazz);
+            controllerCacheMap.put(controllerClazz, controllerCache);
         }
         return controllerCache;
     }
