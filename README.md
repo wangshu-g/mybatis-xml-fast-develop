@@ -10,6 +10,10 @@
 
 了解相关数据库可以自行继承、覆写方法实现
 
+它不是为了完全避免手写 xml，而是最大化发挥、保留 mybatis-xml 直观、结构体映射的优势
+
+不需要再手动维护普通的联表、结构体映射等，像 lombok 一样不再手动维护 get、set、equal 等方法
+
 欢迎一起开发适配
 
 ## 模块简介
@@ -81,7 +85,7 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
 
 ## 联系方式
 
-备注来意哦
+备注来意哦，欢迎一起开发适配
 
 <center>
   <img alt="author-qq-qrcode.jpg" height="1158" src="author-qq-qrcode.jpg" width="588"/>

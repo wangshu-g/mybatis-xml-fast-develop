@@ -1,6 +1,16 @@
 # mybatis-xml-fast-develop changelog
 
++ ## 1.5.0 dev 
+
+postgresql、oracle、mssql xml生成、自动建表等相关支持
+
+createdAt，deletedAt，updatedAt，DefaultOrder 注解标注关键字段
+
+基于 DeletedAt 注解标识的 _softDelete 软删除
+
 + ## 1.4.0
+
+已发布
 
 修复自 1.2.0 编译时生成，scanClassFile = true 时（扫描已编译 model 模式）生成额外的 model bug
 
