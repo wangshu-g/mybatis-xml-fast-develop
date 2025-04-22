@@ -23,13 +23,22 @@ package com.wangshu.generate.xml;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
+import com.wangshu.enu.JoinCondition;
+import com.wangshu.enu.JoinType;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.exception.MessageException;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
+import com.wangshu.tool.CommonStaticField;
 import org.dom4j.Element;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXml<T, F> {
 
@@ -50,7 +59,112 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
     public Element getLimit() {
         org.dom4j.Element ifElement = this.createXmlElement("if");
         ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
-        ifElement.addText(StrUtil.concat(false, "offset ", this.getPreCompileStr("pageIndex"), " rows fetch next ", this.getPreCompileStr("pageSize")));
+        ifElement.addText(StrUtil.concat(false, "offset ", this.getPreCompileStr("pageIndex"), " rows fetch next ", this.getPreCompileStr("pageSize"), " rows only"));
         return ifElement;
     }
+
+    @Override
+    public Element generateSave() {
+        F primaryField = this.getModel().getPrimaryField();
+        org.dom4j.Element insertElement = this.createXmlElement("insert");
+        insertElement.addAttribute("id", CommonStaticField.SAVE_METHOD_NAME);
+        insertElement.addAttribute("parameterType", "Map");
+        List<F> baseFields = this.getModel().getBaseFields();
+        if (StrUtil.equals(primaryField.getJavaTypeName(), Long.class.getName()) || StrUtil.equals(primaryField.getJavaTypeName(), Integer.class.getName())) {
+            insertElement.addAttribute("useGeneratedKeys", "true");
+            insertElement.addAttribute("keyProperty", primaryField.getName());
+            baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
+        }
+        insertElement.addText(StrUtil.concat(false,
+                CommonStaticField.WRAP,
+                "insert into ",
+                this.getBackQuoteStr(this.getModel().getTableName()),
+                "(",
+                baseFields.stream().map(item -> getBackQuoteStr(item.getSqlStyleName())).collect(Collectors.joining(",")),
+                ") values (",
+                String.join(",", baseFields.stream().map(item -> getPreCompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                        .collect(Collectors.joining(","))),
+                ")",
+                CommonStaticField.WRAP));
+        return insertElement;
+    }
+
+    @Override
+    public Element generateBatchSave() {
+        F primaryField = this.getModel().getPrimaryField();
+        org.dom4j.Element batchInsertElement = this.createXmlElement("insert");
+        batchInsertElement.addAttribute("id", CommonStaticField.BATCH_SAVE_METHOD_NAME);
+        batchInsertElement.addAttribute("parameterType", "List");
+        List<F> baseFields = this.getModel().getBaseFields();
+        if (StrUtil.equals(primaryField.getJavaTypeName(), Long.class.getName()) || StrUtil.equals(primaryField.getJavaTypeName(), Integer.class.getName())) {
+            batchInsertElement.addAttribute("useGeneratedKeys", "true");
+            batchInsertElement.addAttribute("keyProperty", primaryField.getName());
+            baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
+        }
+        String text = StrUtil.concat(false, CommonStaticField.WRAP, "insert into ", this.getBackQuoteStr(this.getModel().getTableName()), "(", baseFields.stream().map(item -> getBackQuoteStr(item.getSqlStyleName())).collect(Collectors.joining(",")), ") values", CommonStaticField.WRAP);
+        batchInsertElement.addText(text);
+        String forEachText = StrUtil.concat(false,
+                "(",
+                String.join(",", baseFields.stream().map(item -> getPreCompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                        .collect(Collectors.joining(","))),
+                ")");
+        org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
+        forEachElement.addText(forEachText);
+        batchInsertElement.add(forEachElement);
+        return batchInsertElement;
+    }
+
+    @Override
+    public @NotNull List<String> getFieldsJoinTextList(@NotNull List<F> fields) {
+        List<String> fieldsJoinText = new ArrayList<>();
+        for (F field : fields) {
+            if (field.isClassJoinField()) {
+                T leftModel = field.getLeftModel();
+                String leftJoinField = Objects.equals(leftModel.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(field.getLeftJoinField()) : StrUtil.toUnderlineCase(field.getLeftJoinField());
+                String leftTable = leftModel.getTableName();
+                String leftTableAs = this.getJoinLeftTableAsName(field);
+
+                T rightModel = field.getRightModel();
+                String rightJoinField = Objects.equals(rightModel.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(field.getRightJoinField()) : StrUtil.toUnderlineCase(field.getRightJoinField());
+                String rightTable = rightModel.getTableName();
+                String rightTableAs = this.getJoinRightTableAsName(field);
+
+                JoinType joinType = field.getJoinType();
+                JoinCondition joinCondition = field.getJoinCondition();
+
+                fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " = ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
+            }
+        }
+        return fieldsJoinText;
+    }
+
+    @Override
+    public Element generateUpdate() {
+        org.dom4j.Element updateElement = this.createXmlElement("update");
+        updateElement.addAttribute("id", CommonStaticField.UPDATE_METHOD_NAME);
+        updateElement.addAttribute("parameterType", "Map");
+        String text = StrUtil.concat(false, CommonStaticField.WRAP, "update ", this.getBackQuoteStr(this.getModel().getTableName()), CommonStaticField.WRAP);
+        updateElement.addText(text);
+        org.dom4j.Element setElement = this.createXmlElement("set");
+        this.getModel().getBaseFields().forEach(item -> {
+            Element ifNotNullElement = this.getIfNotNullElement(StrUtil.concat(false, "new", StrUtil.upperFirst(item.getName())));
+            ifNotNullElement.addText(StrUtil.concat(false,
+                    getBackQuoteStr(item.getSqlStyleName()),
+                    " = ",
+                    getPreCompileStr(StrUtil.concat(false, "new", StrUtil.upperFirst(item.getName()), ",jdbcType=", item.getMybatisJdbcType().name())), ","));
+            setElement.add(ifNotNullElement);
+            Element ifSetNullElement = this.getIfSetNullElement(item.getName());
+            ifSetNullElement.addText(StrUtil.concat(false, getBackQuoteStr(item.getSqlStyleName()), " = null,"));
+            setElement.add(ifSetNullElement);
+        });
+        updateElement.add(setElement);
+        org.dom4j.Element whereElement = this.createXmlElement("where");
+
+        List<F> tempFields = new ArrayList<>(this.getModel().getBaseFields());
+        this.getIf(tempFields, whereElement::add);
+
+        updateElement.add(whereElement);
+        return updateElement;
+    }
+
 }

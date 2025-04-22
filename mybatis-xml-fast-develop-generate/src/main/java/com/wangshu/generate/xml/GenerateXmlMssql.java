@@ -59,4 +59,5 @@ public class GenerateXmlMssql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
         ifElement.addText(StrUtil.concat(false, "offset ", this.getPreCompileStr("pageIndex"), " rows fetch next ", this.getPreCompileStr("pageSize"), " rows only"));
         return ifElement;
     }
+
 }
