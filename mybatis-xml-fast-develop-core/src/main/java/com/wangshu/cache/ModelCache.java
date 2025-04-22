@@ -27,6 +27,7 @@ import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import com.wangshu.enu.DataBaseType;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.tool.CommonTool;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +51,7 @@ public class ModelCache {
     public Field createdField;
     public Field updatedField;
     public Field deletedField;
+    public Field defaultOrderField;
     public List<ColumnType> columnTypes;
     public DataBaseType dataBaseType;
     /**
@@ -112,6 +114,14 @@ public class ModelCache {
                         log.warn("存在多个DeletedAt标识字段");
                     }
                 }
+                DefaultOrder defaultOrderColumnAnnotation = baseField.getAnnotation(DefaultOrder.class);
+                if (Objects.nonNull(defaultOrderColumnAnnotation)) {
+                    if (Objects.isNull(this.defaultOrderField)) {
+                        this.defaultOrderField = baseField;
+                    } else {
+                        log.warn("存在多个DefaultOrderColumn标识字段");
+                    }
+                }
             }
         }
     }
@@ -128,13 +138,15 @@ public class ModelCache {
     }
 
     private @NotNull List<String> orderColumnPossibleParameterName(@NotNull Class<? extends BaseModel> modelClazz) {
+        Model modelAnnotation = modelClazz.getAnnotation(Model.class);
+        assert Objects.nonNull(modelAnnotation);
         List<String> orderColumnPossibleParameterName = new ArrayList<>();
         for (Field clazzField : CommonTool.getClazzFields(modelClazz)) {
             String name = clazzField.getName();
             Column column = clazzField.getAnnotation(Column.class);
             Join join = clazzField.getAnnotation(Join.class);
             if (Objects.nonNull(column)) {
-                orderColumnPossibleParameterName.add(name);
+                orderColumnPossibleParameterName.add(modelAnnotation.sqlStyle().equals(SqlStyle.lcc) ? name : StrUtil.toUnderlineCase(name));
             } else if (Objects.nonNull(join)) {
                 String infix = join.infix();
                 Class<? extends BaseModel> leftJoinClazz = joinFieldLeftJoinClazz(clazzField);
