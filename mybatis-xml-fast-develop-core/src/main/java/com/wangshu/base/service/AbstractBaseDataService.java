@@ -25,7 +25,6 @@ package com.wangshu.base.service;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.enu.DataBaseType;
 import com.wangshu.exception.IException;
 import com.wangshu.tool.CacheTool;
 import org.jetbrains.annotations.NotNull;
@@ -310,7 +309,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         Field modelDeletedField = CacheTool.getModelDeletedField(getModelClazz());
         if (Objects.isNull(modelDeletedField)) {
-            log.error("未找到DeletedAt标注的字段");
+            log.error("未找到 DeletedAt 标注的字段");
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         String newDeletedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeletedField.getName()));
@@ -458,7 +457,6 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             try {
                 return getMapper()._select(map);
             } catch (MyBatisSystemException e) {
-                log.error("异常: ", e);
                 throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -670,7 +668,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
                 pageIndex = 1;
             }
         } catch (NumberFormatException e) {
-            log.warn("不规范的pageIndex参数,详细参数: {}", map.get("pageIndex"));
+            log.warn("不规范的 pageIndex 参数,详细参数: {}", map.get("pageIndex"));
             pageIndex = 1;
         }
         long pageSize;
@@ -680,21 +678,26 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
                 pageSize = 10;
             }
         } catch (NumberFormatException e) {
-            log.warn("不规范的pageSize参数,详细参数: {}", map.get("pageSize"));
+            log.warn("不规范的 pageSize 参数,详细参数: {}", map.get("pageSize"));
             pageSize = 10;
         }
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);
         String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? "" : map.get("orderColumn"));
+        if (!CacheTool.getModelOrderColumnPossibleParameterName(getModelClazz()).contains(orderColumn)) {
+            map.remove("orderColumn");
+            log.warn("orderColumn 参数无效,详细参数: {}", orderColumn);
+            Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(getModelClazz());
+            if (Objects.nonNull(modelDefaultOrderField)) {
+                orderColumn = modelDefaultOrderField.getName();
+                log.warn("存在 defaultOrderField,orderColumn 参数重设为: {}", orderColumn);
+            }
+        }
         if (StrUtil.isNotBlank(orderColumn)) {
-            if (CacheTool.getModelOrderColumnPossibleParameterName(getModelClazz()).contains(orderColumn)) {
-                String order = String.valueOf(Objects.isNull(map.get("order")) ? "" : map.get("order"));
-                if (!StrUtil.equalsIgnoreCase(order, "asc") && !StrUtil.equalsIgnoreCase(order, "desc")) {
-                    map.put("order", "asc");
-                }
-            } else {
-                map.remove("orderColumn");
-                log.warn("orderColumn参数无效,详细参数: {}", orderColumn);
+            map.put("orderColumn", orderColumn);
+            String order = String.valueOf(Objects.isNull(map.get("order")) ? "" : map.get("order"));
+            if (!StrUtil.equalsIgnoreCase(order, "asc") && !StrUtil.equalsIgnoreCase(order, "desc")) {
+                map.put("order", "asc");
             }
         }
         return map;
