@@ -27,8 +27,7 @@ import com.wangshu.annotation.Model;
 import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
-import com.wangshu.table.GenerateTable;
-import com.wangshu.table.GenerateTableMysql;
+import com.wangshu.table.*;
 import com.wangshu.tool.CacheTool;
 import com.wangshu.tool.CommonParam;
 import lombok.extern.slf4j.Slf4j;
@@ -89,9 +88,10 @@ public class ConfigManager implements ApplicationContextAware {
                         Model modelAnnotation = modelClazz.getAnnotation(Model.class);
                         GenerateTable generateTable = null;
                         switch (modelAnnotation.dataBaseType()) {
+                            case oracle -> generateTable = new GenerateTableOracle(modelClazz);
+                            case mssql -> generateTable = new GenerateTableMssql(modelClazz);
+                            case postgresql -> generateTable = new GenerateTablePostgresql(modelClazz);
                             case mysql -> generateTable = new GenerateTableMysql(modelClazz);
-                            case mssql -> generateTable = null;
-                            case oracle -> generateTable = null;
                         }
                         if (Objects.isNull(generateTable)) {
                             log.warn("暂无对应数据库类型实现: {}", modelAnnotation.dataBaseType());
