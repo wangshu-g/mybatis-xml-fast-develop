@@ -35,7 +35,6 @@ import java.util.Objects;
 public class OracleTypeMapInfo {
 
     private static final Map<String, String> JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE = new HashMap<>();
-    private static final Map<String, String> DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME = new HashMap<>();
     private static final Map<String, Integer> DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH = new HashMap<>();
     private static final Map<String, JdbcType> DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE = new HashMap<>();
 
@@ -53,32 +52,8 @@ public class OracleTypeMapInfo {
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.sql.Date.class.getName(), "DATE");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.sql.Time.class.getName(), "TIMESTAMP");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.sql.Timestamp.class.getName(), "TIMESTAMP");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte.class.getName(), "NUMBER");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte[].class.getName(), "BLOB");
-    }
-
-    static {
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("CHAR", Character.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("VARCHAR2", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NVARCHAR2", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NCHAR", Character.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NUMBER", BigDecimal.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("FLOAT", Double.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BINARY_FLOAT", Float.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BINARY_DOUBLE", Double.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("DATE", java.sql.Date.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TIMESTAMP", java.sql.Timestamp.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TIMESTAMP WITH TIME ZONE", java.sql.Timestamp.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TIMESTAMP WITH LOCAL TIME ZONE", java.sql.Timestamp.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("INTERVAL YEAR TO MONTH", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("INTERVAL DAY TO SECOND", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("RAW", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("LONG RAW", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BLOB", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("CLOB", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NCLOB", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BFILE", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("ROWID", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("UROWID", String.class.getName());
     }
 
     static {
@@ -88,14 +63,14 @@ public class OracleTypeMapInfo {
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NCHAR", 1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NUMBER", 22);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("FLOAT", 126);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BINARY_FLOAT", 4);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BINARY_DOUBLE", 8);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATE", 7);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP", 11);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP WITH TIME ZONE", 13);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP WITH LOCAL TIME ZONE", 11);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INTERVAL YEAR TO MONTH", 5);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INTERVAL DAY TO SECOND", 11);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BINARY_FLOAT", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BINARY_DOUBLE", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATE", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP WITH TIME ZONE", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP WITH LOCAL TIME ZONE", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INTERVAL YEAR TO MONTH", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INTERVAL DAY TO SECOND", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("RAW", 2000);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("LONG RAW", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BLOB", -1);
@@ -149,34 +124,10 @@ public class OracleTypeMapInfo {
         return oracleType;
     }
 
-    public static String getJavaTypeNameByDbColumnType(@NotNull String dbColumnType) {
-        String javaType = DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.get(dbColumnType.toUpperCase());
-        if (StrUtil.isBlank(javaType)) {
-            throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return javaType;
-    }
-
-    public static Integer getDbColumnTypeDefaultLengthByField(Field field) {
-        Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(getDbColumnTypeByField(field));
-        if (Objects.isNull(length)) {
-            throw new IllegalArgumentException("Unsupported field: " + field);
-        }
-        return length;
-    }
-
     public static Integer getDbColumnTypeDefaultLengthByMybatisJdbcType(String dbColumnType) {
         Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(dbColumnType);
         if (Objects.isNull(length)) {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return length;
-    }
-
-    public static Integer getDbColumnTypeDefaultLengthByJavaTypeName(String javaTypeName) {
-        Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(getDbColumnTypeByJavaTypeName(javaTypeName));
-        if (Objects.isNull(length)) {
-            throw new IllegalArgumentException("Unsupported javaTypeName: " + javaTypeName);
         }
         return length;
     }
@@ -189,14 +140,6 @@ public class OracleTypeMapInfo {
         return jdbcType;
     }
 
-    @NotNull
-    public static String getMybatisJdbcTypeStrByDbColumnType(@NotNull String dbColumnType) {
-        JdbcType jdbcType = DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.get(dbColumnType.toUpperCase());
-        if (Objects.isNull(jdbcType)) {
-            throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return jdbcType.name();
-    }
 }
 
 

@@ -35,7 +35,6 @@ import java.util.Objects;
 public class MssqlTypeMapInfo {
 
     private static final Map<String, String> JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE = new HashMap<>();
-    private static final Map<String, String> DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME = new HashMap<>();
     private static final Map<String, Integer> DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH = new HashMap<>();
     private static final Map<String, JdbcType> DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE = new HashMap<>();
 
@@ -51,41 +50,18 @@ public class MssqlTypeMapInfo {
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(String.class.getName(), "NVARCHAR");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.util.Date.class.getName(), "DATETIME");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.sql.Date.class.getName(), "DATETIME");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte.class.getName(), "TINYINT");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte[].class.getName(), "VARBINARY");
     }
 
     static {
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BIT", Boolean.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TINYINT", Byte.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("SMALLINT", Short.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("INT", Integer.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BIGINT", Long.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("FLOAT", Double.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("REAL", Float.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("DECIMAL", BigDecimal.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NUMERIC", BigDecimal.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("CHAR", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NCHAR", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("VARCHAR", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NVARCHAR", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TEXT", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NTEXT", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("DATETIME", java.util.Date.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("DATE", java.util.Date.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TIME", java.util.Date.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BINARY", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("VARBINARY", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("IMAGE", Byte[].class.getName());
-    }
-
-    static {
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BIT", 1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TINYINT", 1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("SMALLINT", 2);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INT", 4);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BIGINT", 8);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BIT", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TINYINT", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("SMALLINT", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INT", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BIGINT", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("FLOAT", 8);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("REAL", 4);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("REAL", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DECIMAL", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NUMERIC", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("CHAR", 1);
@@ -94,9 +70,9 @@ public class MssqlTypeMapInfo {
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NVARCHAR", 255);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TEXT", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NTEXT", -1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATETIME", 8);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATE", 3);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIME", 5);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATETIME", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATE", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIME", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BINARY", 1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("VARBINARY", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("IMAGE", -1);
@@ -144,34 +120,10 @@ public class MssqlTypeMapInfo {
         return mysqlType;
     }
 
-    public static String getJavaTypeNameByDbColumnType(@NotNull String dbColumnType) {
-        String javaType = DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.get(dbColumnType.toUpperCase());
-        if (StrUtil.isBlank(javaType)) {
-            throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return javaType;
-    }
-
-    public static Integer getDbColumnTypeDefaultLengthByField(Field field) {
-        Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(getDbColumnTypeByField(field));
-        if (Objects.isNull(length)) {
-            throw new IllegalArgumentException("Unsupported field: " + field);
-        }
-        return length;
-    }
-
     public static Integer getDbColumnTypeDefaultLengthByMybatisJdbcType(String dbColumnType) {
         Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(dbColumnType);
         if (Objects.isNull(length)) {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return length;
-    }
-
-    public static Integer getDbColumnTypeDefaultLengthByJavaTypeName(String javaTypeName) {
-        Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(getDbColumnTypeByJavaTypeName(javaTypeName));
-        if (Objects.isNull(length)) {
-            throw new IllegalArgumentException("Unsupported javaTypeName: " + javaTypeName);
         }
         return length;
     }
@@ -182,15 +134,6 @@ public class MssqlTypeMapInfo {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
         }
         return jdbcType;
-    }
-
-    @NotNull
-    public static String getMybatisJdbcTypeStrByDbColumnType(@NotNull String dbColumnType) {
-        JdbcType jdbcType = DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.get(dbColumnType.toUpperCase());
-        if (Objects.isNull(jdbcType)) {
-            throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return jdbcType.name();
     }
 
 }

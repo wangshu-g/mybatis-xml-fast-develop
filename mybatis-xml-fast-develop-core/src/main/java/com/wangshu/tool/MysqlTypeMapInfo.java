@@ -35,7 +35,6 @@ import java.util.Objects;
 public class MysqlTypeMapInfo {
 
     private static final Map<String, String> JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE = new HashMap<>();
-    private static final Map<String, String> DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME = new HashMap<>();
     private static final Map<String, Integer> DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH = new HashMap<>();
     private static final Map<String, JdbcType> DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE = new HashMap<>();
 
@@ -51,38 +50,8 @@ public class MysqlTypeMapInfo {
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(String.class.getName(), "VARCHAR");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.util.Date.class.getName(), "TIMESTAMP");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.sql.Date.class.getName(), "TIMESTAMP");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte.class.getName(), "TINYINT");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte[].class.getName(), "BLOB");
-    }
-
-    static {
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TINYINT", Integer.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("SMALLINT", Short.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("MEDIUMINT", Integer.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("INT", Integer.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("INTEGER", Integer.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BIGINT", Long.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("FLOAT", Float.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("DOUBLE", Double.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("DECIMAL", BigDecimal.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("NUMERIC", BigDecimal.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("CHAR", Character.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("VARCHAR", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TEXT", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("MEDIUMTEXT", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("LONGTEXT", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("ENUM", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("SET", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BIT", Boolean.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("JSON", String.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TIMESTAMP", java.util.Date.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("DATETIME", java.util.Date.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("DATE", java.util.Date.class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BLOB", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("MEDIUMBLOB", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("LONGBLOB", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("TINYBLOB", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("VARBINARY", Byte[].class.getName());
-        DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.put("BINARY", Byte[].class.getName());
     }
 
     static {
@@ -93,13 +62,13 @@ public class MysqlTypeMapInfo {
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INTEGER", 4);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BIGINT", 8);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("FLOAT", 4);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DOUBLE", 8);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DOUBLE", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DECIMAL", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NUMERIC", -1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATE", 3);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIME", 3);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATETIME", 8);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP", 4);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATE", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIME", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATETIME", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("YEAR", 4);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("CHAR", 1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("VARCHAR", 255);
@@ -122,6 +91,7 @@ public class MysqlTypeMapInfo {
 
     static {
         DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("CHAR", JdbcType.CHAR);
+        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TINYINT", JdbcType.TINYINT);
         DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("VARCHAR", JdbcType.VARCHAR);
         DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("LONGTEXT", JdbcType.LONGNVARCHAR);
         DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("MEDIUMTEXT", JdbcType.LONGNVARCHAR);
@@ -164,34 +134,10 @@ public class MysqlTypeMapInfo {
         return mysqlType;
     }
 
-    public static String getJavaTypeNameByDbColumnType(@NotNull String dbColumnType) {
-        String javaType = DB_COLUMN_TYPE_MAP_JAVA_TYPE_NAME.get(dbColumnType.toUpperCase());
-        if (StrUtil.isBlank(javaType)) {
-            throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return javaType;
-    }
-
-    public static Integer getDbColumnTypeDefaultLengthByField(Field field) {
-        Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(getDbColumnTypeByField(field));
-        if (Objects.isNull(length)) {
-            throw new IllegalArgumentException("Unsupported field: " + field);
-        }
-        return length;
-    }
-
     public static Integer getDbColumnTypeDefaultLengthByMybatisJdbcType(String dbColumnType) {
         Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(dbColumnType);
         if (Objects.isNull(length)) {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return length;
-    }
-
-    public static Integer getDbColumnTypeDefaultLengthByJavaTypeName(String javaTypeName) {
-        Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(getDbColumnTypeByJavaTypeName(javaTypeName));
-        if (Objects.isNull(length)) {
-            throw new IllegalArgumentException("Unsupported javaTypeName: " + javaTypeName);
         }
         return length;
     }
@@ -202,15 +148,6 @@ public class MysqlTypeMapInfo {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
         }
         return jdbcType;
-    }
-
-    @NotNull
-    public static String getMybatisJdbcTypeStrByDbColumnType(@NotNull String dbColumnType) {
-        JdbcType jdbcType = DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.get(dbColumnType.toUpperCase());
-        if (Objects.isNull(jdbcType)) {
-            throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return jdbcType.name();
     }
 
 }

@@ -147,6 +147,10 @@ public class CacheTool {
         return getOrCreateModelCache(modelClazz).deletedField;
     }
 
+    public static @Nullable Field getModelDefaultOrderField(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).defaultOrderField;
+    }
+
     public static @NotNull DataBaseType getModelDataBaseType(@NotNull Class<? extends BaseModel> modelClazz) {
         return getOrCreateModelCache(modelClazz).dataBaseType;
     }
