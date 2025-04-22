@@ -164,7 +164,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             insertElement.addAttribute("keyProperty", primaryField.getName());
             baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
         }
-        insertElement.addText(StrUtil.concat(false, CommonStaticField.WRAP, "insert into ", this.getBackQuoteStr(this.getModel().getTableName()), "(", baseFields.stream().map(item -> getBackQuoteStr(item.getSqlStyleName())).collect(Collectors.joining(",")), ") values (", String.join(",", baseFields.stream().map(item -> getPreCompileStr(item.getName())).collect(Collectors.joining(","))), ");", CommonStaticField.WRAP));
+        insertElement.addText(StrUtil.concat(false, CommonStaticField.WRAP, "insert into ", this.getBackQuoteStr(this.getModel().getTableName()), "(", baseFields.stream().map(item -> getBackQuoteStr(item.getSqlStyleName())).collect(Collectors.joining(",")), ") values (", String.join(",", baseFields.stream().map(item -> getPreCompileStr(item.getName())).collect(Collectors.joining(","))), ")", CommonStaticField.WRAP));
         return insertElement;
     }
 
@@ -477,20 +477,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
                 JoinType joinType = field.getJoinType();
                 JoinCondition joinCondition = field.getJoinCondition();
 
-                switch (joinCondition) {
-                    case equal -> {
-                        fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " = ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
-                    }
-                    case great -> {
-                        fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " > ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
-                    }
-                    case less -> {
-                        fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " < ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
-                    }
-                    case like -> {
-                        fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on instr(", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), ",", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField), ")"));
-                    }
-                }
+                fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " as ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " = ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
             }
         }
         return fieldsJoinText;
