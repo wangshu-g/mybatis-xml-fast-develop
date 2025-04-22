@@ -64,7 +64,7 @@ public @interface Join {
     Class<? extends BaseModel> rightTable() default BaseModel.class;
 
     /**
-     * <p>关联属性名称,该值需要自行指定</p>
+     * <p>这个是连表必填值,指定关联属性名称</p>
      * <p>left join leftTable on leftTable.id = rightTable.rightJoinField</p>
      **/
     String rightJoinField() default "id";
