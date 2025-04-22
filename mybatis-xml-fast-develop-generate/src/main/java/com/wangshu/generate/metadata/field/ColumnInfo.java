@@ -88,7 +88,7 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
     default @NotNull JdbcType getMybatisJdbcType() {
         JdbcType mybatisJdbcType;
         switch (this.getModel().getDataBaseType()) {
-//            case oracle -> mybatisJdbcType = OracleTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
+            case oracle -> mybatisJdbcType = OracleTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
             case mssql -> mybatisJdbcType = MssqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
             case postgresql -> mybatisJdbcType = PostgresqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());
             case mysql -> mybatisJdbcType = MysqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(this.getJdbcType());

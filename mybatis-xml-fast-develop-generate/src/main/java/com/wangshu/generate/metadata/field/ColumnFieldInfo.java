@@ -134,7 +134,7 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
         String jdbcType = column.jdbcType();
         if (StrUtil.isBlank(jdbcType)) {
             switch (this.getModel().getDataBaseType()) {
-//                case oracle -> jdbcType = OracleTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
+                case oracle -> jdbcType = OracleTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
                 case mssql -> jdbcType = MssqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
                 case postgresql -> jdbcType = PostgresqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
                 case mysql -> jdbcType = MysqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
