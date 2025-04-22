@@ -26,7 +26,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.SqlStyle;
-import com.wangshu.tool.MysqlTypeMapInfo;
+import com.wangshu.tool.PostgresqlTypeMapInfo;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -43,9 +43,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 @lombok.Data
 @Slf4j
-public class GenerateTableMysql extends GenerateTable {
+public class GenerateTablePostgresql extends GenerateTable {
 
-    public GenerateTableMysql(Class<? extends BaseModel> clazz) {
+    public GenerateTablePostgresql(Class<? extends BaseModel> clazz) {
         super(clazz);
     }
 
@@ -129,16 +129,24 @@ public class GenerateTableMysql extends GenerateTable {
     }
 
     public String generateCreateTable(String tableName) {
-        String sql = StrUtil.concat(false, "create table `", tableName, "` ( ");
+        String sql = StrUtil.concat(false, "create table \"", tableName, "\" ( ");
         for (int index = 0; index < this.getFields().size(); index++) {
             Field item = this.getFields().get(index);
-            String columnName = StrUtil.concat(false, "`", this.getSqlStyleName(item), "`");
+            String columnName = StrUtil.concat(false, "\"", this.getSqlStyleName(item), "\"");
             int length = this.getDefaultLength(item);
             String columnType = StrUtil.concat(false, this.getJdbcType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             boolean defaultNullFlag = this.isDefaultNull(item);
             String columnNull = defaultNullFlag ? "null" : "not null";
             boolean primaryKeyFlag = this.isPrimaryKey(item);
-            String columnAutoIncrement = (primaryKeyFlag && (item.getType().equals(Long.class) || item.getType().equals(Integer.class))) ? "auto_increment" : "";
+
+            if (primaryKeyFlag) {
+                if (item.getType().equals(Long.class)) {
+                    columnType = "bigserial";
+                } else if (item.getType().equals(Integer.class)) {
+                    columnType = "serial";
+                }
+            }
+
             String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
             String columnPrimary = this.isPrimaryKey(item) ? "primary key" : "";
             String columnEnd = index == this.getFields().size() - 1 ? "" : ",";
@@ -146,13 +154,11 @@ public class GenerateTableMysql extends GenerateTable {
                     columnName, " ",
                     columnType, " ",
                     columnNull, " ",
-                    columnAutoIncrement, " ",
-                    columnComment, " ",
+//                    columnComment, " ",
                     columnPrimary, " ",
-                    columnEnd
-            );
+                    columnEnd);
         }
-        sql = StrUtil.concat(false, sql, " ) collate = utf8mb4_bin;");
+        sql = StrUtil.concat(false, sql, " );");
         return sql;
     }
 
@@ -161,19 +167,13 @@ public class GenerateTableMysql extends GenerateTable {
     }
 
     public String generateAddColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StrUtil.concat(false,
-                "alter table `", tableName,
-                "` add `", columnName, "` ",
-                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
-        );
+        return StrUtil.concat(false, "alter table \"", tableName, "\" add column \"", columnName, "\" ", columnJdbcType,
+                columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")"));
     }
 
     public String generateAlterColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StrUtil.concat(false,
-                "alter table `", tableName,
-                "` modify `", columnName, "` ",
-                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
-        );
+        return StrUtil.concat(false, "alter table \"", tableName, "\" alter column \"", columnName, "\" set data type ",
+                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")"));
     }
 
     @Override
@@ -184,14 +184,14 @@ public class GenerateTableMysql extends GenerateTable {
             jdbcType = column.jdbcType();
         }
         if (StrUtil.isBlank(jdbcType)) {
-            jdbcType = MysqlTypeMapInfo.getDbColumnTypeByField(field);
+            jdbcType = PostgresqlTypeMapInfo.getDbColumnTypeByField(field);
         }
         return jdbcType;
     }
 
     @Override
     public int getDefaultLength(@NotNull Field field) {
-        return MysqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
+        return PostgresqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
     }
 
 }
