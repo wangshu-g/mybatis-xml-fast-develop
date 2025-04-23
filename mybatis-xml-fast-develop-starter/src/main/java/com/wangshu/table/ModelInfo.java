@@ -25,6 +25,7 @@ package com.wangshu.table;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Model;
+import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +43,7 @@ public abstract class ModelInfo {
     private List<String> names;
     private Class<?> metadata;
     private Model modelAnnotation;
+    private DataBaseType dataBaseType;
     private SqlStyle sqlStyle;
     private String table;
     private String modelName;
@@ -56,6 +58,7 @@ public abstract class ModelInfo {
 
     public void init(@NotNull Class<?> clazz) {
         this.modelAnnotation = clazz.getAnnotation(Model.class);
+        this.dataBaseType = modelAnnotation.dataBaseType();
         this.sqlStyle = this.modelAnnotation.sqlStyle();
         this.table = this.initTableName(clazz);
         this.modelName = clazz.getSimpleName();
@@ -92,8 +95,9 @@ public abstract class ModelInfo {
         }
         String table = clazz.getSimpleName();
         switch (this.getSqlStyle()) {
-            case SqlStyle.lcc -> table = StrUtil.lowerFirst(table);
             case SqlStyle.sc -> table = StrUtil.toUnderlineCase(table);
+            case SqlStyle.su -> table = StrUtil.toUnderlineCase(table).toUpperCase();
+            default -> table = StrUtil.lowerFirst(table);
         }
         return table;
     }

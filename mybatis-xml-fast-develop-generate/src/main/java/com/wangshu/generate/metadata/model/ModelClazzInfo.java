@@ -28,7 +28,6 @@ import com.wangshu.annotation.Join;
 import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.SqlStyle;
-import com.wangshu.generate.java.GenerateJava;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnFieldInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
@@ -105,8 +104,9 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
         }
         String table = metaData.getSimpleName();
         switch (this.getSqlStyle()) {
-            case SqlStyle.lcc -> table = StrUtil.lowerFirst(table);
             case SqlStyle.sc -> table = StrUtil.toUnderlineCase(table);
+            case SqlStyle.su -> table = StrUtil.toUnderlineCase(table).toUpperCase();
+            default -> table = StrUtil.lowerFirst(table);
         }
         return table;
     }

@@ -2,7 +2,7 @@ spring:
   application:
     name: test
   profiles:
-    active: postgresql
+    active: oracle
   threads:
     virtual:
       enabled: true
@@ -26,6 +26,14 @@ mybatis:
     - classpath:mapper/*.xml
     # 强制覆盖
     - classpath:mybatis-xml-fast-develop-test-mapper/*.xml
+
+mybatis-plus:
+  mapper-locations:
+    # 不会被覆盖
+    - classpath:mapper/*.xml
+    # 强制覆盖
+    - classpath:mybatis-xml-fast-develop-test-mapper/*.xml
+
 
 mybatis-xml-fast-develop:
   generate-compile-time:

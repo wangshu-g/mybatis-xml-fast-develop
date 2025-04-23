@@ -44,11 +44,11 @@ public class GenerateXmlMssql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
     @Override
     public String getLikeIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
-        return StrUtil.concat(false, orAndStr, "charindex(", this.getPreCompileStr(testConditionName), ",", this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), ") != 0");
+        return StrUtil.concat(false, orAndStr, "charindex(", this.wrapMybatisPrecompileStr(testConditionName), ",", this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), ") != 0");
     }
 
     @Override
-    public String getBackQuoteStr(String str) {
+    public String wrapEscapeCharacter(String str) {
         return StrUtil.concat(false, "\"", str, "\"");
     }
 
@@ -56,7 +56,7 @@ public class GenerateXmlMssql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
     public Element getLimit() {
         org.dom4j.Element ifElement = this.createXmlElement("if");
         ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
-        ifElement.addText(StrUtil.concat(false, "offset ", this.getPreCompileStr("pageIndex"), " rows fetch next ", this.getPreCompileStr("pageSize"), " rows only"));
+        ifElement.addText(StrUtil.concat(false, "offset ", this.wrapMybatisPrecompileStr("pageIndex"), " rows fetch next ", this.wrapMybatisPrecompileStr("pageSize"), " rows only"));
         return ifElement;
     }
 

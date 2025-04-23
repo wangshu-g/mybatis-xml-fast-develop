@@ -32,7 +32,7 @@ public class CommonStaticField {
 
     public static final String XML_SUFFIX = ".xml";
     public static final String MYBATIS_XML_DOCTYPE = "-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd";
-    public static final String WRAP = "\r\n";
+    public static final String BREAK_WRAP = "\r\n";
     public static final String SAVE_METHOD_NAME = "_save";
     public static final String BATCH_SAVE_METHOD_NAME = "_batchSave";
     public static final String DELETE_METHOD_NAME = "_delete";

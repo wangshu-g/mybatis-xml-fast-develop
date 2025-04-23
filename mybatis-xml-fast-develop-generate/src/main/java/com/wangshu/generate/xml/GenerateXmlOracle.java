@@ -25,7 +25,6 @@ package com.wangshu.generate.xml;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.enu.JoinCondition;
 import com.wangshu.enu.JoinType;
-import com.wangshu.enu.SqlStyle;
 import com.wangshu.exception.MessageException;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
@@ -36,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -51,7 +49,7 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
     }
 
     @Override
-    public String getBackQuoteStr(String str) {
+    public String wrapEscapeCharacter(String str) {
         return StrUtil.concat(false, "\"", str, "\"");
     }
 
@@ -59,7 +57,7 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
     public Element getLimit() {
         org.dom4j.Element ifElement = this.createXmlElement("if");
         ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
-        ifElement.addText(StrUtil.concat(false, "offset ", this.getPreCompileStr("pageIndex"), " rows fetch next ", this.getPreCompileStr("pageSize"), " rows only"));
+        ifElement.addText(StrUtil.concat(false, "offset ", this.wrapMybatisPrecompileStr("pageIndex"), " rows fetch next ", this.wrapMybatisPrecompileStr("pageSize"), " rows only"));
         return ifElement;
     }
 
@@ -76,16 +74,16 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
             baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
         }
         insertElement.addText(StrUtil.concat(false,
-                CommonStaticField.WRAP,
+                CommonStaticField.BREAK_WRAP,
                 "insert into ",
-                this.getBackQuoteStr(this.getModel().getTableName()),
+                this.wrapEscapeCharacter(this.getModel().getTableName()),
                 "(",
-                baseFields.stream().map(item -> getBackQuoteStr(item.getSqlStyleName())).collect(Collectors.joining(",")),
+                baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
                 ") values (",
-                String.join(",", baseFields.stream().map(item -> getPreCompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
                         .collect(Collectors.joining(","))),
                 ")",
-                CommonStaticField.WRAP));
+                CommonStaticField.BREAK_WRAP));
         return insertElement;
     }
 
@@ -101,11 +99,11 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
             batchInsertElement.addAttribute("keyProperty", primaryField.getName());
             baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
         }
-        String text = StrUtil.concat(false, CommonStaticField.WRAP, "insert into ", this.getBackQuoteStr(this.getModel().getTableName()), "(", baseFields.stream().map(item -> getBackQuoteStr(item.getSqlStyleName())).collect(Collectors.joining(",")), ") values", CommonStaticField.WRAP);
+        String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP, "insert into ", this.wrapEscapeCharacter(this.getModel().getTableName()), "(", baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")), ") values", CommonStaticField.BREAK_WRAP);
         batchInsertElement.addText(text);
         String forEachText = StrUtil.concat(false,
                 "(",
-                String.join(",", baseFields.stream().map(item -> getPreCompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
                         .collect(Collectors.joining(","))),
                 ")");
         org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
@@ -120,19 +118,19 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
         for (F field : fields) {
             if (field.isClassJoinField()) {
                 T leftModel = field.getLeftModel();
-                String leftJoinField = Objects.equals(leftModel.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(field.getLeftJoinField()) : StrUtil.toUnderlineCase(field.getLeftJoinField());
+                String leftJoinField = getLeftJoinField(leftModel, field);
                 String leftTable = leftModel.getTableName();
                 String leftTableAs = this.getJoinLeftTableAsName(field);
 
                 T rightModel = field.getRightModel();
-                String rightJoinField = Objects.equals(rightModel.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(field.getRightJoinField()) : StrUtil.toUnderlineCase(field.getRightJoinField());
+                String rightJoinField = getRightJoinField(rightModel, field);
                 String rightTable = rightModel.getTableName();
                 String rightTableAs = this.getJoinRightTableAsName(field);
 
                 JoinType joinType = field.getJoinType();
                 JoinCondition joinCondition = field.getJoinCondition();
 
-                fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.getBackQuoteStr(leftTable), " ", this.getBackQuoteStr(leftTableAs), " on ", this.getBackQuoteStr(leftTableAs), ".", this.getBackQuoteStr(leftJoinField), " = ", this.getBackQuoteStr(rightTableAs), ".", this.getBackQuoteStr(rightJoinField)));
+                fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.wrapEscapeCharacter(leftTable), " ", this.wrapEscapeCharacter(leftTableAs), " on ", this.wrapEscapeCharacter(leftTableAs), ".", this.wrapEscapeCharacter(leftJoinField), " = ", this.wrapEscapeCharacter(rightTableAs), ".", this.wrapEscapeCharacter(rightJoinField)));
             }
         }
         return fieldsJoinText;
@@ -143,18 +141,18 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
         org.dom4j.Element updateElement = this.createXmlElement("update");
         updateElement.addAttribute("id", CommonStaticField.UPDATE_METHOD_NAME);
         updateElement.addAttribute("parameterType", "Map");
-        String text = StrUtil.concat(false, CommonStaticField.WRAP, "update ", this.getBackQuoteStr(this.getModel().getTableName()), CommonStaticField.WRAP);
+        String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP, "update ", this.wrapEscapeCharacter(this.getModel().getTableName()), CommonStaticField.BREAK_WRAP);
         updateElement.addText(text);
         org.dom4j.Element setElement = this.createXmlElement("set");
         this.getModel().getBaseFields().forEach(item -> {
             Element ifNotNullElement = this.getIfNotNullElement(StrUtil.concat(false, "new", StrUtil.upperFirst(item.getName())));
             ifNotNullElement.addText(StrUtil.concat(false,
-                    getBackQuoteStr(item.getSqlStyleName()),
+                    wrapEscapeCharacter(item.getSqlStyleName()),
                     " = ",
-                    getPreCompileStr(StrUtil.concat(false, "new", StrUtil.upperFirst(item.getName()), ",jdbcType=", item.getMybatisJdbcType().name())), ","));
+                    wrapMybatisPrecompileStr(StrUtil.concat(false, "new", StrUtil.upperFirst(item.getName()), ",jdbcType=", item.getMybatisJdbcType().name())), ","));
             setElement.add(ifNotNullElement);
             Element ifSetNullElement = this.getIfSetNullElement(item.getName());
-            ifSetNullElement.addText(StrUtil.concat(false, getBackQuoteStr(item.getSqlStyleName()), " = null,"));
+            ifSetNullElement.addText(StrUtil.concat(false, wrapEscapeCharacter(item.getSqlStyleName()), " = null,"));
             setElement.add(ifSetNullElement);
         });
         updateElement.add(setElement);

@@ -26,7 +26,6 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.model.ModelElementInfo;
 import com.wangshu.tool.MssqlTypeMapInfo;
 import com.wangshu.tool.MysqlTypeMapInfo;
@@ -152,10 +151,13 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
     }
 
     private String initSqlStyleName(@NotNull VariableElement metaData, @NotNull ModelElementInfo model) {
-        if (Objects.equals(model.getSqlStyle(), SqlStyle.sc)) {
-            return StrUtil.toUnderlineCase(this.getName());
+        String sqlStyleName;
+        switch (this.getModel().getSqlStyle()) {
+            case sc -> sqlStyleName = StrUtil.toUnderlineCase(this.getName());
+            case su -> sqlStyleName = StrUtil.toUnderlineCase(this.getName()).toUpperCase();
+            default -> sqlStyleName = StrUtil.lowerFirst(this.getName());
         }
-        return StrUtil.lowerFirst(this.getName());
+        return sqlStyleName;
     }
 
 

@@ -42,7 +42,15 @@ enum class SqlStyle {
      * <p>user_id</p>
      *
      **/
-    sc;
+    sc,
+
+    /**
+     *
+     * <p>Snake Upper</p>
+     * <p>USER_ID</p>
+     *
+     **/
+    su;
 
     companion object {
         @JvmStatic

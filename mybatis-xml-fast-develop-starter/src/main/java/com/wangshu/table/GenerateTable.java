@@ -24,6 +24,11 @@ package com.wangshu.table;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
+import com.wangshu.enu.SqlStyle;
+import com.wangshu.tool.MssqlTypeMapInfo;
+import com.wangshu.tool.MysqlTypeMapInfo;
+import com.wangshu.tool.OracleTypeMapInfo;
+import com.wangshu.tool.PostgresqlTypeMapInfo;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,11 +53,35 @@ public abstract class GenerateTable extends ModelInfo {
         super(clazz);
     }
 
-    public abstract String getJdbcType(Field field);
+    public String getJdbcType(@NotNull Field field) {
+        String jdbcType = null;
+        Column column = field.getAnnotation(Column.class);
+        if (Objects.nonNull(column)) {
+            jdbcType = column.jdbcType();
+        }
+        if (StrUtil.isBlank(jdbcType)) {
+            switch (this.getDataBaseType()) {
+                case oracle -> jdbcType = OracleTypeMapInfo.getDbColumnTypeByField(field);
+                case mssql -> jdbcType = MssqlTypeMapInfo.getDbColumnTypeByField(field);
+                case postgresql -> jdbcType = PostgresqlTypeMapInfo.getDbColumnTypeByField(field);
+                default -> jdbcType = MysqlTypeMapInfo.getDbColumnTypeByField(field);
+            }
+        }
+        return jdbcType;
+    }
 
-    public abstract int getDefaultLength(Field field);
+    public int getDefaultLength(@NotNull Field field) {
+        int length = -1;
+        switch (this.getDataBaseType()) {
+            case oracle -> length = OracleTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
+            case mssql -> length = MssqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
+            case postgresql -> length = PostgresqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
+            default -> length = MysqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
+        }
+        return length;
+    }
 
-    public boolean isDefaultNull(Field field) {
+    public boolean isDefaultNull(@NotNull Field field) {
         return !isPrimaryKey(field);
     }
 
@@ -76,6 +105,16 @@ public abstract class GenerateTable extends ModelInfo {
             comment = field.getName();
         }
         return comment;
+    }
+
+    public String getSqlStyleName(Field field) {
+        String sqlStyleName = "";
+        switch (this.getSqlStyle()) {
+            case SqlStyle.sc -> sqlStyleName = StrUtil.toUnderlineCase(field.getName());
+            case SqlStyle.su -> sqlStyleName = StrUtil.toUnderlineCase(field.getName()).toUpperCase();
+            default -> sqlStyleName = StrUtil.lowerFirst(field.getName());
+        }
+        return sqlStyleName;
     }
 
     public abstract void createTable(Connection connection) throws SQLException;

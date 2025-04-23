@@ -2,6 +2,7 @@ package com.test;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+import com.test.mapper.TypeTestModelMapper;
 import com.test.model.*;
 import com.test.service.*;
 import com.wangshu.annotation.EnableConfig;
@@ -48,6 +49,8 @@ public class ApplicationTest implements CommandLineRunner {
     ArticleService articleService;
     @Resource
     TypeTestModelService typeTestModelService;
+    @Resource
+    TypeTestModelMapper typeTestModelMapper;
 
     public void test() {
         userService.deleteAll();
@@ -61,6 +64,23 @@ public class ApplicationTest implements CommandLineRunner {
             for (int i1 = 0; i1 < 10; i1++) {
                 articleService._save(new Article().setId(String.valueOf(i1)).setUid(String.valueOf(i)).setGroupId(String.valueOf(i)).setTitle(UUID.randomUUID().toString()).setDetail(UUID.randomUUID().toString()));
                 articleTagService._save(new ArticleTag().setId(UUID.randomUUID().toString()).setArticleId(String.valueOf(i1)).setTagName(UUID.randomUUID().toString()));
+                typeTestModelMapper.insert(
+                        new TypeTestModel()
+//                                注意：oracle id 设置为自增列插入出现异常，详情见：oracle-test-error.log
+//                                .setId()
+                                .setTest1("test1")
+                                .setTest2(i)
+                                .setTest3(Short.valueOf("1"))
+                                .setTest4(Byte.valueOf("1"))
+                                .setTest5('1')
+                                .setTest6(true)
+//                                注意：除了 postgresql，目前其他支持的数据库，注意数值相关要自行指定小数点后长度
+                                .setTest7(BigDecimal.valueOf(1.01))
+                                .setTest8(1.1f)
+                                .setTest9(1.22d)
+                                .setTest10(new Date(System.currentTimeMillis()))
+                                .setTest11(new java.util.Date())
+                );
                 typeTestModelService._save(
                         new TypeTestModel()
 //                                注意：oracle id 设置为自增列插入出现异常，详情见：oracle-test-error.log

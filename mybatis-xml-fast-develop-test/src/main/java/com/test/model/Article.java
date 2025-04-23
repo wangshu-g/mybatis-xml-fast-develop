@@ -4,6 +4,7 @@ import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import com.wangshu.enu.DataBaseType;
+import com.wangshu.enu.SqlStyle;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,7 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@Model(title = "文章", modelDefaultKeyword = "title", dataBaseType = DataBaseType.postgresql)
+@Model(title = "文章", modelDefaultKeyword = "title", dataBaseType = DataBaseType.oracle, sqlStyle = SqlStyle.su)
 public class Article extends BaseModel {
 
     @Column(title = "ID", conditions = {Condition.all}, primary = true)

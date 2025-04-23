@@ -163,10 +163,6 @@ public class GenerateTablePostgresql extends GenerateTable {
         return sql;
     }
 
-    public String getSqlStyleName(Field field) {
-        return Objects.equals(this.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(field.getName()) : StrUtil.toUnderlineCase(field.getName());
-    }
-
     public String generateAddColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
         return StrUtil.concat(false, "alter table \"", tableName, "\" add column \"", columnName, "\" ", columnJdbcType,
                 columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")"));
@@ -175,24 +171,6 @@ public class GenerateTablePostgresql extends GenerateTable {
     public String generateAlterColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
         return StrUtil.concat(false, "alter table \"", tableName, "\" alter column \"", columnName, "\" set data type ",
                 columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")"));
-    }
-
-    @Override
-    public String getJdbcType(@NotNull Field field) {
-        String jdbcType = null;
-        Column column = field.getAnnotation(Column.class);
-        if (Objects.nonNull(column)) {
-            jdbcType = column.jdbcType();
-        }
-        if (StrUtil.isBlank(jdbcType)) {
-            jdbcType = PostgresqlTypeMapInfo.getDbColumnTypeByField(field);
-        }
-        return jdbcType;
-    }
-
-    @Override
-    public int getDefaultLength(@NotNull Field field) {
-        return PostgresqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
     }
 
 }

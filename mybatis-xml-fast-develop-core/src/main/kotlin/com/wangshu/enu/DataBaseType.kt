@@ -23,6 +23,7 @@ package com.wangshu.enu
 // SOFTWARE.
 
 enum class DataBaseType {
+    //  Oracle 12c and later versions
     oracle,
     mssql,
     postgresql,

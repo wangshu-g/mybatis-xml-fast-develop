@@ -44,11 +44,11 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
     @Override
     public String getLikeIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
-        return StrUtil.concat(false, orAndStr, "strpos(", this.getBackQuoteStr(tableName), ".", this.getBackQuoteStr(columnName), ",", this.getPreCompileStr(testConditionName), ") > 0");
+        return StrUtil.concat(false, orAndStr, "strpos(", this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), ",", this.wrapMybatisPrecompileStr(testConditionName), ") > 0");
     }
 
     @Override
-    public String getBackQuoteStr(String str) {
+    public String wrapEscapeCharacter(String str) {
         return StrUtil.concat(false, "\"", str, "\"");
     }
 
@@ -56,7 +56,7 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
     public Element getLimit() {
         org.dom4j.Element ifElement = this.createXmlElement("if");
         ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
-        ifElement.addText(StrUtil.concat(false, "limit ", this.getPreCompileStr("pageSize"), " offset ", this.getPreCompileStr("pageIndex")));
+        ifElement.addText(StrUtil.concat(false, "limit ", this.wrapMybatisPrecompileStr("pageSize"), " offset ", this.wrapMybatisPrecompileStr("pageIndex")));
         return ifElement;
     }
 }

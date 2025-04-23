@@ -683,7 +683,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);
-        String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? "" : map.get("orderColumn"));
+        String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? null : map.get("orderColumn"));
         if (!CacheTool.getModelOrderColumnPossibleParameterName(getModelClazz()).contains(orderColumn)) {
             map.remove("orderColumn");
             log.warn("orderColumn 参数无效,详细参数: {}", orderColumn);

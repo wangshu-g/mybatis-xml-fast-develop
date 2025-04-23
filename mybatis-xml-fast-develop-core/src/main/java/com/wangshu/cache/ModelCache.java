@@ -146,7 +146,7 @@ public class ModelCache {
             Column column = clazzField.getAnnotation(Column.class);
             Join join = clazzField.getAnnotation(Join.class);
             if (Objects.nonNull(column)) {
-                orderColumnPossibleParameterName.add(modelAnnotation.sqlStyle().equals(SqlStyle.lcc) ? name : StrUtil.toUnderlineCase(name));
+                orderColumnPossibleParameterName.add(getOrderColumnPossibleParameterName(name, modelAnnotation.sqlStyle()));
             } else if (Objects.nonNull(join)) {
                 String infix = join.infix();
                 Class<? extends BaseModel> leftJoinClazz = joinFieldLeftJoinClazz(clazzField);
@@ -158,6 +158,16 @@ public class ModelCache {
             }
         }
         return orderColumnPossibleParameterName;
+    }
+
+    private String getOrderColumnPossibleParameterName(String name, @NotNull SqlStyle sqlStyle) {
+        String result = name;
+        switch (sqlStyle) {
+            case sc -> result = StrUtil.toUnderlineCase(name);
+            case su -> result = StrUtil.toUnderlineCase(name).toUpperCase();
+            default -> result = name;
+        }
+        return result;
     }
 
     private @NotNull List<String> deleteMethodPossibleWhereParameterName(@NotNull Class<? extends BaseModel> modelClazz) {

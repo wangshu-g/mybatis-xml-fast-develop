@@ -25,7 +25,6 @@ package com.wangshu.table;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.enu.SqlStyle;
 import com.wangshu.tool.MysqlTypeMapInfo;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -156,10 +155,6 @@ public class GenerateTableMysql extends GenerateTable {
         return sql;
     }
 
-    public String getSqlStyleName(Field field) {
-        return Objects.equals(this.getSqlStyle(), SqlStyle.lcc) ? StrUtil.lowerFirst(field.getName()) : StrUtil.toUnderlineCase(field.getName());
-    }
-
     public String generateAddColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
         return StrUtil.concat(false,
                 "alter table `", tableName,
@@ -174,24 +169,6 @@ public class GenerateTableMysql extends GenerateTable {
                 "` modify `", columnName, "` ",
                 columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
         );
-    }
-
-    @Override
-    public String getJdbcType(@NotNull Field field) {
-        String jdbcType = null;
-        Column column = field.getAnnotation(Column.class);
-        if (Objects.nonNull(column)) {
-            jdbcType = column.jdbcType();
-        }
-        if (StrUtil.isBlank(jdbcType)) {
-            jdbcType = MysqlTypeMapInfo.getDbColumnTypeByField(field);
-        }
-        return jdbcType;
-    }
-
-    @Override
-    public int getDefaultLength(@NotNull Field field) {
-        return MysqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
     }
 
 }

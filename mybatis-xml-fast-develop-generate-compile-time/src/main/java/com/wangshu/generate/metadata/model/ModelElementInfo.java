@@ -72,7 +72,7 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
         this.setDataBaseType(modelAnnotation.dataBaseType());
         this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
         this.setSqlStyle(modelAnnotation.sqlStyle());
-        this.setTableName(StrUtil.lowerFirst(this.initTableName(moduleInfo, metaData, typeUtils, ignoreJoinFields)));
+        this.setTableName(this.initTableName(moduleInfo, metaData, typeUtils, ignoreJoinFields));
         this.setModelTitle(modelAnnotation.title());
         this.setModelName(metaData.getSimpleName().toString());
         this.setModelFullName(metaData.asType().toString());
@@ -113,8 +113,9 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
         }
         String table = metaData.getSimpleName().toString();
         switch (this.getSqlStyle()) {
-            case lcc -> table = StrUtil.lowerFirst(table);
             case sc -> table = StrUtil.toUnderlineCase(table);
+            case su -> table = StrUtil.toUnderlineCase(table).toUpperCase();
+            default -> table = StrUtil.lowerFirst(table);
         }
         return table;
     }
