@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: test
+  profiles:
+    active: postgresql
+  threads:
+    virtual:
+      enabled: true
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  main:
+    allow-circular-references: false
+
+mybatis:
+  configuration:
+    cache-enabled: true
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+  mapper-locations:
+    # 不会被覆盖
+    - classpath:mapper/*.xml
+    # 强制覆盖
+    - classpath:mybatis-xml-fast-develop-test-mapper/*.xml
+
+mybatis-xml-fast-develop:
+  generate-compile-time:
+    # 强制覆盖 resources/xxx-module-mapper
+    force-overwrite-xml: true
+
+logging:
+  level:
+    java.sql: debug
+    javax.sql: debug
+    com.test.mapper: debug
