@@ -235,6 +235,4 @@ public class CommonTool {
         return newStr;
     }
 
-    public static
-
 }
