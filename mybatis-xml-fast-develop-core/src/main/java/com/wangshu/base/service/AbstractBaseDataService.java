@@ -139,7 +139,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
-        if (Objects.isNull(primaryValue) && modelPrimaryField.getType().equals(String.class)) {
+        if (StrUtil.isBlankIfStr(primaryValue) && modelPrimaryField.getType().equals(String.class)) {
             model.setModelAnyValueByFieldName(modelPrimaryField.getName(), getUUID());
         }
         Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
