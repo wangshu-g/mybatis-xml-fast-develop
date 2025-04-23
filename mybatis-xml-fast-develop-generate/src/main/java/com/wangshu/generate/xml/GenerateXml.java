@@ -622,7 +622,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     }
 
     public org.dom4j.Element getResultMapElement(@NotNull F field) {
-        return this.getResultMapElement(field.getName(), field.getMybatisJdbcType().name(), field.getName(), field.isPrimaryField());
+        return this.getResultMapElement(CommonTool.getNewStrBySqlStyle(field.getModel().getSqlStyle(), field.getName()), field.getMybatisJdbcType().name(), field.getName(), field.isPrimaryField());
     }
 
     public org.dom4j.Element getResultMapElement(String column, @NotNull String mybatisJdbcType, String property, boolean isPrimary) {
