@@ -15,7 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@Model(title = "文章", modelDefaultKeyword = "title", dataBaseType = DataBaseType.oracle, sqlStyle = SqlStyle.su)
+@Model(title = "文章", modelDefaultKeyword = "title", dataBaseType = DataBaseType.mysql, sqlStyle = SqlStyle.lcc)
 public class Article extends BaseModel {
 
     @Column(title = "ID", conditions = {Condition.all}, primary = true)

@@ -101,12 +101,6 @@
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.5</version>
-        </dependency>
-
         <!--        <dependency>-->
         <!--            <groupId>com.oracle.database.jdbc</groupId>-->
         <!--            <artifactId>ojdbc11</artifactId>-->

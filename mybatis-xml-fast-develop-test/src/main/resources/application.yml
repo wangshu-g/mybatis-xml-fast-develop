@@ -2,7 +2,7 @@ spring:
   application:
     name: test
   profiles:
-    active: oracle
+    active: mysql
   threads:
     virtual:
       enabled: true

@@ -2,11 +2,13 @@
 
 + ## 1.5.0 dev 
 
-postgresql、oracle、mssql xml生成、自动建表等相关支持
+DataBaseType postgresql、oracle、mssql xml生成、自动建表等相关支持
 
 createdAt，deletedAt，updatedAt，DefaultOrder 注解标注关键字段
 
 基于 DeletedAt 注解标识的 _softDelete 软删除
+
+SqlStyle Snake Upper 风格支持
 
 + ## 1.4.0
 

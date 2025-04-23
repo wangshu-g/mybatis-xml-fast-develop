@@ -14,7 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@Model(title = "文章分组", modelDefaultKeyword = "groupName", dataBaseType = DataBaseType.oracle, sqlStyle = SqlStyle.su)
+@Model(title = "文章分组", modelDefaultKeyword = "groupName", dataBaseType = DataBaseType.mysql, sqlStyle = SqlStyle.lcc)
 public class ArticleGroup extends BaseModel {
 
     @Column(title = "ID", conditions = {Condition.all}, primary = true)

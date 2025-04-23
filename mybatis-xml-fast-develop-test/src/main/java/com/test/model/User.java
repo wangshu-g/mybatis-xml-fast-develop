@@ -14,7 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@Model(title = "用户", modelDefaultKeyword = "name", dataBaseType = DataBaseType.oracle, sqlStyle = SqlStyle.su)
+@Model(title = "用户", modelDefaultKeyword = "name", dataBaseType = DataBaseType.mysql, sqlStyle = SqlStyle.lcc)
 public class User extends BaseModel {
 
     @Column(title = "ID", conditions = {Condition.all}, primary = true)
