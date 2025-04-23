@@ -62,9 +62,9 @@ public class GenerateTablePostgresql extends GenerateTable {
     public void execute(@NotNull Connection connection, String tableName) {
         boolean flag = false;
         try {
-            String database = connection.getCatalog();
+            String catalog = connection.getCatalog();
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet tables = databaseMetaData.getTables(database, "", tableName, new String[]{"TABLE"});
+            ResultSet tables = databaseMetaData.getTables(null, null, tableName, new String[]{"TABLE"});
             flag = tables.next();
             if (flag) {
                 this.executeAlterTable(connection, tableName);
@@ -92,8 +92,8 @@ public class GenerateTablePostgresql extends GenerateTable {
     public void executeAlterTable(@NotNull Connection connection, String tableName) throws SQLException {
         log.info("表格 {} 已存在", tableName);
         DatabaseMetaData databaseMetaData = connection.getMetaData();
-        String database = connection.getCatalog();
-        ResultSet columnsResult = databaseMetaData.getColumns(database, "", tableName, null);
+        String catalog = connection.getCatalog();
+        ResultSet columnsResult = databaseMetaData.getColumns(null, null, tableName, null);
         Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap(this::getSqlStyleName, v -> v));
         while (columnsResult.next()) {
             String column = columnsResult.getString("COLUMN_NAME");
@@ -102,6 +102,7 @@ public class GenerateTablePostgresql extends GenerateTable {
                 String type = columnsResult.getString("TYPE_NAME");
                 String columnJdbcType = this.getJdbcType(columnInfo);
                 int columnLength = this.getDefaultLength(columnInfo);
+//                这里的 type 返回的是 postgresql 内部类型，不是 Jdbc 的标准类型，很多类型始终无法判断是否未更改，始终进入更改逻辑...
                 if (!StrUtil.equals(type.toLowerCase(), columnJdbcType.toLowerCase())) {
                     String columnName = this.getSqlStyleName(columnInfo);
                     log.warn("修改列: {}", columnInfo.getName());

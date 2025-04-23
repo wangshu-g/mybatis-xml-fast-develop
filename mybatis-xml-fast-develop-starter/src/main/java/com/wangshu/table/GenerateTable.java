@@ -34,6 +34,8 @@ import java.util.Objects;
 
 /**
  * @author wangshu-g
+ *
+ * <p>注意：除了 postgresql，目前其他支持的数据库，注意数值相关要自行指定小数点后长度</p>
  */
 @EqualsAndHashCode(callSuper = true)
 @lombok.Data
