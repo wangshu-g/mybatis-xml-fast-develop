@@ -33,6 +33,7 @@ import com.wangshu.generate.GenerateInfo;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.tool.CommonStaticField;
+import com.wangshu.tool.CommonTool;
 import org.apache.ibatis.type.JdbcType;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -461,11 +462,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     }
 
     public String getLeftJoinField(@NotNull T leftModel, @NotNull F joinField) {
-        return switch (leftModel.getSqlStyle()) {
-            case SqlStyle.sc -> StrUtil.toUnderlineCase(joinField.getLeftJoinField());
-            case SqlStyle.su -> StrUtil.toUnderlineCase(joinField.getLeftJoinField()).toUpperCase();
-            default -> StrUtil.lowerFirst(joinField.getLeftJoinField());
-        };
+        return CommonTool.getNewStrBySqlStyle(leftModel.getSqlStyle(), joinField.getLeftJoinField());
     }
 
     public String getRightJoinField(@NotNull T rightModel, @NotNull F joinField) {
@@ -723,6 +720,9 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         return null;
     }
 
+    /**
+     * <p>wc，标准好多啊，我测你的码</p>
+     **/
     public String wrapEscapeCharacter(String str) {
         return StrUtil.concat(false, "`", str, "`");
     }

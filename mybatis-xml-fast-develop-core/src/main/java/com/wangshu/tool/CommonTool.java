@@ -22,11 +22,13 @@ package com.wangshu.tool;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.AbstractBaseDataService;
+import com.wangshu.enu.SqlStyle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -222,5 +224,17 @@ public class CommonTool {
         }
         return field;
     }
+
+    public static String getNewStrBySqlStyle(@NotNull SqlStyle sqlStyle, String str) {
+        String newStr = str;
+        switch (sqlStyle) {
+            case sc -> newStr = StrUtil.toUnderlineCase(str);
+            case su -> newStr = StrUtil.toUnderlineCase(str).toUpperCase();
+            default -> newStr = StrUtil.lowerFirst(str);
+        }
+        return newStr;
+    }
+
+    public static
 
 }

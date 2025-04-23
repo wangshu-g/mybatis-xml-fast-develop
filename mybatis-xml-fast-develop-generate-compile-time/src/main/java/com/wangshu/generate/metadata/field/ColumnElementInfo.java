@@ -27,10 +27,7 @@ import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.generate.metadata.model.ModelElementInfo;
-import com.wangshu.tool.MssqlTypeMapInfo;
-import com.wangshu.tool.MysqlTypeMapInfo;
-import com.wangshu.tool.OracleTypeMapInfo;
-import com.wangshu.tool.PostgresqlTypeMapInfo;
+import com.wangshu.tool.*;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -151,13 +148,7 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
     }
 
     private String initSqlStyleName(@NotNull VariableElement metaData, @NotNull ModelElementInfo model) {
-        String sqlStyleName;
-        switch (this.getModel().getSqlStyle()) {
-            case sc -> sqlStyleName = StrUtil.toUnderlineCase(this.getName());
-            case su -> sqlStyleName = StrUtil.toUnderlineCase(this.getName()).toUpperCase();
-            default -> sqlStyleName = StrUtil.lowerFirst(this.getName());
-        }
-        return sqlStyleName;
+        return CommonTool.getNewStrBySqlStyle(this.getModel().getSqlStyle(), this.getName());
     }
 
 

@@ -27,10 +27,10 @@ import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnFieldInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
+import com.wangshu.tool.CommonTool;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
@@ -102,13 +102,7 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
         if (Objects.nonNull(this.getModelAnnotation()) && StrUtil.isNotBlank(this.getModelAnnotation().table())) {
             return this.getModelAnnotation().table();
         }
-        String table = metaData.getSimpleName();
-        switch (this.getSqlStyle()) {
-            case SqlStyle.sc -> table = StrUtil.toUnderlineCase(table);
-            case SqlStyle.su -> table = StrUtil.toUnderlineCase(table).toUpperCase();
-            default -> table = StrUtil.lowerFirst(table);
-        }
-        return table;
+        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), metaData.getSimpleName());
     }
 
 }

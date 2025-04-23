@@ -27,6 +27,7 @@ import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Model;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
+import com.wangshu.tool.CommonTool;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -94,12 +95,7 @@ public abstract class ModelInfo {
             return modelAnnotation.table();
         }
         String table = clazz.getSimpleName();
-        switch (this.getSqlStyle()) {
-            case SqlStyle.sc -> table = StrUtil.toUnderlineCase(table);
-            case SqlStyle.su -> table = StrUtil.toUnderlineCase(table).toUpperCase();
-            default -> table = StrUtil.lowerFirst(table);
-        }
-        return table;
+        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), table);
     }
 
 }

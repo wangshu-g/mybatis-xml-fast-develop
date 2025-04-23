@@ -29,6 +29,7 @@ import com.wangshu.annotation.Model;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnElementInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
+import com.wangshu.tool.CommonTool;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
@@ -112,12 +113,7 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
             return this.getModelAnnotation().table();
         }
         String table = metaData.getSimpleName().toString();
-        switch (this.getSqlStyle()) {
-            case sc -> table = StrUtil.toUnderlineCase(table);
-            case su -> table = StrUtil.toUnderlineCase(table).toUpperCase();
-            default -> table = StrUtil.lowerFirst(table);
-        }
-        return table;
+        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), table);
     }
 
 }

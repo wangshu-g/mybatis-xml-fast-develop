@@ -161,13 +161,7 @@ public class ModelCache {
     }
 
     private String getOrderColumnPossibleParameterName(String name, @NotNull SqlStyle sqlStyle) {
-        String result = name;
-        switch (sqlStyle) {
-            case sc -> result = StrUtil.toUnderlineCase(name);
-            case su -> result = StrUtil.toUnderlineCase(name).toUpperCase();
-            default -> result = name;
-        }
-        return result;
+        return CommonTool.getNewStrBySqlStyle(sqlStyle, name);
     }
 
     private @NotNull List<String> deleteMethodPossibleWhereParameterName(@NotNull Class<? extends BaseModel> modelClazz) {
