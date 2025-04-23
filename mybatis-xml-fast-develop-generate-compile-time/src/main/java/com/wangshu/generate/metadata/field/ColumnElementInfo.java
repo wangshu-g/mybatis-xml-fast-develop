@@ -64,7 +64,7 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
         Column column = metaData.getAnnotation(Column.class);
         if (Objects.nonNull(column)) {
             this.setColumn(column);
-            this.setJdbcType(this.initJdbcType(metaData, column));
+            this.setDbColumnType(this.initJdbcType(metaData, column));
             this.setTitle(column.title());
             this.setComment(column.comment());
             this.setConditions(Arrays.asList(column.conditions()));
@@ -131,18 +131,10 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
         return null;
     }
 
-    @NotNull
     private String initJdbcType(@NotNull VariableElement field, @NotNull Column column) {
         String jdbcType = column.jdbcType();
         if (StrUtil.isBlank(jdbcType)) {
-            switch (this.getModel().getDataBaseType()) {
-                case oracle -> jdbcType = OracleTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
-                case mssql -> jdbcType = MssqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
-                case postgresql -> jdbcType = PostgresqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
-                case mysql -> jdbcType = MysqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
-//                TODO 添加对应处理
-                default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
-            }
+            jdbcType = CommonTool.getDbColumnTypeByJavaTypeName(this.getModel().getDataBaseType(), this.getJavaTypeName());
         }
         return jdbcType;
     }
@@ -150,6 +142,5 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
     private String initSqlStyleName(@NotNull VariableElement metaData, @NotNull ModelElementInfo model) {
         return CommonTool.getNewStrBySqlStyle(this.getModel().getSqlStyle(), this.getName());
     }
-
 
 }

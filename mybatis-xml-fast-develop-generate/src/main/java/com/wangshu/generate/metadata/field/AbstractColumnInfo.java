@@ -43,7 +43,7 @@ public abstract class AbstractColumnInfo<T, M extends ModelInfo<?, ?>> implement
     private Column column;
     private String title;
     private String comment;
-    private String jdbcType;
+    private String dbColumnType;
     private List<Condition> conditions;
     private boolean baseField;
     private boolean primaryField;
@@ -77,7 +77,7 @@ public abstract class AbstractColumnInfo<T, M extends ModelInfo<?, ?>> implement
     public void initColumnInfo(T metaData, M model) {
         this.setTitle(ColumnInfo.super.getTitle());
         this.setComment(ColumnInfo.super.getComment());
-        this.setJdbcType(null);
+        this.setDbColumnType(null);
         this.setConditions(ColumnInfo.super.getConditions());
         this.setBaseField(ColumnInfo.super.isBaseField());
         this.setPrimaryField(ColumnInfo.super.isPrimaryField());

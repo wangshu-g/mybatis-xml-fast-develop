@@ -106,11 +106,10 @@ public class OracleTypeMapInfo {
         DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("UROWID", JdbcType.VARCHAR);
     }
 
-    @NotNull
     public static String getDbColumnTypeByField(@NotNull Field field) {
         String type = field.getType().getName();
         String oracleType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(type);
-        if (oracleType == null) {
+        if (StrUtil.isBlank(oracleType)) {
             throw new IllegalArgumentException("Unsupported field: " + field);
         }
         return oracleType;
@@ -124,7 +123,7 @@ public class OracleTypeMapInfo {
         return oracleType;
     }
 
-    public static Integer getDbColumnTypeDefaultLengthByMybatisJdbcType(String dbColumnType) {
+    public static @NotNull Integer getDefaultLengthByDbColumnType(String dbColumnType) {
         Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(dbColumnType);
         if (Objects.isNull(length)) {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
@@ -132,7 +131,7 @@ public class OracleTypeMapInfo {
         return length;
     }
 
-    public static JdbcType getMybatisJdbcTypeByDbColumnType(@NotNull String dbColumnType) {
+    public static @NotNull JdbcType getMybatisJdbcTypeByDbColumnType(@NotNull String dbColumnType) {
         JdbcType jdbcType = DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.get(dbColumnType.toUpperCase());
         if (Objects.isNull(jdbcType)) {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);

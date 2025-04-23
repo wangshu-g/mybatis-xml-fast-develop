@@ -28,7 +28,10 @@ import com.wangshu.annotation.Join;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.AbstractBaseDataService;
+import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.type.JdbcType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +40,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Function;
 
+@Slf4j
 public class CommonTool {
 
     @SuppressWarnings("unchecked")
@@ -228,11 +232,60 @@ public class CommonTool {
     public static String getNewStrBySqlStyle(@NotNull SqlStyle sqlStyle, String str) {
         String newStr = str;
         switch (sqlStyle) {
+            case lcc -> StrUtil.lowerFirst(str);
             case sc -> newStr = StrUtil.toUnderlineCase(str);
             case su -> newStr = StrUtil.toUnderlineCase(str).toUpperCase();
-            default -> newStr = StrUtil.lowerFirst(str);
+            default -> throw new IllegalArgumentException("暂无对应风格实现");
         }
         return newStr;
+    }
+
+    public static String getDbColumnTypeByField(@NotNull DataBaseType dataBaseType, @NotNull Field field) {
+        String dbColumnType = "";
+        switch (dataBaseType) {
+            case oracle -> dbColumnType = OracleTypeMapInfo.getDbColumnTypeByField(field);
+            case mssql -> dbColumnType = MssqlTypeMapInfo.getDbColumnTypeByField(field);
+            case postgresql -> dbColumnType = PostgresqlTypeMapInfo.getDbColumnTypeByField(field);
+            case mysql -> dbColumnType = MysqlTypeMapInfo.getDbColumnTypeByField(field);
+            default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
+        }
+        return dbColumnType;
+    }
+
+    public static String getDbColumnTypeByJavaTypeName(@NotNull DataBaseType dataBaseType, String javaTypeName) {
+        String dbColumnType = "";
+        switch (dataBaseType) {
+            case oracle -> dbColumnType = OracleTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
+            case mssql -> dbColumnType = MssqlTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
+            case postgresql -> dbColumnType = PostgresqlTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
+            case mysql -> dbColumnType = MysqlTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
+            default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
+        }
+        return dbColumnType;
+    }
+
+    public static int getDefaultLengthByDbColumnType(@NotNull DataBaseType dataBaseType, String dbColumnType) {
+        int defaultLength = -1;
+        switch (dataBaseType) {
+            case oracle -> defaultLength = OracleTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
+            case mssql -> defaultLength = MssqlTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
+            case postgresql -> defaultLength = PostgresqlTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
+            case mysql -> defaultLength = MysqlTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
+            default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
+        }
+        return defaultLength;
+    }
+
+    public static @NotNull JdbcType getMybatisJdbcTypeByDbColumnType(@NotNull DataBaseType dataBaseType, String dbColumnType) {
+        JdbcType jdbcType = null;
+        switch (dataBaseType) {
+            case oracle -> jdbcType = OracleTypeMapInfo.getMybatisJdbcTypeByDbColumnType(dbColumnType);
+            case mssql -> jdbcType = MssqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(dbColumnType);
+            case postgresql -> jdbcType = PostgresqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(dbColumnType);
+            case mysql -> jdbcType = MysqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(dbColumnType);
+            default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
+        }
+        return jdbcType;
     }
 
 }

@@ -25,10 +25,7 @@ package com.wangshu.table;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.enu.SqlStyle;
-import com.wangshu.tool.MssqlTypeMapInfo;
-import com.wangshu.tool.MysqlTypeMapInfo;
-import com.wangshu.tool.OracleTypeMapInfo;
-import com.wangshu.tool.PostgresqlTypeMapInfo;
+import com.wangshu.tool.CommonTool;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,32 +50,20 @@ public abstract class GenerateTable extends ModelInfo {
         super(clazz);
     }
 
-    public String getJdbcType(@NotNull Field field) {
-        String jdbcType = null;
+    public String getDbColumnType(@NotNull Field field) {
+        String dbColumnType = null;
         Column column = field.getAnnotation(Column.class);
         if (Objects.nonNull(column)) {
-            jdbcType = column.jdbcType();
+            dbColumnType = column.jdbcType();
         }
-        if (StrUtil.isBlank(jdbcType)) {
-            switch (this.getDataBaseType()) {
-                case oracle -> jdbcType = OracleTypeMapInfo.getDbColumnTypeByField(field);
-                case mssql -> jdbcType = MssqlTypeMapInfo.getDbColumnTypeByField(field);
-                case postgresql -> jdbcType = PostgresqlTypeMapInfo.getDbColumnTypeByField(field);
-                default -> jdbcType = MysqlTypeMapInfo.getDbColumnTypeByField(field);
-            }
+        if (StrUtil.isBlank(dbColumnType)) {
+            dbColumnType = CommonTool.getDbColumnTypeByField(this.getDataBaseType(), field);
         }
-        return jdbcType;
+        return dbColumnType;
     }
 
     public int getDefaultLength(@NotNull Field field) {
-        int length = -1;
-        switch (this.getDataBaseType()) {
-            case oracle -> length = OracleTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
-            case mssql -> length = MssqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
-            case postgresql -> length = PostgresqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
-            default -> length = MysqlTypeMapInfo.getDbColumnTypeDefaultLengthByMybatisJdbcType(this.getJdbcType(field).toUpperCase());
-        }
-        return length;
+        return CommonTool.getDefaultLengthByDbColumnType(this.getDataBaseType(), this.getDbColumnType(field).toUpperCase());
     }
 
     public boolean isDefaultNull(@NotNull Field field) {

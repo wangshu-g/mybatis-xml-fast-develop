@@ -23,9 +23,7 @@ package com.wangshu.table;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
-import com.wangshu.annotation.Column;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.tool.MysqlTypeMapInfo;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -99,7 +97,7 @@ public class GenerateTableMysql extends GenerateTable {
             Field columnInfo = columnMap.get(column);
             if (Objects.nonNull(columnInfo)) {
                 String type = columnsResult.getString("TYPE_NAME");
-                String columnJdbcType = this.getJdbcType(columnInfo);
+                String columnJdbcType = this.getDbColumnType(columnInfo);
                 int columnLength = this.getDefaultLength(columnInfo);
                 if (!StrUtil.equals(type.toLowerCase(), columnJdbcType.toLowerCase())) {
                     String columnName = this.getSqlStyleName(columnInfo);
@@ -119,7 +117,7 @@ public class GenerateTableMysql extends GenerateTable {
         }
         for (Field value : columnMap.values()) {
             log.warn("添加列: {}", value.getName());
-            String sql = this.generateAddColumn(tableName, value.getName(), this.getJdbcType(value), this.getDefaultLength(value));
+            String sql = this.generateAddColumn(tableName, value.getName(), this.getDbColumnType(value), this.getDefaultLength(value));
             log.warn("执行sql: {}", sql);
             Statement statement = connection.createStatement();
             statement.execute(sql);
@@ -133,7 +131,7 @@ public class GenerateTableMysql extends GenerateTable {
             Field item = this.getFields().get(index);
             String columnName = StrUtil.concat(false, "`", this.getSqlStyleName(item), "`");
             int length = this.getDefaultLength(item);
-            String columnType = StrUtil.concat(false, this.getJdbcType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
+            String columnType = StrUtil.concat(false, this.getDbColumnType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             boolean defaultNullFlag = this.isDefaultNull(item);
             String columnNull = defaultNullFlag ? "null" : "not null";
             boolean primaryKeyFlag = this.isPrimaryKey(item);

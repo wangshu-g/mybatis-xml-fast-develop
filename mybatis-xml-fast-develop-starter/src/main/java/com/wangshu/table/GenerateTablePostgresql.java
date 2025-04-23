@@ -23,10 +23,7 @@ package com.wangshu.table;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
-import com.wangshu.annotation.Column;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.enu.SqlStyle;
-import com.wangshu.tool.PostgresqlTypeMapInfo;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -100,7 +97,7 @@ public class GenerateTablePostgresql extends GenerateTable {
             Field columnInfo = columnMap.get(column);
             if (Objects.nonNull(columnInfo)) {
                 String type = columnsResult.getString("TYPE_NAME");
-                String columnJdbcType = this.getJdbcType(columnInfo);
+                String columnJdbcType = this.getDbColumnType(columnInfo);
                 int columnLength = this.getDefaultLength(columnInfo);
 //                这里的 type 返回的是 postgresql 内部类型，不是 Jdbc 的标准类型，很多类型始终无法判断是否未更改，始终进入更改逻辑...
                 if (!StrUtil.equals(type.toLowerCase(), columnJdbcType.toLowerCase())) {
@@ -121,7 +118,7 @@ public class GenerateTablePostgresql extends GenerateTable {
         }
         for (Field value : columnMap.values()) {
             log.warn("添加列: {}", value.getName());
-            String sql = this.generateAddColumn(tableName, value.getName(), this.getJdbcType(value), this.getDefaultLength(value));
+            String sql = this.generateAddColumn(tableName, value.getName(), this.getDbColumnType(value), this.getDefaultLength(value));
             log.warn("执行sql: {}", sql);
             Statement statement = connection.createStatement();
             statement.execute(sql);
@@ -135,7 +132,7 @@ public class GenerateTablePostgresql extends GenerateTable {
             Field item = this.getFields().get(index);
             String columnName = StrUtil.concat(false, "\"", this.getSqlStyleName(item), "\"");
             int length = this.getDefaultLength(item);
-            String columnType = StrUtil.concat(false, this.getJdbcType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
+            String columnType = StrUtil.concat(false, this.getDbColumnType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             boolean defaultNullFlag = this.isDefaultNull(item);
             String columnNull = defaultNullFlag ? "null" : "not null";
             boolean primaryKeyFlag = this.isPrimaryKey(item);

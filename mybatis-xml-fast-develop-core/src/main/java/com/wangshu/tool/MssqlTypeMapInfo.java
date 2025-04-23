@@ -102,11 +102,10 @@ public class MssqlTypeMapInfo {
         DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("IMAGE", JdbcType.BLOB);
     }
 
-    @NotNull
     public static String getDbColumnTypeByField(@NotNull Field field) {
         String type = field.getType().getName();
         String mysqlType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(type);
-        if (mysqlType == null) {
+        if (StrUtil.isBlank(mysqlType)) {
             throw new IllegalArgumentException("Unsupported field: " + field);
         }
         return mysqlType;
@@ -120,7 +119,7 @@ public class MssqlTypeMapInfo {
         return mysqlType;
     }
 
-    public static Integer getDbColumnTypeDefaultLengthByMybatisJdbcType(String dbColumnType) {
+    public static @NotNull Integer getDefaultLengthByDbColumnType(String dbColumnType) {
         Integer length = DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.get(dbColumnType);
         if (Objects.isNull(length)) {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
@@ -128,7 +127,7 @@ public class MssqlTypeMapInfo {
         return length;
     }
 
-    public static JdbcType getMybatisJdbcTypeByDbColumnType(@NotNull String dbColumnType) {
+    public static @NotNull JdbcType getMybatisJdbcTypeByDbColumnType(@NotNull String dbColumnType) {
         JdbcType jdbcType = DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.get(dbColumnType.toUpperCase());
         if (Objects.isNull(jdbcType)) {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);

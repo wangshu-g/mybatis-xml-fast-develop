@@ -28,10 +28,7 @@ import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.model.ModelClazzInfo;
-import com.wangshu.tool.MssqlTypeMapInfo;
-import com.wangshu.tool.MysqlTypeMapInfo;
-import com.wangshu.tool.OracleTypeMapInfo;
-import com.wangshu.tool.PostgresqlTypeMapInfo;
+import com.wangshu.tool.CommonTool;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,7 +63,7 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
         Column column = metaData.getAnnotation(Column.class);
         if (Objects.nonNull(column)) {
             this.setColumn(column);
-            this.setJdbcType(this.initJdbcType(metaData, column));
+            this.setDbColumnType(this.initJdbcType(metaData, column));
             this.setTitle(column.title());
             this.setComment(column.comment());
             this.setConditions(Arrays.asList(column.conditions()));
@@ -133,14 +130,7 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
     private String initJdbcType(@NotNull Field field, @NotNull Column column) {
         String jdbcType = column.jdbcType();
         if (StrUtil.isBlank(jdbcType)) {
-            switch (this.getModel().getDataBaseType()) {
-                case oracle -> jdbcType = OracleTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
-                case mssql -> jdbcType = MssqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
-                case postgresql -> jdbcType = PostgresqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
-                case mysql -> jdbcType = MysqlTypeMapInfo.getDbColumnTypeByJavaTypeName(this.getJavaTypeName());
-//                TODO 添加对应处理
-                default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
-            }
+            jdbcType = CommonTool.getDbColumnTypeByJavaTypeName(this.getModel().getDataBaseType(), this.getJavaTypeName());
         }
         return jdbcType;
     }
