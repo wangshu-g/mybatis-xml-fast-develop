@@ -38,6 +38,10 @@ public @interface EnableConfig {
 
     String[] modelPackage() default {};
 
+    /**
+     * <p>默认关闭，上线注意关闭</p>
+     * <p>注意：除了 postgresql，目前其他支持的数据库，注意数值相关要自行指定小数点后长度</p>
+     **/
     boolean enableAutoInitTable() default false;
 
     String[] targetDataSource() default {"*"};
