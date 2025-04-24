@@ -230,9 +230,9 @@ public class CommonTool {
     }
 
     public static String getNewStrBySqlStyle(@NotNull SqlStyle sqlStyle, String str) {
-        String newStr = str;
+        String newStr;
         switch (sqlStyle) {
-            case lcc -> StrUtil.lowerFirst(str);
+            case lcc -> newStr = StrUtil.lowerFirst(str);
             case sc -> newStr = StrUtil.toUnderlineCase(str);
             case su -> newStr = StrUtil.toUnderlineCase(str).toUpperCase();
             default -> throw new IllegalArgumentException("暂无对应风格实现");
@@ -241,7 +241,7 @@ public class CommonTool {
     }
 
     public static String getDbColumnTypeByField(@NotNull DataBaseType dataBaseType, @NotNull Field field) {
-        String dbColumnType = "";
+        String dbColumnType;
         switch (dataBaseType) {
             case oracle -> dbColumnType = OracleTypeMapInfo.getDbColumnTypeByField(field);
             case mssql -> dbColumnType = MssqlTypeMapInfo.getDbColumnTypeByField(field);
@@ -253,7 +253,7 @@ public class CommonTool {
     }
 
     public static String getDbColumnTypeByJavaTypeName(@NotNull DataBaseType dataBaseType, String javaTypeName) {
-        String dbColumnType = "";
+        String dbColumnType;
         switch (dataBaseType) {
             case oracle -> dbColumnType = OracleTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
             case mssql -> dbColumnType = MssqlTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
@@ -265,7 +265,7 @@ public class CommonTool {
     }
 
     public static int getDefaultLengthByDbColumnType(@NotNull DataBaseType dataBaseType, String dbColumnType) {
-        int defaultLength = -1;
+        int defaultLength;
         switch (dataBaseType) {
             case oracle -> defaultLength = OracleTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
             case mssql -> defaultLength = MssqlTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
@@ -276,16 +276,8 @@ public class CommonTool {
         return defaultLength;
     }
 
-    public static @NotNull JdbcType getMybatisJdbcTypeByDbColumnType(@NotNull DataBaseType dataBaseType, String dbColumnType) {
-        JdbcType jdbcType = null;
-        switch (dataBaseType) {
-            case oracle -> jdbcType = OracleTypeMapInfo.getMybatisJdbcTypeByDbColumnType(dbColumnType);
-            case mssql -> jdbcType = MssqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(dbColumnType);
-            case postgresql -> jdbcType = PostgresqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(dbColumnType);
-            case mysql -> jdbcType = MysqlTypeMapInfo.getMybatisJdbcTypeByDbColumnType(dbColumnType);
-            default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
-        }
-        return jdbcType;
+    public static @NotNull JdbcType getJdbcTypeByJavaTypeName(@NotNull String javaTypeName) {
+        return MybatisJdbcTypeMapInfo.getJdbcTypeForJavaTypeName(javaTypeName);
     }
 
 }

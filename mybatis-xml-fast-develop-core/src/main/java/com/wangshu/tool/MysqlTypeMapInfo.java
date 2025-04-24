@@ -36,7 +36,6 @@ public class MysqlTypeMapInfo {
 
     private static final Map<String, String> JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE = new HashMap<>();
     private static final Map<String, Integer> DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH = new HashMap<>();
-    private static final Map<String, JdbcType> DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE = new HashMap<>();
 
     static {
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Integer.class.getName(), "INT");
@@ -89,33 +88,6 @@ public class MysqlTypeMapInfo {
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("JSON", -1);
     }
 
-    static {
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("CHAR", JdbcType.CHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TINYINT", JdbcType.TINYINT);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("VARCHAR", JdbcType.VARCHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("LONGTEXT", JdbcType.LONGNVARCHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("MEDIUMTEXT", JdbcType.LONGNVARCHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("NUMERIC", JdbcType.NUMERIC);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("DECIMAL", JdbcType.DECIMAL);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("INT", JdbcType.INTEGER);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("SMALLINT", JdbcType.SMALLINT);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("BIGINT", JdbcType.BIGINT);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("REAL", JdbcType.REAL);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("FLOAT", JdbcType.FLOAT);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("DOUBLE", JdbcType.DOUBLE);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("DATE", JdbcType.DATE);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TIME", JdbcType.TIME);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TIMESTAMP", JdbcType.TIMESTAMP);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("BOOLEAN", JdbcType.BOOLEAN);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("BLOB", JdbcType.BLOB);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("MEDIUMBLOB", JdbcType.BLOB);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("LONGBLOB", JdbcType.BLOB);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TINYBLOB", JdbcType.BLOB);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("JSON", JdbcType.VARCHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("ENUM", JdbcType.VARCHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("SET", JdbcType.VARCHAR);
-    }
-
     public static String getDbColumnTypeByField(@NotNull Field field) {
         String type = field.getType().getName();
         String mssqlType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(type);
@@ -139,14 +111,6 @@ public class MysqlTypeMapInfo {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
         }
         return length;
-    }
-
-    public static @NotNull JdbcType getMybatisJdbcTypeByDbColumnType(@NotNull String dbColumnType) {
-        JdbcType jdbcType = DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.get(dbColumnType.toUpperCase());
-        if (Objects.isNull(jdbcType)) {
-            throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return jdbcType;
     }
 
 }

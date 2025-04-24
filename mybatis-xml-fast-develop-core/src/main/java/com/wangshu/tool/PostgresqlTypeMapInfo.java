@@ -23,7 +23,6 @@ package com.wangshu.tool;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
-import org.apache.ibatis.type.JdbcType;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -36,7 +35,6 @@ public class PostgresqlTypeMapInfo {
 
     private static final Map<String, String> JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE = new HashMap<>();
     private static final Map<String, Integer> DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH = new HashMap<>();
-    private static final Map<String, JdbcType> DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE = new HashMap<>();
 
     static {
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Integer.class.getName(), "INTEGER");
@@ -72,25 +70,6 @@ public class PostgresqlTypeMapInfo {
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BYTEA", -1);
     }
 
-    static {
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("BOOLEAN", JdbcType.BOOLEAN);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TINYINT", JdbcType.TINYINT);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("SMALLINT", JdbcType.SMALLINT);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("INTEGER", JdbcType.INTEGER);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("BIGINT", JdbcType.BIGINT);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("REAL", JdbcType.FLOAT);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("DOUBLE PRECISION", JdbcType.DOUBLE);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("NUMERIC", JdbcType.NUMERIC);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("DECIMAL", JdbcType.DECIMAL);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("CHAR", JdbcType.CHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("VARCHAR", JdbcType.VARCHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TEXT", JdbcType.LONGVARCHAR);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TIMESTAMP", JdbcType.TIMESTAMP);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("DATE", JdbcType.DATE);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("TIME", JdbcType.TIME);
-        DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.put("BYTEA", JdbcType.BLOB);
-    }
-
     public static String getDbColumnTypeByField(@NotNull Field field) {
         String type = field.getType().getName();
         String postgresqlType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(type);
@@ -114,14 +93,6 @@ public class PostgresqlTypeMapInfo {
             throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
         }
         return length;
-    }
-
-    public static @NotNull JdbcType getMybatisJdbcTypeByDbColumnType(@NotNull String dbColumnType) {
-        JdbcType jdbcType = DB_COLUMN_TYPE_MAP_MYBATIS_JDBC_TYPE.get(dbColumnType.toUpperCase());
-        if (Objects.isNull(jdbcType)) {
-            throw new IllegalArgumentException("Unsupported dbColumnType: " + dbColumnType);
-        }
-        return jdbcType;
     }
 
 }

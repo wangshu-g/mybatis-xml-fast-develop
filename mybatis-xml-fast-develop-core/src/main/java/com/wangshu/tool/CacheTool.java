@@ -30,6 +30,7 @@ import com.wangshu.base.query.Query;
 import com.wangshu.base.service.BaseDataService;
 import com.wangshu.cache.*;
 import com.wangshu.enu.DataBaseType;
+import com.wangshu.enu.SqlStyle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,6 +154,10 @@ public class CacheTool {
 
     public static @NotNull DataBaseType getModelDataBaseType(@NotNull Class<? extends BaseModel> modelClazz) {
         return getOrCreateModelCache(modelClazz).dataBaseType;
+    }
+
+    public static @NotNull SqlStyle getModelSqlStyle(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).sqlStyle;
     }
 
     public static @NotNull List<ColumnType> getModelColumnTypes(@NotNull Class<? extends BaseModel> modelClazz) {
