@@ -165,7 +165,15 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             insertElement.addAttribute("keyProperty", primaryField.getName());
             baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
         }
-        insertElement.addText(StrUtil.concat(false, CommonStaticField.BREAK_WRAP, "insert into ", this.wrapEscapeCharacter(this.getModel().getTableName()), "(", baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")), ") values (", String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(item.getName())).collect(Collectors.joining(","))), ")", CommonStaticField.BREAK_WRAP));
+        insertElement.addText(StrUtil.concat(false, CommonStaticField.BREAK_WRAP,
+                "insert into ",
+                this.wrapEscapeCharacter(this.getModel().getTableName()),
+                "(",
+                baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
+                ") values (",
+                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name()))).collect(Collectors.joining(","))),
+                ")",
+                CommonStaticField.BREAK_WRAP));
         return insertElement;
     }
 
@@ -180,9 +188,17 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             batchInsertElement.addAttribute("keyProperty", primaryField.getName());
             baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
         }
-        String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP, "insert into ", this.wrapEscapeCharacter(this.getModel().getTableName()), "(", baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")), ") values", CommonStaticField.BREAK_WRAP);
+        String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP,
+                "insert into ",
+                this.wrapEscapeCharacter(this.getModel().getTableName()),
+                "(",
+                baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
+                ") values",
+                CommonStaticField.BREAK_WRAP);
         batchInsertElement.addText(text);
-        String forEachText = StrUtil.concat(false, "(", String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName()))).collect(Collectors.joining(","))), ")");
+        String forEachText = StrUtil.concat(false, "(",
+                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                        .collect(Collectors.joining(","))), ")");
         org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
         forEachElement.addText(forEachText);
         batchInsertElement.add(forEachElement);
@@ -490,7 +506,19 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
                 JoinType joinType = field.getJoinType();
                 JoinCondition joinCondition = field.getJoinCondition();
 
-                fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.wrapEscapeCharacter(leftTable), " as ", this.wrapEscapeCharacter(leftTableAs), " on ", this.wrapEscapeCharacter(leftTableAs), ".", this.wrapEscapeCharacter(leftJoinField), " = ", this.wrapEscapeCharacter(rightTableAs), ".", this.wrapEscapeCharacter(rightJoinField)));
+                fieldsJoinText.add(StrUtil.concat(false, joinType.name(),
+                        " join ",
+                        this.wrapEscapeCharacter(leftTable),
+                        " as ",
+                        this.wrapEscapeCharacter(leftTableAs),
+                        " on ",
+                        this.wrapEscapeCharacter(leftTableAs),
+                        ".",
+                        this.wrapEscapeCharacter(leftJoinField),
+                        " = ",
+                        this.wrapEscapeCharacter(rightTableAs),
+                        ".",
+                        this.wrapEscapeCharacter(rightJoinField)));
             }
         }
         return fieldsJoinText;

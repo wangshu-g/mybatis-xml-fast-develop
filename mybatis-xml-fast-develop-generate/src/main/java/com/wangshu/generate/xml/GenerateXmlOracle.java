@@ -29,6 +29,7 @@ import com.wangshu.exception.MessageException;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.tool.CommonStaticField;
+import com.wangshu.tool.CommonTool;
 import org.dom4j.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +62,11 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
         return ifElement;
     }
 
+    private String getPrimaryIncrSeqName() {
+        String primaryIncrSeq = CommonTool.getNewStrBySqlStyle(this.getModel().getSqlStyle(), "primaryIncrSeq");
+        return StrUtil.concat(false, this.getModel().getTableName(), "_", primaryIncrSeq);
+    }
+
     @Override
     public Element generateSave() {
         F primaryField = this.getModel().getPrimaryField();
@@ -69,21 +75,36 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
         insertElement.addAttribute("parameterType", "Map");
         List<F> baseFields = this.getModel().getBaseFields();
         if (StrUtil.equals(primaryField.getJavaTypeName(), Long.class.getName()) || StrUtil.equals(primaryField.getJavaTypeName(), Integer.class.getName())) {
-            insertElement.addAttribute("useGeneratedKeys", "true");
             insertElement.addAttribute("keyProperty", primaryField.getName());
-            baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
+            baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
+            insertElement.addText(StrUtil.concat(false,
+                    CommonStaticField.BREAK_WRAP,
+                    "insert into ",
+                    this.wrapEscapeCharacter(this.getModel().getTableName()),
+                    "(",
+                    this.wrapEscapeCharacter(primaryField.getSqlStyleName()),
+                    ",",
+                    baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
+                    ") values (",
+                    this.wrapEscapeCharacter(this.getPrimaryIncrSeqName()), ".NEXTVAL",
+                    ",",
+                    String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                            .collect(Collectors.joining(","))),
+                    ")",
+                    CommonStaticField.BREAK_WRAP));
+        } else {
+            insertElement.addText(StrUtil.concat(false,
+                    CommonStaticField.BREAK_WRAP,
+                    "insert into ",
+                    this.wrapEscapeCharacter(this.getModel().getTableName()),
+                    "(",
+                    baseFields.stream().map(item -> this.wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
+                    ") values (",
+                    String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                            .collect(Collectors.joining(","))),
+                    ")",
+                    CommonStaticField.BREAK_WRAP));
         }
-        insertElement.addText(StrUtil.concat(false,
-                CommonStaticField.BREAK_WRAP,
-                "insert into ",
-                this.wrapEscapeCharacter(this.getModel().getTableName()),
-                "(",
-                baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
-                ") values (",
-                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
-                        .collect(Collectors.joining(","))),
-                ")",
-                CommonStaticField.BREAK_WRAP));
         return insertElement;
     }
 
@@ -98,17 +119,42 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
             batchInsertElement.addAttribute("useGeneratedKeys", "true");
             batchInsertElement.addAttribute("keyProperty", primaryField.getName());
             baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
+            String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP, "insert into ",
+                    this.wrapEscapeCharacter(this.getModel().getTableName()),
+                    "(",
+                    this.wrapEscapeCharacter(primaryField.getSqlStyleName()),
+                    ",",
+                    baseFields.stream().map(item -> this.wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
+                    ") values",
+                    CommonStaticField.BREAK_WRAP);
+            batchInsertElement.addText(text);
+            String forEachText = StrUtil.concat(false,
+                    "(",
+                    this.wrapEscapeCharacter(this.getPrimaryIncrSeqName()), ".NEXTVAL",
+                    ",",
+                    String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                            .collect(Collectors.joining(","))),
+                    ")");
+            org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
+            forEachElement.addText(forEachText);
+            batchInsertElement.add(forEachElement);
+        } else {
+            String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP, "insert into ",
+                    this.wrapEscapeCharacter(this.getModel().getTableName()),
+                    "(",
+                    baseFields.stream().map(item -> this.wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
+                    ") values",
+                    CommonStaticField.BREAK_WRAP);
+            batchInsertElement.addText(text);
+            String forEachText = StrUtil.concat(false,
+                    "(",
+                    String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
+                            .collect(Collectors.joining(","))),
+                    ")");
+            org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
+            forEachElement.addText(forEachText);
+            batchInsertElement.add(forEachElement);
         }
-        String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP, "insert into ", this.wrapEscapeCharacter(this.getModel().getTableName()), "(", baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")), ") values", CommonStaticField.BREAK_WRAP);
-        batchInsertElement.addText(text);
-        String forEachText = StrUtil.concat(false,
-                "(",
-                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
-                        .collect(Collectors.joining(","))),
-                ")");
-        org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
-        forEachElement.addText(forEachText);
-        batchInsertElement.add(forEachElement);
         return batchInsertElement;
     }
 
@@ -130,7 +176,19 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
                 JoinType joinType = field.getJoinType();
                 JoinCondition joinCondition = field.getJoinCondition();
 
-                fieldsJoinText.add(StrUtil.concat(false, joinType.name(), " join ", this.wrapEscapeCharacter(leftTable), " ", this.wrapEscapeCharacter(leftTableAs), " on ", this.wrapEscapeCharacter(leftTableAs), ".", this.wrapEscapeCharacter(leftJoinField), " = ", this.wrapEscapeCharacter(rightTableAs), ".", this.wrapEscapeCharacter(rightJoinField)));
+                fieldsJoinText.add(StrUtil.concat(false, joinType.name(),
+                        " join ",
+                        this.wrapEscapeCharacter(leftTable),
+                        " ",
+                        this.wrapEscapeCharacter(leftTableAs),
+                        " on ",
+                        this.wrapEscapeCharacter(leftTableAs),
+                        ".",
+                        this.wrapEscapeCharacter(leftJoinField),
+                        " = ",
+                        this.wrapEscapeCharacter(rightTableAs),
+                        ".",
+                        this.wrapEscapeCharacter(rightJoinField)));
             }
         }
         return fieldsJoinText;
