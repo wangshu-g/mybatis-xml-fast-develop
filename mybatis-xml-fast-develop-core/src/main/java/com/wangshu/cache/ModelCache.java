@@ -54,6 +54,7 @@ public class ModelCache {
     public Field defaultOrderField;
     public List<ColumnType> columnTypes;
     public DataBaseType dataBaseType;
+    public SqlStyle sqlStyle;
     /**
      * <p>用于可能的${orderColumn}注入的安全校验</p>
      **/
@@ -77,6 +78,7 @@ public class ModelCache {
         this.deleteMethodPossibleWhereParameterName = deleteMethodPossibleWhereParameterName(modelClazz);
         this.updateMethodPossibleWhereParameterName = this.deleteMethodPossibleWhereParameterName;
         this.dataBaseType = modelClazz.getAnnotation(Model.class).dataBaseType();
+        this.sqlStyle = modelClazz.getAnnotation(Model.class).sqlStyle();
     }
 
     private void initCriticalFields() {
