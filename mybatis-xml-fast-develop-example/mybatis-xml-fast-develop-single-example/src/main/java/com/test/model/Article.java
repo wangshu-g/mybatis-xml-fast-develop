@@ -34,7 +34,7 @@ public class Article extends BaseModel {
     @Column(conditions = {Condition.all}, title = "描述", keyword = true)
     private String desc;
 
-    @Column(conditions = {Condition.all}, title = "文章详情", jdbcType = "longtext")
+    @Column(conditions = {Condition.all}, title = "文章详情", dbColumnType = "longtext")
     private String detail;
 
     @Column(conditions = {Condition.all}, title = "状态")
