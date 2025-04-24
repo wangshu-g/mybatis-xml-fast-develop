@@ -27,6 +27,7 @@ import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.exception.IException;
 import com.wangshu.tool.CacheTool;
+import com.wangshu.tool.CommonTool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mybatis.spring.MyBatisSystemException;
@@ -689,7 +690,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             log.warn("orderColumn 参数无效,详细参数: {}", orderColumn);
             Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(getModelClazz());
             if (Objects.nonNull(modelDefaultOrderField)) {
-                orderColumn = modelDefaultOrderField.getName();
+                orderColumn = CommonTool.getNewStrBySqlStyle(CacheTool.getModelSqlStyle(getModelClazz()), modelDefaultOrderField.getName());
                 log.warn("存在 defaultOrderField,orderColumn 参数重设为: {}", orderColumn);
             }
         }
