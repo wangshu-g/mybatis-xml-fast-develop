@@ -63,7 +63,7 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
         Column column = metaData.getAnnotation(Column.class);
         if (Objects.nonNull(column)) {
             this.setColumn(column);
-            this.setDbColumnType(this.initJdbcType(metaData, column));
+            this.setDbColumnType(this.initDbColumnType(metaData, column));
             this.setTitle(column.title());
             this.setComment(column.comment());
             this.setConditions(Arrays.asList(column.conditions()));
@@ -127,12 +127,12 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
         }
     }
 
-    private String initJdbcType(@NotNull Field field, @NotNull Column column) {
-        String jdbcType = column.jdbcType();
-        if (StrUtil.isBlank(jdbcType)) {
-            jdbcType = CommonTool.getDbColumnTypeByJavaTypeName(this.getModel().getDataBaseType(), this.getJavaTypeName());
+    private String initDbColumnType(@NotNull Field field, @NotNull Column column) {
+        String dbColumnType = column.dbColumnType();
+        if (StrUtil.isBlank(dbColumnType)) {
+            dbColumnType = CommonTool.getDbColumnTypeByJavaTypeName(this.getModel().getDataBaseType(), this.getJavaTypeName());
         }
-        return jdbcType;
+        return dbColumnType;
     }
 
     private String initSqlStyleName(@NotNull Field metaData, @NotNull ModelClazzInfo model) {

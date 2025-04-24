@@ -83,7 +83,7 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
     String getDbColumnType();
 
     default @NotNull JdbcType getMybatisJdbcType() {
-        return CommonTool.getMybatisJdbcTypeByDbColumnType(this.getModel().getDataBaseType(), this.getDbColumnType());
+        return CommonTool.getJdbcTypeByJavaTypeName(this.getJavaTypeName());
     }
 
     default List<Condition> getConditions() {
