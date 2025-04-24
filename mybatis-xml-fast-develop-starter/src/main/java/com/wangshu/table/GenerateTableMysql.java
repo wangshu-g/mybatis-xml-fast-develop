@@ -25,21 +25,15 @@ package com.wangshu.table;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.model.BaseModel;
 import lombok.EqualsAndHashCode;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.sql.*;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author wangshu-g
  */
 @EqualsAndHashCode(callSuper = true)
 @lombok.Data
-@Slf4j
 public class GenerateTableMysql extends GenerateTable {
 
     public GenerateTableMysql(Class<? extends BaseModel> clazz) {
@@ -47,85 +41,12 @@ public class GenerateTableMysql extends GenerateTable {
     }
 
     @Override
-    public void createTable(@NotNull Connection connection) throws SQLException {
-        log.info("当前数据源: {} {}", connection.getCatalog(), connection.getMetaData().getURL());
-        if (Objects.nonNull(this.getNames()) && !this.getNames().isEmpty()) {
-            this.getNames().forEach(item -> this.execute(connection, item));
-        } else {
-            this.execute(connection, this.getTable());
-        }
+    public boolean columnIsModify(@NotNull String currentColumnTypeName, @NotNull String columnJdbcType) {
+        return !StrUtil.equals(currentColumnTypeName.toLowerCase(), columnJdbcType.toLowerCase());
     }
 
-    public void execute(@NotNull Connection connection, String tableName) {
-        boolean flag = false;
-        try {
-            String catalog = connection.getCatalog();
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet tables = databaseMetaData.getTables(null, null, tableName, new String[]{"TABLE"});
-            flag = tables.next();
-            if (flag) {
-                this.executeAlterTable(connection, tableName);
-            } else {
-                this.executeCreateTable(connection, tableName);
-            }
-        } catch (SQLException e) {
-            if (flag) {
-                log.error(StrUtil.concat(false, "修改表 ", tableName, " 失败"), e);
-            } else {
-                log.error(StrUtil.concat(false, "创建表 ", tableName, " 失败"), e);
-            }
-        }
-    }
-
-    public void executeCreateTable(@NotNull Connection connection, String tableName) throws SQLException {
-        log.info("创建表: {}", tableName);
-        String sql = this.generateCreateTable(tableName);
-        log.info("执行sql: {}", sql);
-        Statement statement = connection.createStatement();
-        statement.execute(sql);
-        log.info("");
-    }
-
-    public void executeAlterTable(@NotNull Connection connection, String tableName) throws SQLException {
-        log.info("表格 {} 已存在", tableName);
-        DatabaseMetaData databaseMetaData = connection.getMetaData();
-        String catalog = connection.getCatalog();
-        ResultSet columnsResult = databaseMetaData.getColumns(null, null, tableName, null);
-        Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap(this::getSqlStyleName, v -> v));
-        while (columnsResult.next()) {
-            String column = columnsResult.getString("COLUMN_NAME");
-            Field columnInfo = columnMap.get(column);
-            if (Objects.nonNull(columnInfo)) {
-                String type = columnsResult.getString("TYPE_NAME");
-                String columnJdbcType = this.getDbColumnType(columnInfo);
-                int columnLength = this.getDefaultLength(columnInfo);
-                if (!StrUtil.equals(type.toLowerCase(), columnJdbcType.toLowerCase())) {
-                    String columnName = this.getSqlStyleName(columnInfo);
-                    log.warn("修改列: {}", columnInfo.getName());
-                    String sql = this.generateAlterColumn(tableName, columnName, columnJdbcType, columnLength);
-                    log.warn("执行sql: {}", sql);
-                    Statement statement = connection.createStatement();
-                    try {
-                        statement.execute(sql);
-                    } catch (SQLException e) {
-                        log.error("修改列: {},失败", columnName);
-                        log.error("异常: ", e);
-                    }
-                }
-                columnMap.remove(column);
-            }
-        }
-        for (Field value : columnMap.values()) {
-            log.warn("添加列: {}", value.getName());
-            String sql = this.generateAddColumn(tableName, value.getName(), this.getDbColumnType(value), this.getDefaultLength(value));
-            log.warn("执行sql: {}", sql);
-            Statement statement = connection.createStatement();
-            statement.execute(sql);
-        }
-        log.info("");
-    }
-
-    public String generateCreateTable(String tableName) {
+    @Override
+    public String getCreateTableSql(@NotNull String tableName) {
         String sql = StrUtil.concat(false, "create table `", tableName, "` ( ");
         for (int index = 0; index < this.getFields().size(); index++) {
             Field item = this.getFields().get(index);
@@ -153,19 +74,27 @@ public class GenerateTableMysql extends GenerateTable {
         return sql;
     }
 
-    public String generateAddColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StrUtil.concat(false,
-                "alter table `", tableName,
-                "` add `", columnName, "` ",
-                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
+    @Override
+    public String getAlterColumnSql(String tableName, String columnName, String columnJdbcType, int columnLength) {
+        return StrUtil.concat(false, "alter table `",
+                tableName,
+                "` modify `",
+                columnName,
+                "` ",
+                columnJdbcType,
+                columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
         );
     }
 
-    public String generateAlterColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StrUtil.concat(false,
-                "alter table `", tableName,
-                "` modify `", columnName, "` ",
-                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
+    @Override
+    public String getAddColumnSql(String tableName, String columnName, String columnJdbcType, int columnLength) {
+        return StrUtil.concat(false, "alter table `",
+                tableName,
+                "` add `",
+                columnName,
+                "` ",
+                columnJdbcType,
+                columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
         );
     }
 

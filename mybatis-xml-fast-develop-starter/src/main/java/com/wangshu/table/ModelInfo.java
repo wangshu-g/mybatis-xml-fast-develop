@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-
 @lombok.Data
 public abstract class ModelInfo {
 
@@ -46,7 +45,7 @@ public abstract class ModelInfo {
     private Model modelAnnotation;
     private DataBaseType dataBaseType;
     private SqlStyle sqlStyle;
-    private String table;
+    private String tableName;
     private String modelName;
     private String modelFullName;
 
@@ -61,7 +60,7 @@ public abstract class ModelInfo {
         this.modelAnnotation = clazz.getAnnotation(Model.class);
         this.dataBaseType = modelAnnotation.dataBaseType();
         this.sqlStyle = this.modelAnnotation.sqlStyle();
-        this.table = this.initTableName(clazz);
+        this.tableName = this.initTableName(clazz);
         this.modelName = clazz.getSimpleName();
         this.modelFullName = clazz.getTypeName();
         this.initNames(clazz);

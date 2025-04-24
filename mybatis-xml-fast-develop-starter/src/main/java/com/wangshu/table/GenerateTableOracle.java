@@ -23,16 +23,18 @@ package com.wangshu.table;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
+import com.wangshu.annotation.Column;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.tool.CommonTool;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.sql.*;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Optional;
 
 /**
  * @author wangshu-g
@@ -47,86 +49,49 @@ public class GenerateTableOracle extends GenerateTable {
     }
 
     @Override
-    public void createTable(@NotNull Connection connection) throws SQLException {
-        log.info("当前数据源: {} {}", connection.getCatalog(), connection.getMetaData().getURL());
-        if (Objects.nonNull(this.getNames()) && !this.getNames().isEmpty()) {
-            this.getNames().forEach(item -> this.execute(connection, item));
-        } else {
-            this.execute(connection, this.getTable());
-        }
-    }
-
-    public void execute(@NotNull Connection connection, String tableName) {
-        boolean flag = false;
-        try {
-            String catalog = connection.getCatalog();
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet tables = databaseMetaData.getTables(null, null, tableName, new String[]{"TABLE"});
-            flag = tables.next();
-            if (flag) {
-                this.executeAlterTable(connection, tableName);
-            } else {
-                this.executeCreateTable(connection, tableName);
-            }
-        } catch (SQLException e) {
-            if (flag) {
-                log.error(StrUtil.concat(false, "修改表 ", tableName, " 失败"), e);
-            } else {
-                log.error(StrUtil.concat(false, "创建表 ", tableName, " 失败"), e);
-            }
-        }
-    }
-
-    public void executeCreateTable(@NotNull Connection connection, String tableName) throws SQLException {
+    public void createTable(@NotNull Connection connection, @NotNull String tableName) throws SQLException {
         log.info("创建表: {}", tableName);
-        String sql = this.generateCreateTable(tableName);
+        String sql = this.getCreateTableSql(tableName);
         log.info("执行sql: {}", sql);
         Statement statement = connection.createStatement();
         statement.execute(sql);
-        log.info("");
-        this.createAutoIncrementSequenceAndTrigger(connection, tableName);
-    }
-
-    public void executeAlterTable(@NotNull Connection connection, String tableName) throws SQLException {
-        log.info("表格 {} 已存在", tableName);
-        DatabaseMetaData databaseMetaData = connection.getMetaData();
-        String catalog = connection.getCatalog();
-        ResultSet columnsResult = databaseMetaData.getColumns(null, null, tableName, null);
-        Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap(this::getSqlStyleName, v -> v));
-        while (columnsResult.next()) {
-            String column = columnsResult.getString("COLUMN_NAME");
-            Field columnInfo = columnMap.get(column);
-            if (Objects.nonNull(columnInfo)) {
-                String type = columnsResult.getString("TYPE_NAME");
-                String columnJdbcType = this.getDbColumnType(columnInfo);
-                int columnLength = this.getDefaultLength(columnInfo);
-                if (!StrUtil.equals(type.toLowerCase().split("\\(")[0], columnJdbcType.toLowerCase())) {
-                    String columnName = this.getSqlStyleName(columnInfo);
-                    log.warn("修改列: {}", columnInfo.getName());
-                    String sql = this.generateAlterColumn(tableName, columnName, columnJdbcType, columnLength);
-                    log.warn("执行sql: {}", sql);
-                    Statement statement = connection.createStatement();
-                    try {
-                        statement.execute(sql);
-                    } catch (SQLException e) {
-                        log.error("修改列: {},失败", columnName);
-                        log.error("异常: ", e);
-                    }
-                }
-                columnMap.remove(column);
+        Optional<Field> first = this.getFields().stream().filter(field -> {
+            Column annotation = field.getAnnotation(Column.class);
+            return annotation.primary();
+        }).findFirst();
+        if (first.isPresent()) {
+            Class<?> type = first.get().getType();
+            if (type.equals(Long.class) || type.equals(Integer.class)) {
+                this.createPrimaryIncrSeq(connection);
             }
         }
-        for (Field value : columnMap.values()) {
-            log.warn("添加列: {}", value.getName());
-            String sql = this.generateAddColumn(tableName, value.getName(), this.getDbColumnType(value), this.getDefaultLength(value));
-            log.warn("执行sql: {}", sql);
-            Statement statement = connection.createStatement();
-            statement.execute(sql);
-        }
         log.info("");
     }
 
-    public String generateCreateTable(String tableName) {
+    private String getPrimaryIncrSeqName() {
+        String primaryIncrSeq = CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), "primaryIncrSeq");
+        return StrUtil.concat(false, this.getTableName(), "_", primaryIncrSeq);
+    }
+
+    private void createPrimaryIncrSeq(@NotNull Connection connection) throws SQLException {
+        String primaryIncrSeqName = getPrimaryIncrSeqName();
+        log.info("创建主键自增序列: {}", primaryIncrSeqName);
+        String sequenceSql = StrUtil.concat(false, "create sequence ",
+                "\"",
+                primaryIncrSeqName,
+                "\"",
+                " start with 1 increment by 1 nocache");
+        log.info("执行sql: {}", sequenceSql);
+        connection.createStatement().execute(sequenceSql);
+    }
+
+    @Override
+    public boolean columnIsModify(@NotNull String currentColumnTypeName, @NotNull String columnJdbcType) {
+        return !StrUtil.equals(currentColumnTypeName.toLowerCase().split("\\(")[0], columnJdbcType.toLowerCase());
+    }
+
+    @Override
+    public String getCreateTableSql(@NotNull String tableName) {
         String sql = StrUtil.concat(false, "create table \"", tableName, "\" ( ");
         for (int index = 0; index < this.getFields().size(); index++) {
             Field item = this.getFields().get(index);
@@ -136,57 +101,44 @@ public class GenerateTableOracle extends GenerateTable {
             boolean defaultNullFlag = this.isDefaultNull(item);
             String columnNull = defaultNullFlag ? "null" : "not null";
             boolean primaryKeyFlag = this.isPrimaryKey(item);
-            String columnAutoIncrement = (primaryKeyFlag && (item.getType().equals(Long.class) || item.getType().equals(Integer.class))) ? "generated always as identity start with 1 increment by 1" : "";
-            String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
+//            String columnAutoIncrement = (primaryKeyFlag && (item.getType().equals(Long.class) || item.getType().equals(Integer.class))) ? "generated always as identity start with 1 increment by 1" : "";
+//            String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
             String columnPrimary = this.isPrimaryKey(item) ? "primary key" : "";
             String columnEnd = index == this.getFields().size() - 1 ? "" : ",";
             sql = StrUtil.concat(false, sql,
-                    "\"", columnName, "\" ",
-                    columnType, " ",
+                    "\"",
+                    columnName,
+                    "\" ",
+                    columnType,
+                    " ",
                     !primaryKeyFlag ? StrUtil.concat(false, columnNull, " ") : "",
-                    columnAutoIncrement, " ",
+                    " ",
 //                    columnComment, " ",
-                    columnPrimary, " ",
-                    columnEnd
-            );
+                    columnPrimary, " ", columnEnd);
         }
         sql = StrUtil.concat(false, sql, " )");
         return sql;
     }
 
-    public String generateAddColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StrUtil.concat(false,
-                "alter table ", tableName,
-                " add \"", columnName, "\" ",
-                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
-        );
+    @Override
+    public String getAlterColumnSql(String tableName, String columnName, String columnJdbcType, int columnLength) {
+        return StrUtil.concat(false, "alter table \"",
+                tableName,
+                "\" modify \"",
+                columnName,
+                "\" ",
+                columnJdbcType,
+                columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")"));
     }
 
-    public String generateAlterColumn(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StrUtil.concat(false,
-                "alter table \"", tableName,
-                "\" modify \"", columnName, "\" ",
-                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
-        );
-    }
-
-    private void createAutoIncrementSequenceAndTrigger(Connection connection, String tableName) throws SQLException {
-        String sequenceName = tableName + "_seq";
-        String triggerName = tableName + "_trigger";
-
-        String sequenceSql = StrUtil.concat(false, "create sequence ", sequenceName, " start with 1 increment by 1 nocache");
-        Statement stmt = connection.createStatement();
-        stmt.execute(sequenceSql);
-
-        String triggerSql = StrUtil.concat(false, "create or replace trigger ", triggerName,
-                " before insert on ", tableName,
-                " for each row",
-                " begin",
-                "   :new.id := ", sequenceName, ".nextval;",
-                " end;");
-        stmt.execute(triggerSql);
-
-        log.info("Auto-increment sequence and trigger created for table: {}", tableName);
+    @Override
+    public String getAddColumnSql(String tableName, String columnName, String columnJdbcType, int columnLength) {
+        return StrUtil.concat(false, "alter table ",
+                tableName,
+                " add \"",
+                columnName,
+                "\" ",
+                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")"));
     }
 
 }

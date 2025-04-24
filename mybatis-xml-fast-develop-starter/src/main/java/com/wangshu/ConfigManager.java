@@ -96,7 +96,7 @@ public class ConfigManager implements ApplicationContextAware {
                         if (Objects.isNull(generateTable)) {
                             log.warn("暂无对应数据库类型实现: {}", modelAnnotation.dataBaseType());
                         } else {
-                            generateTable.createTable(connection);
+                            generateTable.execute(connection);
                         }
                     }
                 } catch (SQLException e) {
