@@ -50,7 +50,7 @@ public @interface Column {
     /**
      * <p>可选值,会根据类型选择数据类型</p>
      **/
-    String jdbcType() default "";
+    String dbColumnType() default "";
 
     /**
      * <p>可选值,字段标题||注释</p>
