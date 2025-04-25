@@ -1,8 +1,10 @@
 # mybatis-xml-fast-develop changelog
 
-+ ## 1.5.0 dev 
++ ## 1.5.0
 
-DataBaseType postgresql、oracle、mssql xml生成、自动建表等相关支持
+待推送
+
+DataBaseType postgresql、oracle、mssql xml 生成、自动建表等相关支持
 
 createdAt，deletedAt，updatedAt，DefaultOrder 注解标注关键字段
 
