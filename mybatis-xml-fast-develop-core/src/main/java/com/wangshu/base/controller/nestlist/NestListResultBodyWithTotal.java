@@ -25,9 +25,8 @@ package com.wangshu.base.controller.nestlist;
 import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.result.ResultBody;
-import com.wangshu.base.result.ResultTableBody;
+import com.wangshu.base.result.ResultBodyWithTotal;
 import com.wangshu.base.service.BaseDataService;
-import com.wangshu.tool.CacheTool;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -38,7 +37,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public interface NestListResultTableBody<S extends BaseDataService<?,  T>, T extends BaseModel> extends BaseDataController<S, T> {
+public interface NestListResultBodyWithTotal<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**
      * <p>查询列表</p>
@@ -47,7 +46,7 @@ public interface NestListResultTableBody<S extends BaseDataService<?,  T>, T ext
     @ResponseBody
     public default ResultBody<List<T>> getNestList(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
         Map<String, Object> params = this.getRequestParams(request);
-        return ResultTableBody.success(this.getService()._getNestList(params), this.getService()._getTotal(params), CacheTool.getControllerModelGenericColumnType(this.getClass()));
+        return ResultBodyWithTotal.success(this.getService()._getNestList(params), this.getService()._getTotal(params));
     }
 
 }

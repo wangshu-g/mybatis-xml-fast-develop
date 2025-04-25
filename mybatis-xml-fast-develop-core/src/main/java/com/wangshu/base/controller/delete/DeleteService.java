@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
-public interface DeleteService<S extends BaseDataService<?,  T>, T extends BaseModel> extends BaseDataController<S, T> {
+public interface DeleteService<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**
      * <p>删除</p>

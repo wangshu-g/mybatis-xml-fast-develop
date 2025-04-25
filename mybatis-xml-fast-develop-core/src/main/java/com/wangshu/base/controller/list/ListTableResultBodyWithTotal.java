@@ -1,4 +1,4 @@
-package com.wangshu.cache;
+package com.wangshu.base.controller.list;
 
 // MIT License
 //
@@ -22,50 +22,31 @@ package com.wangshu.cache;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.util.StrUtil;
-import com.wangshu.annotation.Column;
-import lombok.Data;
-import org.jetbrains.annotations.NotNull;
+import com.wangshu.base.controller.BaseDataController;
+import com.wangshu.base.model.BaseModel;
+import com.wangshu.base.result.ResultBody;
+import com.wangshu.base.result.ResultBodyWithTotal;
+import com.wangshu.base.service.BaseDataService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.lang.reflect.Field;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
-@Data
-public class ColumnType {
+public interface ListTableResultBodyWithTotal<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
-    String name;
-    String title;
-    String dataType;
-    Integer order;
-
-    public ColumnType() {
-
-    }
-
-    public ColumnType(@NotNull Field field) {
-        this.name = field.getName();
-        this.dataType = field.getType().getSimpleName();
-        this.order = fieldOrder(field);
-        this.title = fieldTitle(field);
-    }
-
-    private String fieldTitle(@NotNull Field field) {
-        Column column = field.getAnnotation(Column.class);
-        if (Objects.nonNull(column)) {
-            if (StrUtil.isBlank(column.title())) {
-                return column.comment();
-            }
-            return column.title();
-        }
-        return field.getName();
-    }
-
-    private @NotNull Integer fieldOrder(@NotNull Field field) {
-        Column column = field.getAnnotation(Column.class);
-        if (Objects.nonNull(column)) {
-            return column.order();
-        }
-        return 0;
+    /**
+     * <p>查询列表</p>
+     **/
+    @PostMapping("/getList")
+    @ResponseBody
+    public default ResultBody<List<Map<String, Object>>> getList(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        Map<String, Object> params = this.getRequestParams(request);
+        return ResultBodyWithTotal.success(this.getService()._getList(params), this.getService()._getTotal(params));
     }
 
 }

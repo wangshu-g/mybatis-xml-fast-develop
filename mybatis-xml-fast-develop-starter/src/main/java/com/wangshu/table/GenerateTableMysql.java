@@ -28,6 +28,10 @@ import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * @author wangshu-g
@@ -43,6 +47,13 @@ public class GenerateTableMysql extends GenerateTable {
     @Override
     public boolean columnIsModify(@NotNull String currentColumnTypeName, @NotNull String columnJdbcType) {
         return !StrUtil.equals(currentColumnTypeName.toLowerCase(), columnJdbcType.toLowerCase());
+    }
+
+    @Override
+    public ResultSet getTablesResultSetFromDatabaseMetaData(@NotNull Connection connection, String tableName) throws SQLException {
+        String catalog = connection.getCatalog();
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        return databaseMetaData.getTables(catalog, null, tableName, new String[]{"TABLE"});
     }
 
     @Override

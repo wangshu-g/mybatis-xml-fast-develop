@@ -4,7 +4,6 @@ import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import com.wangshu.enu.DataBaseType;
-import com.wangshu.enu.SqlStyle;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,7 +13,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@Model(title = "文章分组", modelDefaultKeyword = "groupName", dataBaseType = DataBaseType.mssql)
+@Model(title = "文章分组", modelDefaultKeyword = "groupName", dataBaseType = DataBaseType.mysql)
 public class ArticleGroup extends BaseModel {
 
     @Column(title = "ID", conditions = {Condition.all}, primary = true)

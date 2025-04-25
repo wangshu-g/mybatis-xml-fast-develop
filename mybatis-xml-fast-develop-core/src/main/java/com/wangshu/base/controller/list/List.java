@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 
-public interface List<S extends BaseDataService<?,  T>, T extends BaseModel> extends BaseDataController<S, T> {
+public interface List<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**
      * <p>查询列表</p>

@@ -1,4 +1,4 @@
-package com.wangshu.base.controller.list;
+package com.wangshu.base.controller;
 
 // MIT License
 //
@@ -22,32 +22,21 @@ package com.wangshu.base.controller.list;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import com.wangshu.base.controller.BaseDataController;
+import com.wangshu.base.controller.delete.DeleteResultBody;
+import com.wangshu.base.controller.list.ListTableResultBodyWithTotal;
+import com.wangshu.base.controller.nestlist.NestListResultBodyWithTotal;
+import com.wangshu.base.controller.save.SaveResultBody;
+import com.wangshu.base.controller.select.SelectResultBody;
+import com.wangshu.base.controller.struct.StructResultBody;
+import com.wangshu.base.controller.update.UpdateResultBody;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.base.result.ResultBody;
-import com.wangshu.base.result.ResultTableBody;
+import com.wangshu.base.result.ResultBodyWithTotal;
 import com.wangshu.base.service.BaseDataService;
-import com.wangshu.tool.CacheTool;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-public interface ListTableResultTableBody<S extends BaseDataService<?,  T>, T extends BaseModel> extends BaseDataController<S, T> {
-
-    /**
-     * <p>查询列表</p>
-     **/
-    @PostMapping("/getList")
-    @ResponseBody
-    public default ResultBody<List<Map<String, Object>>> getList(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
-        Map<String, Object> params = this.getRequestParams(request);
-        return ResultTableBody.success(this.getService()._getList(params), this.getService()._getTotal(params), CacheTool.getControllerModelGenericColumnType(this.getClass()));
-    }
+/**
+ * @author wangshu-g
+ * <p>基础控制器,所有方法响应数据{@link ResultBodyWithTotal}包装后的数据</p>
+ */
+public abstract class AbstractBaseDataControllerResultBodyWithTotal<S extends BaseDataService<?, T>, T extends BaseModel> implements SaveResultBody<S, T>, DeleteResultBody<S, T>, UpdateResultBody<S, T>, SelectResultBody<S, T>, ListTableResultBodyWithTotal<S, T>, NestListResultBodyWithTotal<S, T>, StructResultBody<S, T> {
 
 }

@@ -2,7 +2,7 @@ spring:
   application:
     name: test
   profiles:
-    active: mssql
+    active: mysql
   threads:
     virtual:
       enabled: true
@@ -38,7 +38,7 @@ mybatis-plus:
 mybatis-xml-fast-develop:
   generate-compile-time:
     # 强制覆盖 resources/xxx-module-mapper
-    force-overwrite-xml: true
+    force-overwrite-xml: false
 
 logging:
   level:

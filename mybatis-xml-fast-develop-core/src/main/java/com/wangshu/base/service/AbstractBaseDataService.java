@@ -25,6 +25,7 @@ package com.wangshu.base.service;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.DataBaseType;
 import com.wangshu.exception.IException;
 import com.wangshu.tool.CacheTool;
 import com.wangshu.tool.CommonTool;
@@ -175,6 +176,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             return model;
         }).toList();
         if (newModelList.stream().allMatch(this::saveValidate)) {
+            DataBaseType dataBaseType = CacheTool.getModelDataBaseType(getModelClazz());
+            if ((dataBaseType.equals(DataBaseType.mssql) || dataBaseType.equals(DataBaseType.oracle))) {
+                log.warn("注意 oracle 和 mssql 数据库使用主键自增,批量插入无法正常获取主键自增值,建议添加业务ID解决");
+            }
             return getMapper()._batchSave(modelList);
         }
         throw new IException(HttpStatus.BAD_REQUEST);
@@ -684,14 +689,14 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);
-        String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? null : map.get("orderColumn"));
+        String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? "" : map.get("orderColumn"));
         if (!CacheTool.getModelOrderColumnPossibleParameterName(getModelClazz()).contains(orderColumn)) {
             map.remove("orderColumn");
             log.warn("orderColumn 参数无效,详细参数: {}", orderColumn);
             Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(getModelClazz());
             if (Objects.nonNull(modelDefaultOrderField)) {
                 orderColumn = CommonTool.getNewStrBySqlStyle(CacheTool.getModelSqlStyle(getModelClazz()), modelDefaultOrderField.getName());
-                log.warn("存在 defaultOrderField,orderColumn 参数重设为: {}", orderColumn);
+                log.warn("存在 DefaultOrder 标识列, orderColumn 参数重设为: {}", orderColumn);
             }
         }
         if (StrUtil.isNotBlank(orderColumn)) {

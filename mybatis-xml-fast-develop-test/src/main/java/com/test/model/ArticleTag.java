@@ -14,7 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
-@Model(title = "文章标签", modelDefaultKeyword = "tagName", dataBaseType = DataBaseType.mssql)
+@Model(title = "文章标签", modelDefaultKeyword = "tagName", dataBaseType = DataBaseType.mysql)
 public class ArticleTag extends BaseModel {
 
     @Column(title = "ID", conditions = {Condition.all}, primary = true)

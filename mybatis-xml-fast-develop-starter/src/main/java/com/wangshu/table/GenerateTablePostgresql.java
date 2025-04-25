@@ -55,15 +55,13 @@ public class GenerateTablePostgresql extends GenerateTable {
             boolean defaultNullFlag = this.isDefaultNull(item);
             String columnNull = defaultNullFlag ? "null" : "not null";
             boolean primaryKeyFlag = this.isPrimaryKey(item);
-            String columnType = "";
+            String columnType = StrUtil.concat(false, this.getDbColumnType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             if (primaryKeyFlag) {
                 if (item.getType().equals(Long.class)) {
                     columnType = "bigserial";
                 } else if (item.getType().equals(Integer.class)) {
                     columnType = "serial";
                 }
-            } else {
-                columnType = StrUtil.concat(false, this.getDbColumnType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             }
             String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
             String columnPrimary = this.isPrimaryKey(item) ? "primary key" : "";

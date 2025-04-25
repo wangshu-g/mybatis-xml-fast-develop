@@ -23,7 +23,6 @@ package com.wangshu.tool;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
-import org.apache.ibatis.type.JdbcType;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;

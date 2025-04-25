@@ -1,4 +1,4 @@
-package com.wangshu.base.controller;
+package com.wangshu.cache;
 
 // MIT License
 //
@@ -22,19 +22,50 @@ package com.wangshu.base.controller;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import com.wangshu.base.controller.delete.DeleteResultBody;
-import com.wangshu.base.controller.list.ListResultBody;
-import com.wangshu.base.controller.nestlist.NestListResultBody;
-import com.wangshu.base.controller.save.SaveResultBody;
-import com.wangshu.base.controller.select.SelectResultBody;
-import com.wangshu.base.controller.update.UpdateResultBody;
-import com.wangshu.base.model.BaseModel;
-import com.wangshu.base.service.BaseDataService;
+import cn.hutool.core.util.StrUtil;
+import com.wangshu.annotation.Column;
+import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * @author wangshu-g
- * <p>基础控制器,所有方法响应数据{@link com.wangshu.base.result.ResultBody}包装后的数据</p>
- */
-public abstract class AbstractBaseDataControllerResultBody<S extends BaseDataService<?, T>, T extends BaseModel> extends AbstractBaseDataController<S, T> implements SaveResultBody<S, T>, DeleteResultBody<S, T>, UpdateResultBody<S, T>, SelectResultBody<S, T>, ListResultBody<S, T>, NestListResultBody<S, T> {
+import java.lang.reflect.Field;
+import java.util.Objects;
+
+@Data
+public class ColumnMetadata {
+
+    String name;
+    String title;
+    String dataType;
+    Integer order;
+
+    public ColumnMetadata() {
+
+    }
+
+    public ColumnMetadata(@NotNull Field field) {
+        this.name = field.getName();
+        this.dataType = field.getType().getSimpleName();
+        this.order = fieldOrder(field);
+        this.title = fieldTitle(field);
+    }
+
+    private String fieldTitle(@NotNull Field field) {
+        Column column = field.getAnnotation(Column.class);
+        if (Objects.nonNull(column)) {
+            if (StrUtil.isBlank(column.title())) {
+                return column.comment();
+            }
+            return column.title();
+        }
+        return field.getName();
+    }
+
+    private @NotNull Integer fieldOrder(@NotNull Field field) {
+        Column column = field.getAnnotation(Column.class);
+        if (Objects.nonNull(column)) {
+            return column.order();
+        }
+        return 0;
+    }
 
 }

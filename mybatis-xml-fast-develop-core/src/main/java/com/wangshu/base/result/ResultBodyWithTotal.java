@@ -1,4 +1,4 @@
-package com.wangshu.base.controller;
+package com.wangshu.base.result;
 
 // MIT License
 //
@@ -22,20 +22,37 @@ package com.wangshu.base.controller;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import com.wangshu.base.controller.delete.DeleteResultBody;
-import com.wangshu.base.controller.list.ListTableResultTableBody;
-import com.wangshu.base.controller.nestlist.NestListResultTableBody;
-import com.wangshu.base.controller.save.SaveResultBody;
-import com.wangshu.base.controller.select.SelectResultBody;
-import com.wangshu.base.controller.update.UpdateResultBody;
-import com.wangshu.base.mapper.BaseDataMapper;
-import com.wangshu.base.model.BaseModel;
-import com.wangshu.base.service.BaseDataService;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author wangshu-g
- * <p>BaseControllerImpl</p>
+ * <p>返回给表格用的数据格式</p>
  */
-public abstract class AbstractBaseDataControllerResultTableBody<S extends BaseDataService<?,  T>, T extends BaseModel> implements SaveResultBody<S, T>, DeleteResultBody<S, T>, UpdateResultBody<S, T>, SelectResultBody<S, T>, ListTableResultTableBody<S, T>, NestListResultTableBody<S, T> {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class ResultBodyWithTotal<T> extends ResultBody<T> {
+
+    int total = 0;
+
+    public ResultBodyWithTotal() {
+    }
+
+    @NotNull
+    public static <T> ResultBodyWithTotal<T> build(T data, int total, String code, String message, boolean status) {
+        ResultBodyWithTotal<T> resultBodyWithTotal = new ResultBodyWithTotal<>();
+        resultBodyWithTotal.setData(data);
+        resultBodyWithTotal.setCode(code);
+        resultBodyWithTotal.setMessage(message);
+        resultBodyWithTotal.setStatus(status);
+        resultBodyWithTotal.setTotal(total);
+        return resultBodyWithTotal;
+    }
+
+    public static <T> @NotNull ResultBodyWithTotal<T> success(T data, int total) {
+        return ResultBodyWithTotal.build(data, total, String.valueOf(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), true);
+    }
 
 }

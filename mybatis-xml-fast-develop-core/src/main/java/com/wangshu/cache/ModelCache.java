@@ -52,7 +52,7 @@ public class ModelCache {
     public Field updatedField;
     public Field deletedField;
     public Field defaultOrderField;
-    public List<ColumnType> columnTypes;
+    public List<ColumnMetadata> columnMetadata;
     public DataBaseType dataBaseType;
     public SqlStyle sqlStyle;
     /**
@@ -73,12 +73,15 @@ public class ModelCache {
         this.fieldsMap = this.fields.stream().collect(Collectors.toMap(Field::getName, value -> value));
         this.baseFields = this.fields.stream().filter(field -> Objects.nonNull(field.getAnnotation(Column.class))).toList();
         this.initCriticalFields();
-        this.columnTypes = modelColumnType(modelClazz);
-        this.orderColumnPossibleParameterName = orderColumnPossibleParameterName(modelClazz);
-        this.deleteMethodPossibleWhereParameterName = deleteMethodPossibleWhereParameterName(modelClazz);
-        this.updateMethodPossibleWhereParameterName = this.deleteMethodPossibleWhereParameterName;
-        this.dataBaseType = modelClazz.getAnnotation(Model.class).dataBaseType();
-        this.sqlStyle = modelClazz.getAnnotation(Model.class).sqlStyle();
+        Model annotation = modelClazz.getAnnotation(Model.class);
+        if (Objects.nonNull(annotation)) {
+            this.columnMetadata = modelColumnType(modelClazz);
+            this.orderColumnPossibleParameterName = orderColumnPossibleParameterName(modelClazz);
+            this.deleteMethodPossibleWhereParameterName = deleteMethodPossibleWhereParameterName(modelClazz);
+            this.updateMethodPossibleWhereParameterName = this.deleteMethodPossibleWhereParameterName;
+            this.dataBaseType = annotation.dataBaseType();
+            this.sqlStyle = annotation.sqlStyle();
+        }
     }
 
     private void initCriticalFields() {
@@ -128,20 +131,19 @@ public class ModelCache {
         }
     }
 
-    private @NotNull List<ColumnType> modelColumnType(@NotNull Class<? extends BaseModel> modelClazz) {
-        List<ColumnType> columnTypes = new ArrayList<>();
+    private @NotNull List<ColumnMetadata> modelColumnType(@NotNull Class<? extends BaseModel> modelClazz) {
+        List<ColumnMetadata> columnMetadata = new ArrayList<>();
         Model annotation = modelClazz.getAnnotation(Model.class);
         if (Objects.nonNull(annotation)) {
             for (Field field : this.baseFields) {
-                columnTypes.add(new ColumnType(field));
+                columnMetadata.add(new ColumnMetadata(field));
             }
         }
-        return columnTypes;
+        return columnMetadata;
     }
 
     private @NotNull List<String> orderColumnPossibleParameterName(@NotNull Class<? extends BaseModel> modelClazz) {
         Model modelAnnotation = modelClazz.getAnnotation(Model.class);
-        assert Objects.nonNull(modelAnnotation);
         List<String> orderColumnPossibleParameterName = new ArrayList<>();
         for (Field clazzField : CommonTool.getClazzFields(modelClazz)) {
             String name = clazzField.getName();

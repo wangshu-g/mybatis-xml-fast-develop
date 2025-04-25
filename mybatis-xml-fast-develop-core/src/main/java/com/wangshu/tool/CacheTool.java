@@ -160,8 +160,8 @@ public class CacheTool {
         return getOrCreateModelCache(modelClazz).sqlStyle;
     }
 
-    public static @NotNull List<ColumnType> getModelColumnTypes(@NotNull Class<? extends BaseModel> modelClazz) {
-        return getOrCreateModelCache(modelClazz).columnTypes;
+    public static @NotNull List<ColumnMetadata> getModelColumnMetadata(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).columnMetadata;
     }
 
     public static @NotNull List<String> getModelOrderColumnPossibleParameterName(@NotNull Class<? extends BaseModel> modelClazz) {
@@ -193,9 +193,9 @@ public class CacheTool {
         return getOrCreateControllerCache(controllerClazz).serviceGeneric;
     }
 
-    public static @NotNull List<ColumnType> getControllerModelGenericColumnType(@NotNull Class<? extends BaseDataController> controllerClazz) {
+    public static @NotNull List<ColumnMetadata> getControllerModelGenericColumnMetadata(@NotNull Class<? extends BaseDataController> controllerClazz) {
         Class<? extends BaseModel> controllerModelGeneric = getControllerModelGeneric(controllerClazz);
-        return getModelColumnTypes(controllerModelGeneric);
+        return getModelColumnMetadata(controllerModelGeneric);
     }
 
 }

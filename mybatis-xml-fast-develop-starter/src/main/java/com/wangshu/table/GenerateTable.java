@@ -99,6 +99,12 @@ public abstract class GenerateTable extends ModelInfo {
         return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), field.getName());
     }
 
+    public ResultSet getTablesResultSetFromDatabaseMetaData(@NotNull Connection connection, String tableName) throws SQLException {
+        String catalog = connection.getCatalog();
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        return databaseMetaData.getTables(null, null, tableName, new String[]{"TABLE"});
+    }
+
     public void execute(@NotNull Connection connection) throws SQLException {
         log.info("当前数据源: {} {}", connection.getCatalog(), connection.getMetaData().getURL());
         List<String> names = this.getNames();
@@ -108,9 +114,7 @@ public abstract class GenerateTable extends ModelInfo {
         for (String tableName : names) {
             boolean flag = false;
             try {
-                String catalog = connection.getCatalog();
-                DatabaseMetaData databaseMetaData = connection.getMetaData();
-                ResultSet tables = databaseMetaData.getTables(null, null, tableName, new String[]{"TABLE"});
+                ResultSet tables = getTablesResultSetFromDatabaseMetaData(connection, tableName);
                 flag = tables.next();
                 if (flag) {
                     this.alterTable(connection, tableName);
@@ -136,11 +140,17 @@ public abstract class GenerateTable extends ModelInfo {
         log.info("");
     }
 
+    public ResultSet getColumnsResultSetFromDatabaseMetaData(@NotNull Connection connection, String tableName) throws SQLException {
+        String catalog = connection.getCatalog();
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        return databaseMetaData.getColumns(null, null, tableName, null);
+    }
+
     public void alterTable(@NotNull Connection connection, @NotNull String tableName) throws SQLException {
         log.info("表 {} 已存在", tableName);
         DatabaseMetaData databaseMetaData = connection.getMetaData();
         String catalog = connection.getCatalog();
-        ResultSet columnsResult = databaseMetaData.getColumns(null, null, tableName, null);
+        ResultSet columnsResult = getColumnsResultSetFromDatabaseMetaData(connection, tableName);
         Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap(this::getSqlStyleName, v -> v));
         while (columnsResult.next()) {
             String column = columnsResult.getString("COLUMN_NAME");
