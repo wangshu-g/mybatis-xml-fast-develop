@@ -83,6 +83,10 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
 
 ```
 
+## 视频使用演示
+
+https://www.bilibili.com/video/BV17t5kzNEU2
+
 ## 联系方式
 
 备注来意哦，欢迎一起开发适配
