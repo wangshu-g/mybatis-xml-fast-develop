@@ -85,6 +85,7 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
     private String apiDelete;
     private String apiList;
     private String apiNestList;
+    private String apiStruct;
     @Deprecated
     private String apiExport;
     @Deprecated
@@ -133,6 +134,7 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
         this.setApiDelete(ModelInfo.super.getApiDelete());
         this.setApiList(ModelInfo.super.getApiList());
         this.setApiNestList(ModelInfo.super.getApiNestList());
+        this.setApiStruct(ModelInfo.super.getApiStruct());
         this.setApiExport(ModelInfo.super.getApiExport());
         this.setApiImport(ModelInfo.super.getApiImport());
     }
