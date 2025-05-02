@@ -52,6 +52,7 @@ public class ModelCache {
     public Field updatedField;
     public Field deletedField;
     public Field defaultOrderField;
+    public Field deleteFlagField;
     public List<ColumnMetadata> columnMetadata;
     public DataBaseType dataBaseType;
     public SqlStyle sqlStyle;
@@ -117,6 +118,14 @@ public class ModelCache {
                         this.deletedField = baseField;
                     } else {
                         log.warn("存在多个DeletedAt标识字段");
+                    }
+                }
+                DeleteFlag deleteFlagAnnotation = baseField.getAnnotation(DeleteFlag.class);
+                if (Objects.nonNull(deleteFlagAnnotation)) {
+                    if (Objects.isNull(this.deleteFlagField)) {
+                        this.deleteFlagField = baseField;
+                    } else {
+                        log.warn("存在多个DeleteFlag标识字段");
                     }
                 }
                 DefaultOrder defaultOrderColumnAnnotation = baseField.getAnnotation(DefaultOrder.class);
