@@ -27,7 +27,7 @@ package com.wangshu.enu
  *
  **/
 enum class Condition {
-    equal, less, great, like, `in`, isNull, isNotNull, orEqual, orLess, orGreat, orLike, orIn, orIsNull, orIsNotNull, all;
+    equal, less, great, like, instr, `in`, isNull, isNotNull, orEqual, orLess, orGreat, orLike, orInstr, orIn, orIsNull, orIsNotNull, all;
 
     companion object {
         @JvmStatic
