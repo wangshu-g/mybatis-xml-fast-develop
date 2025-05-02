@@ -309,18 +309,35 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public Map<String, Object> softDeleteParamFilter(@NotNull Map<String, Object> map) {
-        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(getModelClazz())::contains)) {
+        Class<T> modelClazz = getModelClazz();
+        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(modelClazz)::contains)) {
             log.error("没有合法的软删除参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
-        Field modelDeletedField = CacheTool.getModelDeletedField(getModelClazz());
-        if (Objects.isNull(modelDeletedField)) {
-            log.error("未找到 DeletedAt 标注的字段");
-            throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+        Field modelDeletedField = CacheTool.getModelDeletedField(modelClazz);
+        boolean tempFlag = false;
+        if (Objects.nonNull(modelDeletedField)) {
+            tempFlag = true;
+            String newDeletedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeletedField.getName()));
+            if (Objects.isNull(map.get(newDeletedAtName))) {
+                map.put(newDeletedAtName, new Date());
+            }
         }
-        String newDeletedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeletedField.getName()));
-        if (Objects.isNull(map.get(newDeletedAtName))) {
-            map.put(newDeletedAtName, new Date());
+        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(modelClazz);
+        if (Objects.nonNull(modelDeleteFlagField)) {
+            if (modelDeleteFlagField.getType().equals(Boolean.class)) {
+                tempFlag = true;
+                String newDeleteFlagName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeleteFlagField.getName()));
+                if (Objects.isNull(map.get(newDeleteFlagName))) {
+                    map.put(newDeleteFlagName, true);
+                }
+            } else {
+                log.warn("DeleteFlag 标注字段必须为 Boolean 类DDeleteFlagDeleteFlagDeleteFlageleteFlag型");
+            }
+        }
+        if (!tempFlag) {
+            log.error("未找到 DeletedAt 或 DeleteFlag 标注的字段");
+            throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Field modelUpdatedField = CacheTool.getModelUpdatedField(getModelClazz());
         if (Objects.nonNull(modelUpdatedField)) {
