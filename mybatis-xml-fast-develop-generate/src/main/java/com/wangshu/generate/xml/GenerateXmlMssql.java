@@ -42,7 +42,7 @@ public class GenerateXmlMssql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
     }
 
     @Override
-    public String getLikeIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
+    public String getInstrIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
         return StrUtil.concat(false, orAndStr, "charindex(", this.wrapMybatisPrecompileStr(testConditionName), ",", this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), ") != 0");
     }
