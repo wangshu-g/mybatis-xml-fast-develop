@@ -30,12 +30,14 @@ import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnElementInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
 import com.wangshu.tool.CommonTool;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
-@lombok.Data
+@Data
 public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnElementInfo> {
 
     private Types typeUtils;
@@ -61,6 +63,7 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
     public ModelElementInfo(ModuleInfo moduleInfo, TypeElement metaData, Types typeUtils, boolean ignoreJoinFields) {
         this.setModuleInfo(moduleInfo);
         this.setMetaData(metaData);
+        this.setTypeUtils(typeUtils);
         this.initBaseInfo(moduleInfo, metaData, typeUtils, ignoreJoinFields);
         this.initFields(moduleInfo, metaData, typeUtils, ignoreJoinFields);
         this.initNameInfo();
@@ -82,17 +85,21 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
 
     public void initFields(ModuleInfo moduleInfo, TypeElement metaData, Types typeUtils, boolean ignoreJoinFields) {
         List<ColumnElementInfo> fields = new ArrayList<>();
-        while (metaData != null) {
+        DeclaredType owner = null;
+        while (Objects.nonNull(metaData)) {
             for (Element enclosedElement : metaData.getEnclosedElements()) {
                 if (enclosedElement instanceof VariableElement temp) {
                     if (Objects.nonNull(enclosedElement.getAnnotation(Column.class))) {
-                        fields.add(new ColumnElementInfo(temp, this));
+                        fields.add(new ColumnElementInfo(temp, this, owner));
                     } else if (Objects.nonNull(enclosedElement.getAnnotation(Join.class)) && !ignoreJoinFields) {
-                        fields.add(new ColumnElementInfo(temp, this));
+                        fields.add(new ColumnElementInfo(temp, this, null));
                     }
                 }
             }
-            if (metaData.getSuperclass() != null) {
+            if (Objects.nonNull(metaData.getSuperclass())) {
+                if (metaData.getSuperclass() instanceof DeclaredType temp) {
+                    owner = temp;
+                }
                 metaData = (TypeElement) typeUtils.asElement(metaData.getSuperclass());
             } else {
                 metaData = null;
