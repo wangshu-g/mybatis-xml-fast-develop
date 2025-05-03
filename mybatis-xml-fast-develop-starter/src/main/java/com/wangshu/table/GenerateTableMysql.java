@@ -66,8 +66,8 @@ public class GenerateTableMysql extends GenerateTable {
             String columnType = StrUtil.concat(false, this.getDbColumnType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             boolean defaultNullFlag = this.isDefaultNull(item);
             String columnNull = defaultNullFlag ? "null" : "not null";
-            boolean primaryKeyFlag = this.isPrimaryKey(item);
-            String columnAutoIncrement = (primaryKeyFlag && (item.getType().equals(Long.class) || item.getType().equals(Integer.class))) ? "auto_increment" : "";
+//            boolean primaryKeyFlag = this.isPrimaryKey(item);
+            String columnAutoIncrement = this.isAutoIncrement(item) ? "auto_increment" : "";
             String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
             String columnPrimary = this.isPrimaryKey(item) ? "primary key" : "";
             String columnEnd = index == this.getFields().size() - 1 ? "" : ",";

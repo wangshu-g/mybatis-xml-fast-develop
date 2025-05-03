@@ -24,13 +24,17 @@ package com.wangshu.table;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
+import com.wangshu.base.model.BaseModelWithDefaultFields;
 import com.wangshu.tool.CommonTool;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,6 +57,14 @@ public abstract class GenerateTable extends ModelInfo {
         super(clazz);
     }
 
+    public Type getGenericPrimaryType(@NotNull Field field) {
+        if (BaseModelWithDefaultFields.class.isAssignableFrom(this.getMetadata()) && StrUtil.equals(field.getName(), "id") && this.getMetadata().getGenericSuperclass() instanceof ParameterizedType temp) {
+            return Arrays.stream(temp.getActualTypeArguments()).toList().getFirst();
+        } else {
+            throw new IllegalArgumentException("Unsupported field: " + field);
+        }
+    }
+
     public String getDbColumnType(@NotNull Field field) {
         String dbColumnType = null;
         Column column = field.getAnnotation(Column.class);
@@ -60,13 +72,29 @@ public abstract class GenerateTable extends ModelInfo {
             dbColumnType = column.dbColumnType();
         }
         if (StrUtil.isBlank(dbColumnType)) {
-            dbColumnType = CommonTool.getDbColumnTypeByField(this.getDataBaseType(), field);
+            if (field.getType().equals(Object.class)) {
+                dbColumnType = CommonTool.getDbColumnTypeByJavaTypeName(this.getDataBaseType(), this.getGenericPrimaryType(field).getTypeName());
+            } else {
+                dbColumnType = CommonTool.getDbColumnTypeByField(this.getDataBaseType(), field);
+            }
         }
         return dbColumnType;
     }
 
     public int getDefaultLength(@NotNull Field field) {
         return CommonTool.getDefaultLengthByDbColumnType(this.getDataBaseType(), this.getDbColumnType(field).toUpperCase());
+    }
+
+    public boolean isAutoIncrement(@NotNull Field field) {
+        if (!this.isPrimaryKey(field)) {
+            return false;
+        }
+        if (field.getType().equals(Object.class)) {
+            String typeName = this.getGenericPrimaryType(field).getTypeName();
+            return StrUtil.equals(typeName, Long.class.getTypeName()) || StrUtil.equals(typeName, Integer.class.getTypeName());
+        } else {
+            return Objects.equals(field.getType(), Long.class);
+        }
     }
 
     public boolean isDefaultNull(@NotNull Field field) {
