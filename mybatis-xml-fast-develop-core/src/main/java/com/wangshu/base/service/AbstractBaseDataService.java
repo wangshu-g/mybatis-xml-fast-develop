@@ -390,7 +390,9 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         map.put(modelPrimaryField.getName(), id);
-        if (!column1.startsWith("new")) {
+        if (column1.startsWith("new")) {
+            map.put(column1, newValue);
+        } else {
             map.put(StrUtil.concat(false, "new", StrUtil.upperFirst(column1)), newValue);
         }
         return _update(map);
