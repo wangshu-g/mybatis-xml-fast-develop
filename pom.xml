@@ -17,6 +17,8 @@
 
     <packaging>pom</packaging>
 
+    <description>一个 mybatis-xml、spring boot 快速开发集合、mybatis-xml 编译期插件。</description>
+
     <modules>
         <module>mybatis-xml-fast-develop-core</module>
         <module>mybatis-xml-fast-develop-generate</module>
