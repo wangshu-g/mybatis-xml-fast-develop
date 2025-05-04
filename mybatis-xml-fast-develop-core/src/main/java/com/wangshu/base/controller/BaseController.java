@@ -25,13 +25,13 @@ package com.wangshu.base.controller;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
-import com.wangshu.exception.IException;
+import com.github.f4b6a3.ulid.UlidCreator;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -44,18 +44,37 @@ import java.util.UUID;
 public interface BaseController {
 
     default Map<String, Object> getRequestParams(@NotNull HttpServletRequest request) throws IOException {
+        Map<String, Object> params = new HashMap<>();
         if (StrUtil.equals(request.getMethod(), RequestMethod.POST.name())) {
-            Map<String, Object> jsonParams = JSON.parseObject(IoUtil.readUtf8(request.getInputStream()));
-            if (Objects.isNull(jsonParams)) {
-                jsonParams = new HashMap<>();
+            params = JSON.parseObject(IoUtil.read(request.getInputStream(), Charset.forName(request.getCharacterEncoding())));
+            if (Objects.isNull(params)) {
+                params = new HashMap<>();
             }
-            return jsonParams;
+            return params;
+        } else {
+            Map<String, String[]> paramMap = request.getParameterMap();
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String key = entry.getKey();
+                String[] values = entry.getValue();
+                if (values == null) {
+                    params.put(key, null);
+                } else if (values.length == 1) {
+                    params.put(key, values[0]);
+                } else {
+                    params.put(key, values);
+                }
+            }
         }
-        throw new IException(HttpStatus.BAD_REQUEST);
+        return params;
     }
 
+    @Deprecated
     default String getId() {
         return UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
+    default String getUlId() {
+        return UlidCreator.getUlid().toLowerCase();
     }
 
 }
