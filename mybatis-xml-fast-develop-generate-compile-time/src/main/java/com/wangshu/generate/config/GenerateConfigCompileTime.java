@@ -63,10 +63,8 @@ public class GenerateConfigCompileTime extends GenerateConfig {
     }
 
     /**
-     * <p>
-     * 和默认扫描 java 文件冲突，二者选其一（简单来说，默认是扫描未被编译的，开启这个是扫描已编译的，对于模块化分层开发会用到，解耦 model 模块）。
-     * 该值为 true 时，必须指定 {@link GenerateConfigCompileTime#scanClassFileModelPackage}，注意这里 {@link com.wangshu.annotation.Model} 对于包名的要求
-     * </p>
+     * <p>和默认扫描 java 文件冲突，二者选其一（简单来说，默认是扫描未被编译的，开启这个是扫描已编译的，对于模块化分层开发会用到，解耦 model 模块）。</p>
+     * <p>该值为 true 时，必须指定 {@link GenerateConfigCompileTime#scanClassFileModelPackage}，注意这里 {@link com.wangshu.annotation.Model} 对于包名的要求</p>
      **/
     private boolean scanClassFile = false;
     /**
@@ -77,7 +75,7 @@ public class GenerateConfigCompileTime extends GenerateConfig {
     /**
      * <p>强制覆盖 xml 文件</p>
      * <p>默认 false 避免覆盖被修改过的同名 xml 文件，推荐自定义 xml 文件放在 resources/mapper 文件夹下</p>
-     * <p>为 true 避免每次都要删除 resources/xxx-module-mapper</p>
+     * <p>为 true 则强制覆盖，避免每次都要删除 resources/xxx-module-mapper 中生成的 xml 文件</p>
      **/
     private boolean forceOverwriteXml = false;
 
