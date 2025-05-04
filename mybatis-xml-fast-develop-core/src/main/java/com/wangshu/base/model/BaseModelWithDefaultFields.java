@@ -44,11 +44,11 @@ public class BaseModelWithDefaultFields<T> extends BaseModel {
 
     @CreatedAt
     @Column
-    private Date createdAt;
+    private Date createdAt = new Date();
 
     @UpdatedAt
     @Column
-    private Date updatedAt;
+    private Date updatedAt = new Date();
 
     @DeletedAt
     @Column
@@ -56,6 +56,6 @@ public class BaseModelWithDefaultFields<T> extends BaseModel {
 
     @DeleteFlag
     @Column
-    private Boolean deleteFlag;
+    private Boolean deleteFlag = false;
 
 }
