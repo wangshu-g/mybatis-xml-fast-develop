@@ -29,7 +29,7 @@ import com.wangshu.base.service.BaseDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public interface UpdateResultBody<S extends BaseDataService<?, T>, T extends Bas
     /**
      * <p>更新</p>
      **/
-    @PostMapping("/update")
+    @RequestMapping("/update")
     @ResponseBody
     public default ResultBody<Object> update(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
         int line = this.getService()._update(this.getRequestParams(request));

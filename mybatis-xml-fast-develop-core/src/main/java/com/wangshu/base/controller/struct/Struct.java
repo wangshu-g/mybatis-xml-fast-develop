@@ -8,7 +8,7 @@ import com.wangshu.tool.CacheTool;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public interface Struct<S extends BaseDataService<?, T>, T extends BaseModel> ex
     /**
      * <p>实体结构信息</p>
      **/
-    @PostMapping("/struct")
+    @RequestMapping("/struct")
     @ResponseBody
     public default String struct(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
         return ResultBody.success(CacheTool.getControllerModelGenericColumnMetadata(this.getClass())).toJson();

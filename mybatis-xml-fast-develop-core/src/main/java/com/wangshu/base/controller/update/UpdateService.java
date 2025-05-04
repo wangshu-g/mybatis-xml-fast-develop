@@ -28,7 +28,7 @@ import com.wangshu.base.service.BaseDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public interface UpdateService<S extends BaseDataService<?, T>, T extends BaseMo
     /**
      * <p>查询一条</p>
      **/
-    @PostMapping("/update")
+    @RequestMapping("/update")
     @ResponseBody
     public default int update(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
         return this.getService()._update(this.getRequestParams(request));
