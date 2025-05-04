@@ -144,9 +144,18 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         if (StrUtil.isBlankIfStr(primaryValue) && modelPrimaryField.getType().equals(String.class)) {
             model.setModelAnyValueByFieldName(modelPrimaryField.getName(), getUlId());
         }
-        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        Class<T> modelClazz = getModelClazz();
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(modelClazz);
         if (Objects.nonNull(modelCreatedAtField)) {
             model.setModelAnyValueByFieldName(modelCreatedAtField.getName(), new Date());
+        }
+        Field modelUpdatedField = CacheTool.getModelUpdatedField(modelClazz);
+        if (Objects.nonNull(modelUpdatedField)) {
+            model.setModelAnyValueByFieldName(modelUpdatedField.getName(), new Date());
+        }
+        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(modelClazz);
+        if (Objects.nonNull(modelDeleteFlagField)) {
+            model.setModelAnyValueByFieldName(modelDeleteFlagField.getName(), false);
         }
         return model;
     }
@@ -339,14 +348,14 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             log.error("未找到 DeletedAt 或 DeleteFlag 标注的字段");
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        Field modelUpdatedField = CacheTool.getModelUpdatedField(getModelClazz());
+        Field modelUpdatedField = CacheTool.getModelUpdatedField(modelClazz);
         if (Objects.nonNull(modelUpdatedField)) {
             String newUpdatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelUpdatedField.getName()));
             if (Objects.isNull(map.get(newUpdatedAtName))) {
                 map.put(newUpdatedAtName, new Date());
             }
         }
-        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(modelClazz);
         if (Objects.nonNull(modelCreatedAtField)) {
             String newCreatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelCreatedAtField.getName()));
             map.remove(newCreatedAtName);
@@ -437,18 +446,19 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return Map<String, Object>
      **/
     public Map<String, Object> updateParamFilter(@NotNull Map<String, Object> map) {
-        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(getModelClazz())::contains)) {
+        Class<T> modelClazz = getModelClazz();
+        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(modelClazz)::contains)) {
             log.error("没有合法的更新参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
-        Field modelUpdatedField = CacheTool.getModelUpdatedField(getModelClazz());
+        Field modelUpdatedField = CacheTool.getModelUpdatedField(modelClazz);
         if (Objects.nonNull(modelUpdatedField)) {
             String newUpdatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelUpdatedField.getName()));
             if (Objects.isNull(map.get(newUpdatedAtName))) {
                 map.put(newUpdatedAtName, new Date());
             }
         }
-        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(modelClazz);
         if (Objects.nonNull(modelCreatedAtField)) {
             String newCreatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelCreatedAtField.getName()));
             map.remove(newCreatedAtName);
@@ -709,12 +719,13 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);
         String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? "" : map.get("orderColumn"));
-        if (!CacheTool.getModelOrderColumnPossibleParameterName(getModelClazz()).contains(orderColumn)) {
+        Class<T> modelClazz = getModelClazz();
+        if (!CacheTool.getModelOrderColumnPossibleParameterName(modelClazz).contains(orderColumn)) {
             map.remove("orderColumn");
             log.warn("orderColumn 参数无效,详细参数: {}", orderColumn);
-            Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(getModelClazz());
+            Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(modelClazz);
             if (Objects.nonNull(modelDefaultOrderField)) {
-                orderColumn = CommonTool.getNewStrBySqlStyle(CacheTool.getModelSqlStyle(getModelClazz()), modelDefaultOrderField.getName());
+                orderColumn = CommonTool.getNewStrBySqlStyle(CacheTool.getModelSqlStyle(modelClazz), modelDefaultOrderField.getName());
                 log.warn("存在 DefaultOrder 标识列, orderColumn 参数重设为: {}", orderColumn);
             }
         }
