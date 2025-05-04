@@ -1,8 +1,24 @@
 # mybatis-xml-fast-develop changelog
 
-+ ## 1.5.0
++ ## 1.5.1
 
 待推送
+
+DeleteFlag 删除标识，相关软删除兼容
+
+BaseModelWithDefaultFields 基类模型，附带常用默认字段，泛型主键
+
+添加 like 条件生成处理，原有 instr 方法保留
+
+com.wangshu.base.controller 内所有默认 @PostMapping 更改为 @RequestMapping，注意生产环境权限问题
+
+BaseService getUUID 方法标记为 Deprecated，添加 getUlId 替代使用
+
+fix：_update(P id, @NotNull String column1, Object newValue) 方法，参数处理错误
+
++ ## 1.5.0
+
+已推送 maven
 
 DataBaseType postgresql、oracle、mssql xml 生成、自动建表等相关支持
 
@@ -14,7 +30,7 @@ SqlStyle Snake Upper 风格支持
 
 + ## 1.4.0
 
-已发布
+已推送 maven
 
 修复自 1.2.0 编译时生成，scanClassFile = true 时（扫描已编译 model 模式）生成额外的 model bug
 
@@ -34,7 +50,7 @@ BaseDataService 添加 _saveUnCheckExist，保存但不校验是否真实存在
 
 + ## 1.3.0
 
-已发布
+已推送 maven
 
 添加使用示例模块 mybatis-xml-fast-develop-example
 
@@ -42,7 +58,7 @@ BaseDataService 添加 _saveUnCheckExist，保存但不校验是否真实存在
 
 + ## 1.2.0
 
-已发布
+已推送 maven
 
 引入编译期生成功能
 
@@ -54,10 +70,10 @@ BaseDataService 添加 _saveUnCheckExist，保存但不校验是否真实存在
 
 + ## 1.1.0
 
-已发布
+已推送 maven
 
 Query 支持，emm...
 
 + ## 1.0.0
 
-已发布
+已推送 maven
