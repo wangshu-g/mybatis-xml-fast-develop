@@ -24,14 +24,6 @@ package com.wangshu.base.controller;
 
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
-import com.wangshu.tool.CacheTool;
-import jakarta.servlet.http.HttpServletRequest;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Objects;
 
 public interface BaseDataController<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseController {
 
