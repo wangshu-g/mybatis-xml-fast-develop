@@ -30,10 +30,12 @@ import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.AbstractBaseDataService;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
+import com.wangshu.exception.IException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.type.JdbcType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.*;
@@ -278,6 +280,28 @@ public class CommonTool {
 
     public static @NotNull JdbcType getJdbcTypeByJavaTypeName(@NotNull String javaTypeName) {
         return MybatisJdbcTypeMapInfo.getJdbcTypeForJavaTypeName(javaTypeName);
+    }
+
+    @NotNull
+    public static <T> String getPropertyFuncFieldName(PropertyFunc<T, ?> func) {
+        try {
+            Method writeReplace = func.getClass().getDeclaredMethod("writeReplace");
+            writeReplace.setAccessible(true);
+            SerializedLambda lambda = (SerializedLambda) writeReplace.invoke(func);
+            String methodName = lambda.getImplMethodName();
+            if (methodName.startsWith("get")) {
+                methodName = methodName.substring(3);
+            } else if (methodName.startsWith("is")) {
+                methodName = methodName.substring(2);
+            } else {
+                log.error("不是一个getter方法");
+                throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+        } catch (Exception e) {
+            log.error("无法解析该属性名", e);
+            throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

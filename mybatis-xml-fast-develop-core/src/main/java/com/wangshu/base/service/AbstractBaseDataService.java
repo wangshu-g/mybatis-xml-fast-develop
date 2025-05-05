@@ -25,6 +25,7 @@ package com.wangshu.base.service;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.base.query.CommonQueryParam;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.exception.IException;
 import com.wangshu.tool.CacheTool;
@@ -520,6 +521,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return _select(model.safeToMap());
     }
 
+    public @Nullable T _select(@NotNull CommonQueryParam<T> query) {
+        return _select(query.safeToMap());
+    }
+
     /**
      * <p>查询1条</p>
      *
@@ -602,6 +607,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return _getListWithOutLimit(model.safeToMap());
     }
 
+    public @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull CommonQueryParam<T> query) {
+        return _getListWithOutLimit(query.safeToMap());
+    }
+
     public @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Object... keyValuesArray) {
         return _getListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
     }
@@ -614,6 +623,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     public @NotNull List<Map<String, Object>> _getList(@NotNull T model) {
         return _getList(model.safeToMap());
+    }
+
+    public @NotNull List<Map<String, Object>> _getList(@NotNull CommonQueryParam<T> query) {
+        return _getList(query.safeToMap());
     }
 
     /**
@@ -662,6 +675,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return _getNestList(model.safeToMap());
     }
 
+    public @NotNull List<T> _getNestList(@NotNull CommonQueryParam<T> query) {
+        return _getNestList(query.safeToMap());
+    }
+
     public @NotNull List<T> _getNestList(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
@@ -690,6 +707,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     public @NotNull List<T> _getNestListWithOutLimit(@NotNull T model) {
         return _getNestListWithOutLimit(model.safeToMap());
+    }
+
+    public @NotNull List<T> _getNestListWithOutLimit(@NotNull CommonQueryParam<T> query) {
+        return _getNestListWithOutLimit(query.safeToMap());
     }
 
     public @NotNull List<T> _getNestListWithOutLimit(@NotNull Object... keyValuesArray) {
@@ -818,7 +839,11 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         int length = keyValuesArray.length;
         for (int i = 0; i < keyValuesArray.length; i++) {
             if (i % 2 == 0 && length >= i + 1) {
-                map.put(String.valueOf(keyValuesArray[i]), keyValuesArray[i + 1]);
+                Object key = keyValuesArray[i];
+                Object value = keyValuesArray[i + 1];
+                if (key instanceof String temp) {
+                    map.put(temp, value);
+                }
             }
         }
         return map;
