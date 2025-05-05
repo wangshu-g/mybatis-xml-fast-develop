@@ -30,6 +30,7 @@ import com.wangshu.enu.DataBaseType;
 import com.wangshu.exception.IException;
 import com.wangshu.tool.CacheTool;
 import com.wangshu.tool.CommonTool;
+import com.wangshu.tool.KeyValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mybatis.spring.MyBatisSystemException;
@@ -645,16 +646,16 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     /**
      * <p>查询列表</p>
      *
-     * @param keyValues 键值对,偶数长度。key, value, key, value...
+     * @param keyValuesArray 键值对,偶数长度。key, value, key, value...
      * @return List<Map < String, Object>>
      **/
-    public @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValues) {
+    public @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValuesArray) {
         Map<String, Object> map = new HashMap<>();
-        if (keyValues.length > 0) {
-            int length = keyValues.length;
-            for (int i = 0; i < keyValues.length; i++) {
+        if (keyValuesArray.length > 0) {
+            int length = keyValuesArray.length;
+            for (int i = 0; i < keyValuesArray.length; i++) {
                 if (i % 2 == 0 && length >= i + 1) {
-                    map.put(String.valueOf(keyValues[i]), keyValues[i + 1]);
+                    map.put(String.valueOf(keyValuesArray[i]), keyValuesArray[i + 1]);
                 }
             }
             return _getList(map);
@@ -800,6 +801,23 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return getMapper()._getTotal(map);
     }
 
+    @Override
+    public int _getTotal(@NotNull T model) {
+        return _getTotal(model.safeToMap());
+    }
+
+    @Override
+    public int _getTotal(@NotNull CommonQueryParam<T> query) {
+        return _getTotal(query.safeToMap());
+    }
+
+    @Override
+    public int _getTotal(String column, Object value) {
+        Map<String, Object> map = new HashMap<>(1);
+        map.put(column, value);
+        return _getTotal(map);
+    }
+
     public int _getTotal(@NotNull Object... keyValuesArray) {
         return _getTotal(keyValuesArrayParamsToMap(keyValuesArray));
     }
@@ -837,12 +855,33 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     public Map<String, Object> keyValuesArrayParamsToMap(@NotNull Object... keyValuesArray) {
         Map<String, Object> map = new HashMap<>();
         int length = keyValuesArray.length;
+        boolean isKV = false;
         for (int i = 0; i < keyValuesArray.length; i++) {
-            if (i % 2 == 0 && length >= i + 1) {
-                Object key = keyValuesArray[i];
-                Object value = keyValuesArray[i + 1];
-                if (key instanceof String temp) {
-                    map.put(temp, value);
+            if (isKV) {
+                Object current = keyValuesArray[i];
+                if (current instanceof KeyValue temp) {
+                    map.put(temp.getKey(), temp.getValue());
+                } else {
+                    log.error("使用 KV 时所有参数必须全部是 KeyValue 对象");
+                    throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                if (i % 2 == 0 && length >= i + 1) {
+                    Object key = keyValuesArray[i];
+                    if (key instanceof String temp) {
+                        Object value = keyValuesArray[i + 1];
+                        map.put(temp, value);
+                    } else if (key instanceof KeyValue temp) {
+                        if (i != 0) {
+                            log.error("使用 KV 时所有参数必须全部是 KeyValue 对象");
+                            throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
+                        map.put(temp.getKey(), temp.getValue());
+                        isKV = true;
+                    } else {
+                        log.error("key 类型错误");
+                        throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
                 }
             }
         }

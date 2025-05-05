@@ -283,7 +283,7 @@ public class CommonTool {
     }
 
     @NotNull
-    public static <T> String getPropertyFuncFieldName(PropertyFunc<T, ?> func) {
+    public static <T, R> String getFuncFieldName(PropertyFunc<T, R> func) {
         try {
             Method writeReplace = func.getClass().getDeclaredMethod("writeReplace");
             writeReplace.setAccessible(true);
