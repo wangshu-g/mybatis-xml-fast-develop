@@ -502,6 +502,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         if (map.isEmpty()) {
             throw new IException(HttpStatus.BAD_REQUEST);
         }
+        map = deleteFlagParamFilter(map);
         return map;
     }
 
@@ -695,7 +696,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return _getNestListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
     }
 
-    public Map<String, Object> listParamFilter(@NotNull Map<String, Object> map) {
+    /**
+     * <p>分页参数过滤，可能存在的 sql 注入过滤，若分页参数不存在或不合法，则重设为 pageIndex = 1, pageSize = 10</p>
+     **/
+    public @NotNull Map<String, Object> limitParamFilter(@NotNull Map<String, Object> map) {
         long pageIndex;
         try {
             pageIndex = Long.parseLong(String.valueOf(map.get("pageIndex")));
@@ -718,9 +722,17 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);
+        return map;
+    }
+
+    /**
+     * <p>排序参数过滤，可能存在的 sql 注入过滤，若存在 {@link com.wangshu.annotation.DefaultOrder} 标识列，并且排序参数不合法，则重设为排序标识列</p>
+     **/
+    public @NotNull Map<String, Object> orderParamFilter(@NotNull Map<String, Object> map) {
         String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? "" : map.get("orderColumn"));
         Class<T> modelClazz = getModelClazz();
-        if (!CacheTool.getModelOrderColumnPossibleParameterName(modelClazz).contains(orderColumn)) {
+        List<String> modelOrderColumnPossibleParameterName = CacheTool.getModelOrderColumnPossibleParameterName(modelClazz);
+        if (!modelOrderColumnPossibleParameterName.contains(orderColumn)) {
             map.remove("orderColumn");
             log.warn("orderColumn 参数无效,详细参数: {}", orderColumn);
             Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(modelClazz);
@@ -739,12 +751,31 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return map;
     }
 
+    /**
+     * <p>若存在 {@link com.wangshu.annotation.DeleteFlag} 标识列，并且没有显式指定标识列的值，则设为 false，仅查询未删除数据</p>
+     **/
+    public @NotNull Map<String, Object> deleteFlagParamFilter(@NotNull Map<String, Object> map) {
+        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(getModelClazz());
+        if (Objects.nonNull(modelDeleteFlagField) && Objects.isNull(map.get(modelDeleteFlagField.getName()))) {
+            map.put(modelDeleteFlagField.getName(), false);
+        }
+        return map;
+    }
+
+    public Map<String, Object> listParamFilter(@NotNull Map<String, Object> map) {
+        map = limitParamFilter(map);
+        map = orderParamFilter(map);
+        map = deleteFlagParamFilter(map);
+        return map;
+    }
+
     public boolean listValidate(@NotNull Map<String, Object> map) {
         return true;
     }
 
     @Override
     public int _getTotal(@NotNull Map<String, Object> map) {
+        map = deleteFlagParamFilter(map);
         return getMapper()._getTotal(map);
     }
 
