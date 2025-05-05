@@ -1,13 +1,12 @@
 package com.test.model;
 
 import com.wangshu.annotation.Column;
-import com.wangshu.annotation.Model;
 import com.wangshu.annotation.Join;
+import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import java.util.Date;
 
