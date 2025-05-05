@@ -212,7 +212,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Transactional(rollbackFor = Exception.class)
     public int _delete(@NotNull Object... keyValuesArray) {
-        return _delete(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _delete(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -314,7 +314,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Transactional(rollbackFor = Exception.class)
     public int _softDelete(@NotNull Object... keyValuesArray) {
-        return _softDelete(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _softDelete(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public Map<String, Object> softDeleteParamFilter(@NotNull Map<String, Object> map) {
@@ -436,7 +436,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Transactional(rollbackFor = Exception.class)
     public int _update(@NotNull Object... keyValuesArray) {
-        return _update(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _update(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -558,7 +558,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @Nullable T _select(@NotNull Object... keyValuesArray) {
-        return _select(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _select(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -603,7 +603,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return _getListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _getListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -669,7 +669,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @NotNull List<T> _getNestList(@NotNull Object... keyValuesArray) {
-        return _getNestList(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _getNestList(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public @NotNull List<T> _getNestListWithOutLimit(@NotNull Map<String, Object> map) {
@@ -693,7 +693,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @NotNull List<T> _getNestListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return _getNestListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _getNestListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -780,7 +780,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public int _getTotal(@NotNull Object... keyValuesArray) {
-        return _getTotal(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _getTotal(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public int _getTotal() {
@@ -813,7 +813,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return CacheTool.getModelPrimaryField(getModelClazz());
     }
 
-    public Map<String, Object> keyValuesArrayParamssafeToMap(@NotNull Object... keyValuesArray) {
+    public Map<String, Object> keyValuesArrayParamsToMap(@NotNull Object... keyValuesArray) {
         Map<String, Object> map = new HashMap<>();
         int length = keyValuesArray.length;
         for (int i = 0; i < keyValuesArray.length; i++) {
