@@ -136,7 +136,7 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
 
     @NotNull List<Map<String, Object>> _getList(String column, Object value);
 
-    @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValues);
+    @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValuesArray);
 
     /**
      * <p>查询嵌套列表</p>
@@ -161,9 +161,15 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
 
     @NotNull List<T> _getNestList(String column, Object value);
 
-    @NotNull List<T> _getNestList(@NotNull Object... keyValues);
+    @NotNull List<T> _getNestList(@NotNull Object... keyValuesArray);
 
     int _getTotal(@NotNull Map<String, Object> map);
+
+    int _getTotal(@NotNull T model);
+
+    int _getTotal(@NotNull CommonQueryParam<T> query);
+
+    int _getTotal(String column, Object value);
 
     int _getTotal(@NotNull Object... keyValuesArray);
 
