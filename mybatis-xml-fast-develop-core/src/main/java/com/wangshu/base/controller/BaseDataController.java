@@ -35,16 +35,6 @@ import java.util.Objects;
 
 public interface BaseDataController<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseController {
 
-    @Override
-    default Map<String, Object> getRequestParams(@NotNull HttpServletRequest request) throws IOException {
-        Map<String, Object> params = BaseController.super.getRequestParams(request);
-        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(CacheTool.getControllerModelGeneric(this.getClass()));
-        if (Objects.nonNull(modelDeleteFlagField)) {
-            params.put(modelDeleteFlagField.getName(), 0);
-        }
-        return params;
-    }
-
     S getService();
 
     T getModel();
