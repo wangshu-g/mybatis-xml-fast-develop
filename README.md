@@ -2,7 +2,7 @@
 
 ## 介绍
 
-一个 mybatis-xml、spring boot 快速开发集合、mybatis-xml 编译期插件。
+一个 mybatis-xml、spring boot 快速开发集合、mybatis-xml 编译期类似 lombok 的插件。
 
 引入依赖、注解后，仅需实体，无需其他代码，直接一键启动
 
