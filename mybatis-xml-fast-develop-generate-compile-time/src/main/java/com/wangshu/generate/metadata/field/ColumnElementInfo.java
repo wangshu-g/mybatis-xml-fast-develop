@@ -27,7 +27,7 @@ import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.generate.metadata.model.ModelElementInfo;
-import com.wangshu.tool.*;
+import com.wangshu.tool.CommonTool;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +36,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +46,10 @@ import java.util.Objects;
 @lombok.Data
 public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, ModelElementInfo> {
 
-    public ColumnElementInfo(VariableElement metaData, ModelElementInfo model) {
+    private DeclaredType owner;
+
+    public ColumnElementInfo(@NotNull VariableElement metaData, @NotNull ModelElementInfo model, @Nullable DeclaredType owner) {
+        this.setOwner(owner);
         this.setMetaData(metaData);
         this.setModel(model);
         this.initBaseInfo(metaData, model);
@@ -56,7 +60,8 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
     public void initBaseInfo(@NotNull VariableElement metaData, ModelElementInfo model) {
         this.setName(metaData.getSimpleName().toString());
         this.setSqlStyleName(this.initSqlStyleName(metaData, model));
-        this.setJavaTypeName(metaData.asType().toString());
+        this.setJavaTypeName(this.initJavaTyeName(metaData));
+        this.initJavaTyeName(metaData);
     }
 
     @Override
@@ -90,6 +95,20 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
             this.setJoinType(this.getJoin().joinType());
             this.setJoinCondition(this.getJoin().joinCondition());
             this.setInfix(this.getJoin().infix());
+        }
+    }
+
+    private String initJavaTyeName(@NotNull VariableElement field) {
+        TypeMirror type = field.asType();
+        if (Objects.equals(type.getKind(), TypeKind.DECLARED)) {
+            return type.toString();
+        } else if (Objects.equals(type.getKind(), TypeKind.TYPEVAR)) {
+            if (Objects.isNull(this.getOwner())) {
+                throw new IllegalArgumentException("Unsupported typeKind: " + type.getKind().toString());
+            }
+            return this.getOwner().getTypeArguments().getFirst().toString();
+        } else {
+            throw new IllegalArgumentException("Unsupported typeKind: " + type.getKind().toString());
         }
     }
 

@@ -198,6 +198,10 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
         return StrUtil.concat(false, "/", this.getModelName(), "/getNestList");
     }
 
+    default String getApiStruct() {
+        return StrUtil.concat(false, "/", this.getModelName(), "/struct");
+    }
+
     @Deprecated
     default String getApiExport() {
         return StrUtil.concat(false, "/", this.getModelName(), "/exportExcel");

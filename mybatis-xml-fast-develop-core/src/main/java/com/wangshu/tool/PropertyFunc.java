@@ -1,4 +1,4 @@
-package com.wangshu.base.controller.update;
+package com.wangshu.tool;
 
 // MIT License
 //
@@ -22,28 +22,9 @@ package com.wangshu.base.controller.update;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.model.BaseModel;
-import com.wangshu.base.result.ResultBody;
-import com.wangshu.base.service.BaseDataService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import java.io.Serializable;
 
-import java.io.IOException;
-
-public interface UpdateResultBody<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
-
-    /**
-     * <p>更新</p>
-     **/
-    @RequestMapping("/update")
-    @ResponseBody
-    public default ResultBody<Object> update(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
-        int line = this.getService()._update(this.getRequestParams(request));
-        return line > 0 ? ResultBody.success(line) : ResultBody.error("更新失败");
-    }
-
+@FunctionalInterface
+public interface PropertyFunc<T, R> extends Serializable {
+    R apply(T t);
 }

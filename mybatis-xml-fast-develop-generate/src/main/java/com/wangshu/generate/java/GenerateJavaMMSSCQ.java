@@ -309,6 +309,19 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                 .addModifiers(Modifier.PUBLIC)
                 .superclass(parameterizedTypeName);
 
+        AnnotationSpec lombokDataAnnotation = GenerateJavaUtil.generateAnnotationSpec(Data.class);
+        typeSpec.addAnnotation(lombokDataAnnotation);
+
+        AnnotationSpec.Builder accessorsAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Accessors.class);
+        accessorsAnnotation.addMember("chain", "$L", true);
+
+        typeSpec.addAnnotation(accessorsAnnotation.build());
+
+        AnnotationSpec.Builder equalsAndHashCodeAnnotation = GenerateJavaUtil.generateAnnotationBuilder(EqualsAndHashCode.class);
+        equalsAndHashCodeAnnotation.addMember("callSuper", "$L", true);
+
+        typeSpec.addAnnotation(equalsAndHashCodeAnnotation.build());
+
         for (F item : this.getModel().getFields()) {
             if (item.isBaseField()) {
                 List<Condition> conditions = item.getConditions();

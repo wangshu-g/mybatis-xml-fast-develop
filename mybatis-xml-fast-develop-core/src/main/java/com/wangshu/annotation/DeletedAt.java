@@ -28,6 +28,7 @@ import java.lang.annotation.*;
  * @author wangshu-g
  *
  * <p>标记伪删除时间字段</p>
+ * <p>注意该字段类型只能为 {@link Boolean} 类型，大多数数据库会映射为 tinyint 类型</p>
  **/
 @Documented
 @Target(ElementType.FIELD)

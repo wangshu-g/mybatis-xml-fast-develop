@@ -23,6 +23,9 @@ package com.wangshu.base.service;
 // SOFTWARE.
 
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.base.query.CommonQueryParam;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -38,31 +41,31 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
      *
      * @param model 实体类
      **/
-    int _save(T model);
+    int _save(@NotNull T model);
 
-    int _save(Map<String, Object> map);
+    int _save(@NotNull Map<String, Object> map);
 
     int _saveUnCheckExist(T model);
 
-    int _saveUnCheckExist(Map<String, Object> map);
+    int _saveUnCheckExist(@NotNull Map<String, Object> map);
 
     /**
      * <p>批量保存</p>
      *
      * @param modelList 实体类列表
      **/
-    int _batchSave(List<T> modelList);
+    int _batchSave(@NotNull List<T> modelList);
 
     /**
      * <p>删除</p>
      *
      * @param map {columnName : value}
      **/
-    int _delete(Map<String, Object> map);
+    int _delete(@NotNull Map<String, Object> map);
 
-    int _delete(Object... keyValuesArray);
+    int _delete(@NotNull Object... keyValuesArray);
 
-    int _delete(T model);
+    int _delete(@NotNull T model);
 
     int _delete(P id);
 
@@ -71,13 +74,13 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
      *
      * @param map {columnName : value}
      **/
-    int _update(Map<String, Object> map);
+    int _update(@NotNull Map<String, Object> map);
 
     int _update(P id, String column1, Object newValue);
 
-    int _update(T model);
+    int _update(@NotNull T model);
 
-    int _update(Object... keyValuesArray);
+    int _update(@NotNull Object... keyValuesArray);
 
     /**
      * <p>软删除</p>
@@ -85,74 +88,90 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
      * @param map {conditionName : value}
      * @return int
      **/
-    int _softDelete(Map<String, Object> map);
+    int _softDelete(@NotNull Map<String, Object> map);
 
     int _softDelete(P id);
 
-    int _softDelete(T model);
+    int _softDelete(@NotNull T model);
 
-    int _softDelete(Object... keyValuesArray);
+    int _softDelete(@NotNull Object... keyValuesArray);
 
     /**
      * <p>查询1条</p>
      *
      * @param map {columnName : value}
      **/
-    T _select(Map<String, Object> map);
+    @Nullable T _select(@NotNull Map<String, Object> map);
 
-    T _select(T model);
+    @Nullable T _select(@NotNull T model);
 
-    T _select(P id);
+    @Nullable T _select(@NotNull CommonQueryParam<T> query);
 
-    T _select(String column1, Object param1, String column2, Object param2);
+    @Nullable T _select(P id);
 
-    T _select(Object... keyValuesArray);
+    @Nullable T _select(String column1, Object param1, String column2, Object param2);
+
+    @Nullable T _select(@NotNull Object... keyValuesArray);
 
     /**
      * <p>查询列表</p>
      *
      * @param map {columnName : value}
      **/
-    List<Map<String, Object>> _getList(Map<String, Object> map);
+    @NotNull List<Map<String, Object>> _getList(@NotNull Map<String, Object> map);
 
-    List<Map<String, Object>> _getListWithOutLimit(Map<String, Object> map);
+    @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Map<String, Object> map);
 
-    List<Map<String, Object>> _getListWithOutLimit(String column, Object value);
+    @NotNull List<Map<String, Object>> _getListWithOutLimit(String column, Object value);
 
-    List<Map<String, Object>> _getListWithOutLimit(T model);
+    @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull T model);
 
-    List<Map<String, Object>> _getListWithOutLimit(Object... keyValuesArray);
+    @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull CommonQueryParam<T> query);
 
-    List<Map<String, Object>> _getList(T model);
+    @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Object... keyValuesArray);
 
-    List<Map<String, Object>> _getList(String column, Object value);
+    @NotNull List<Map<String, Object>> _getList(@NotNull T model);
 
-    List<Map<String, Object>> _getList(Object... keyValues);
+    @NotNull List<Map<String, Object>> _getList(@NotNull CommonQueryParam<T> query);
+
+    @NotNull List<Map<String, Object>> _getList(String column, Object value);
+
+    @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValuesArray);
 
     /**
      * <p>查询嵌套列表</p>
      *
      * @param map {columnName : value}
      **/
-    List<T> _getNestList(Map<String, Object> map);
+    @NotNull List<T> _getNestList(@NotNull Map<String, Object> map);
 
-    List<T> _getNestListWithOutLimit(Map<String, Object> map);
+    @NotNull List<T> _getNestListWithOutLimit(@NotNull Map<String, Object> map);
 
-    List<T> _getNestListWithOutLimit(String column, Object value);
+    @NotNull List<T> _getNestListWithOutLimit(String column, Object value);
 
-    List<T> _getNestListWithOutLimit(T model);
+    @NotNull List<T> _getNestListWithOutLimit(@NotNull T model);
 
-    List<T> _getNestListWithOutLimit(Object... keyValuesArray);
+    @NotNull List<T> _getNestListWithOutLimit(@NotNull CommonQueryParam<T> query);
 
-    List<T> _getNestList(T model);
+    @NotNull List<T> _getNestListWithOutLimit(@NotNull Object... keyValuesArray);
 
-    List<T> _getNestList(String column, Object value);
+    @NotNull List<T> _getNestList(@NotNull T model);
 
-    List<T> _getNestList(Object... keyValues);
+    @NotNull List<T> _getNestList(@NotNull CommonQueryParam<T> query);
 
-    int _getTotal(Map<String, Object> map);
+    @NotNull List<T> _getNestList(String column, Object value);
 
-    int _getTotal(Object... keyValuesArray);
+    @NotNull List<T> _getNestList(@NotNull Object... keyValuesArray);
+
+    int _getTotal(@NotNull Map<String, Object> map);
+
+    int _getTotal(@NotNull T model);
+
+    int _getTotal(@NotNull CommonQueryParam<T> query);
+
+    int _getTotal(String column, Object value);
+
+    int _getTotal(@NotNull Object... keyValuesArray);
 
     int _getTotal();
 

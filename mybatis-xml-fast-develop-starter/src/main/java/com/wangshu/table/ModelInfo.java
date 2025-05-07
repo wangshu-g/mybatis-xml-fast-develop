@@ -57,6 +57,7 @@ public abstract class ModelInfo {
     }
 
     public void init(@NotNull Class<?> clazz) {
+        this.metadata = clazz;
         this.modelAnnotation = clazz.getAnnotation(Model.class);
         this.dataBaseType = modelAnnotation.dataBaseType();
         this.sqlStyle = this.modelAnnotation.sqlStyle();
@@ -69,7 +70,7 @@ public abstract class ModelInfo {
 
     public void initFields(Class<?> clazz) {
         List<Field> fields = new ArrayList<>();
-        while (clazz != null) {
+        while (Objects.nonNull(clazz)) {
             for (Field field : clazz.getDeclaredFields()) {
                 if (Objects.nonNull(field.getAnnotation(Column.class))) {
                     fields.add(field);

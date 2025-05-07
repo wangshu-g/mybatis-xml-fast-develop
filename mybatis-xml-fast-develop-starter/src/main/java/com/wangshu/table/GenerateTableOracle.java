@@ -103,7 +103,7 @@ public class GenerateTableOracle extends GenerateTable {
             boolean primaryKeyFlag = this.isPrimaryKey(item);
 //            String columnAutoIncrement = (primaryKeyFlag && (item.getType().equals(Long.class) || item.getType().equals(Integer.class))) ? "generated always as identity start with 1 increment by 1" : "";
 //            String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
-            String columnPrimary = this.isPrimaryKey(item) ? "primary key" : "";
+            String columnPrimary = primaryKeyFlag ? "primary key" : "";
             String columnEnd = index == this.getFields().size() - 1 ? "" : ",";
             sql = StrUtil.concat(false, sql,
                     "\"",

@@ -8,7 +8,7 @@
     <parent>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop</artifactId>
-        <version>1.5.0</version>
+        <version>1.5.1</version>
     </parent>
 
     <artifactId>mybatis-xml-fast-develop-generate</artifactId>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>io.github.wangshu-g</groupId>
             <artifactId>mybatis-xml-fast-develop-core</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->

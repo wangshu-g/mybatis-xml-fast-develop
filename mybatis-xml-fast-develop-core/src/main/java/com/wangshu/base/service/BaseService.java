@@ -22,6 +22,8 @@ package com.wangshu.base.service;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import com.github.f4b6a3.ulid.UlidCreator;
+
 import java.util.UUID;
 
 /**
@@ -30,8 +32,13 @@ import java.util.UUID;
  */
 public interface BaseService {
 
+    @Deprecated
     default String getUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
+    default String getUlId() {
+        return UlidCreator.getUlid().toLowerCase();
     }
 
 }

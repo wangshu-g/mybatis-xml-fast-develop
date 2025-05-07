@@ -607,6 +607,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     }
 
     private final List<Condition> normalConditionList = List.of(Condition.equal, Condition.orEqual, Condition.less, Condition.orLess, Condition.great, Condition.orGreat);
+    private final List<Condition> instrConditionList = List.of(Condition.instr, Condition.orInstr);
     private final List<Condition> likeConditionList = List.of(Condition.like, Condition.orLike);
     private final List<Condition> inConditionList = List.of(Condition.in, Condition.orIn);
     private final List<Condition> nullConditionList = List.of(Condition.isNull, Condition.orIsNull, Condition.isNotNull, Condition.orIsNotNull);
@@ -618,6 +619,8 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             ifText = this.getNormalIfText(table, columnName, this.getConditionStr(condition), testConditionName, isAndStr);
         } else if (likeConditionList.contains(condition)) {
             ifText = this.getLikeIfText(table, columnName, testConditionName, isAndStr);
+        } else if (instrConditionList.contains(condition)) {
+            ifText = this.getInstrIfText(table, columnName, testConditionName, isAndStr);
         } else if (inConditionList.contains(condition)) {
             String orAndStr = condition.name().indexOf("or") == 0 ? "or " : "and ";
             String itemText = StrUtil.concat(false, testConditionName, "Item");
@@ -703,6 +706,11 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     }
 
     public String getLikeIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
+        String orAndStr = isAndStr ? "and " : "or ";
+        return StrUtil.concat(false, orAndStr, this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), " like concat(", this.wrapMybatisPrecompileStr(testConditionName), ", '%')");
+    }
+
+    public String getInstrIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
         return StrUtil.concat(false, orAndStr, "instr(", this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), ",", this.wrapMybatisPrecompileStr(testConditionName), ") > 0");
     }

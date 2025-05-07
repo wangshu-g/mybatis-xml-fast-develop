@@ -1,5 +1,6 @@
 package com.wangshu.base.controller;
 
+// MIT License
 //
 // Copyright (c) 2025 2560334673@qq.com wangshu-g https://github.com/wangshu-g/mybatis-xml-fast-develop
 //

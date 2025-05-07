@@ -1,7 +1,7 @@
 package com.module1.mapper;
 
-import com.wangshu.base.mapper.BaseDataMapper;
 import com.module1.model.Module1;
+import com.wangshu.base.mapper.BaseDataMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

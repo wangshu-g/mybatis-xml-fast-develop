@@ -13,9 +13,11 @@
 
     <groupId>io.github.wangshu-g</groupId>
     <artifactId>mybatis-xml-fast-develop</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
 
     <packaging>pom</packaging>
+
+    <description>一个 mybatis-xml、spring boot 快速开发集合、mybatis-xml 编译期插件。</description>
 
     <modules>
         <module>mybatis-xml-fast-develop-core</module>
@@ -59,6 +61,7 @@
         <mybatis-spring.version>3.0.3</mybatis-spring.version>
         <fastjson.version>2.0.51</fastjson.version>
         <hutool.version>5.8.25</hutool.version>
+        <ulid.version>5.2.3</ulid.version>
     </properties>
 
     <dependencyManagement>
@@ -95,6 +98,12 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.f4b6a3</groupId>
+                <artifactId>ulid-creator</artifactId>
+                <version>${ulid.version}</version>
             </dependency>
 
         </dependencies>

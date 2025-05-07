@@ -6,7 +6,6 @@ import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import java.util.Date;
 

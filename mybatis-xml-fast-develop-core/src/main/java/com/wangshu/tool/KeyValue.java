@@ -1,4 +1,4 @@
-package com.wangshu.base.controller.update;
+package com.wangshu.tool;
 
 // MIT License
 //
@@ -22,28 +22,36 @@ package com.wangshu.base.controller.update;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import com.wangshu.base.controller.BaseDataController;
-import com.wangshu.base.model.BaseModel;
-import com.wangshu.base.result.ResultBody;
-import com.wangshu.base.service.BaseDataService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import lombok.Data;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+@Data
+public class KeyValue<T, R> {
 
-public interface UpdateResultBody<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
+    private final String key;
+    private final Object value;
 
-    /**
-     * <p>更新</p>
-     **/
-    @RequestMapping("/update")
-    @ResponseBody
-    public default ResultBody<Object> update(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
-        int line = this.getService()._update(this.getRequestParams(request));
-        return line > 0 ? ResultBody.success(line) : ResultBody.error("更新失败");
+    public KeyValue(PropertyFunc<T, R> getter, Object value) {
+        this.key = CommonTool.getFuncFieldName(getter);
+        this.value = value;
+    }
+
+    public KeyValue(String key, Object value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    @NotNull
+    @Contract("_, _ -> new")
+    public static <T, R> KeyValue<T, R> KV(PropertyFunc<T, R> getter, Object value) {
+        return new KeyValue<T, R>(getter, value);
+    }
+
+    @NotNull
+    @Contract("_, _ -> new")
+    public static KeyValue KV(String key, Object value) {
+        return new KeyValue(key, value);
     }
 
 }

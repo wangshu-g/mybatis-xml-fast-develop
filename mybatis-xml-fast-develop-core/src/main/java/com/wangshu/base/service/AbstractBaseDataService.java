@@ -25,10 +25,12 @@ package com.wangshu.base.service;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.base.query.CommonQueryParam;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.exception.IException;
 import com.wangshu.tool.CacheTool;
 import com.wangshu.tool.CommonTool;
+import com.wangshu.tool.KeyValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mybatis.spring.MyBatisSystemException;
@@ -142,11 +144,20 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
         if (StrUtil.isBlankIfStr(primaryValue) && modelPrimaryField.getType().equals(String.class)) {
-            model.setModelAnyValueByFieldName(modelPrimaryField.getName(), getUUID());
+            model.setModelAnyValueByFieldName(modelPrimaryField.getName(), getUlId());
         }
-        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        Class<T> modelClazz = getModelClazz();
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(modelClazz);
         if (Objects.nonNull(modelCreatedAtField)) {
             model.setModelAnyValueByFieldName(modelCreatedAtField.getName(), new Date());
+        }
+        Field modelUpdatedField = CacheTool.getModelUpdatedField(modelClazz);
+        if (Objects.nonNull(modelUpdatedField)) {
+            model.setModelAnyValueByFieldName(modelUpdatedField.getName(), new Date());
+        }
+        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(modelClazz);
+        if (Objects.nonNull(modelDeleteFlagField)) {
+            model.setModelAnyValueByFieldName(modelDeleteFlagField.getName(), false);
         }
         return model;
     }
@@ -203,7 +214,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Transactional(rollbackFor = Exception.class)
     public int _delete(@NotNull Object... keyValuesArray) {
-        return _delete(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _delete(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -305,31 +316,48 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Transactional(rollbackFor = Exception.class)
     public int _softDelete(@NotNull Object... keyValuesArray) {
-        return _softDelete(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _softDelete(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public Map<String, Object> softDeleteParamFilter(@NotNull Map<String, Object> map) {
-        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(getModelClazz())::contains)) {
+        Class<T> modelClazz = getModelClazz();
+        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(modelClazz)::contains)) {
             log.error("没有合法的软删除参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
-        Field modelDeletedField = CacheTool.getModelDeletedField(getModelClazz());
-        if (Objects.isNull(modelDeletedField)) {
-            log.error("未找到 DeletedAt 标注的字段");
+        Field modelDeletedField = CacheTool.getModelDeletedField(modelClazz);
+        boolean tempFlag = false;
+        if (Objects.nonNull(modelDeletedField)) {
+            tempFlag = true;
+            String newDeletedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeletedField.getName()));
+            if (Objects.isNull(map.get(newDeletedAtName))) {
+                map.put(newDeletedAtName, new Date());
+            }
+        }
+        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(modelClazz);
+        if (Objects.nonNull(modelDeleteFlagField)) {
+            if (modelDeleteFlagField.getType().equals(Boolean.class)) {
+                tempFlag = true;
+                String newDeleteFlagName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeleteFlagField.getName()));
+                if (Objects.isNull(map.get(newDeleteFlagName))) {
+                    map.put(newDeleteFlagName, true);
+                }
+            } else {
+                log.warn("DeleteFlag 标注字段必须为 Boolean 类DDeleteFlagDeleteFlagDeleteFlageleteFlag型");
+            }
+        }
+        if (!tempFlag) {
+            log.error("未找到 DeletedAt 或 DeleteFlag 标注的字段");
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String newDeletedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeletedField.getName()));
-        if (Objects.isNull(map.get(newDeletedAtName))) {
-            map.put(newDeletedAtName, new Date());
-        }
-        Field modelUpdatedField = CacheTool.getModelUpdatedField(getModelClazz());
+        Field modelUpdatedField = CacheTool.getModelUpdatedField(modelClazz);
         if (Objects.nonNull(modelUpdatedField)) {
             String newUpdatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelUpdatedField.getName()));
             if (Objects.isNull(map.get(newUpdatedAtName))) {
                 map.put(newUpdatedAtName, new Date());
             }
         }
-        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(modelClazz);
         if (Objects.nonNull(modelCreatedAtField)) {
             String newCreatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelCreatedAtField.getName()));
             map.remove(newCreatedAtName);
@@ -373,7 +401,9 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         map.put(modelPrimaryField.getName(), id);
-        if (!column1.startsWith("new")) {
+        if (column1.startsWith("new")) {
+            map.put(column1, newValue);
+        } else {
             map.put(StrUtil.concat(false, "new", StrUtil.upperFirst(column1)), newValue);
         }
         return _update(map);
@@ -408,7 +438,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     @Transactional(rollbackFor = Exception.class)
     public int _update(@NotNull Object... keyValuesArray) {
-        return _update(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _update(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -418,18 +448,19 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return Map<String, Object>
      **/
     public Map<String, Object> updateParamFilter(@NotNull Map<String, Object> map) {
-        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(getModelClazz())::contains)) {
+        Class<T> modelClazz = getModelClazz();
+        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(modelClazz)::contains)) {
             log.error("没有合法的更新参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
-        Field modelUpdatedField = CacheTool.getModelUpdatedField(getModelClazz());
+        Field modelUpdatedField = CacheTool.getModelUpdatedField(modelClazz);
         if (Objects.nonNull(modelUpdatedField)) {
             String newUpdatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelUpdatedField.getName()));
             if (Objects.isNull(map.get(newUpdatedAtName))) {
                 map.put(newUpdatedAtName, new Date());
             }
         }
-        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(getModelClazz());
+        Field modelCreatedAtField = CacheTool.getModelCreatedAtField(modelClazz);
         if (Objects.nonNull(modelCreatedAtField)) {
             String newCreatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelCreatedAtField.getName()));
             map.remove(newCreatedAtName);
@@ -473,6 +504,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         if (map.isEmpty()) {
             throw new IException(HttpStatus.BAD_REQUEST);
         }
+        map = deleteFlagParamFilter(map);
         return map;
     }
 
@@ -488,6 +520,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     public @Nullable T _select(@NotNull T model) {
         return _select(model.safeToMap());
+    }
+
+    public @Nullable T _select(@NotNull CommonQueryParam<T> query) {
+        return _select(query.safeToMap());
     }
 
     /**
@@ -528,7 +564,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @Nullable T _select(@NotNull Object... keyValuesArray) {
-        return _select(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _select(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -572,8 +608,12 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return _getListWithOutLimit(model.safeToMap());
     }
 
+    public @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull CommonQueryParam<T> query) {
+        return _getListWithOutLimit(query.safeToMap());
+    }
+
     public @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return _getListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _getListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     /**
@@ -584,6 +624,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      **/
     public @NotNull List<Map<String, Object>> _getList(@NotNull T model) {
         return _getList(model.safeToMap());
+    }
+
+    public @NotNull List<Map<String, Object>> _getList(@NotNull CommonQueryParam<T> query) {
+        return _getList(query.safeToMap());
     }
 
     /**
@@ -602,16 +646,16 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     /**
      * <p>查询列表</p>
      *
-     * @param keyValues 键值对,偶数长度。key, value, key, value...
+     * @param keyValuesArray 键值对,偶数长度。key, value, key, value...
      * @return List<Map < String, Object>>
      **/
-    public @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValues) {
+    public @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValuesArray) {
         Map<String, Object> map = new HashMap<>();
-        if (keyValues.length > 0) {
-            int length = keyValues.length;
-            for (int i = 0; i < keyValues.length; i++) {
+        if (keyValuesArray.length > 0) {
+            int length = keyValuesArray.length;
+            for (int i = 0; i < keyValuesArray.length; i++) {
                 if (i % 2 == 0 && length >= i + 1) {
-                    map.put(String.valueOf(keyValues[i]), keyValues[i + 1]);
+                    map.put(String.valueOf(keyValuesArray[i]), keyValuesArray[i + 1]);
                 }
             }
             return _getList(map);
@@ -632,6 +676,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return _getNestList(model.safeToMap());
     }
 
+    public @NotNull List<T> _getNestList(@NotNull CommonQueryParam<T> query) {
+        return _getNestList(query.safeToMap());
+    }
+
     public @NotNull List<T> _getNestList(String column, Object value) {
         Map<String, Object> map = new HashMap<>(1);
         map.put(column, value);
@@ -639,7 +687,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public @NotNull List<T> _getNestList(@NotNull Object... keyValuesArray) {
-        return _getNestList(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _getNestList(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public @NotNull List<T> _getNestListWithOutLimit(@NotNull Map<String, Object> map) {
@@ -662,11 +710,18 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return _getNestListWithOutLimit(model.safeToMap());
     }
 
-    public @NotNull List<T> _getNestListWithOutLimit(@NotNull Object... keyValuesArray) {
-        return _getNestListWithOutLimit(keyValuesArrayParamssafeToMap(keyValuesArray));
+    public @NotNull List<T> _getNestListWithOutLimit(@NotNull CommonQueryParam<T> query) {
+        return _getNestListWithOutLimit(query.safeToMap());
     }
 
-    public Map<String, Object> listParamFilter(@NotNull Map<String, Object> map) {
+    public @NotNull List<T> _getNestListWithOutLimit(@NotNull Object... keyValuesArray) {
+        return _getNestListWithOutLimit(keyValuesArrayParamsToMap(keyValuesArray));
+    }
+
+    /**
+     * <p>分页参数过滤，可能存在的 sql 注入过滤，若分页参数不存在或不合法，则重设为 pageIndex = 1, pageSize = 10</p>
+     **/
+    public @NotNull Map<String, Object> limitParamFilter(@NotNull Map<String, Object> map) {
         long pageIndex;
         try {
             pageIndex = Long.parseLong(String.valueOf(map.get("pageIndex")));
@@ -689,13 +744,22 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);
+        return map;
+    }
+
+    /**
+     * <p>排序参数过滤，可能存在的 sql 注入过滤，若存在 {@link com.wangshu.annotation.DefaultOrder} 标识列，并且排序参数不合法，则重设为排序标识列</p>
+     **/
+    public @NotNull Map<String, Object> orderParamFilter(@NotNull Map<String, Object> map) {
         String orderColumn = String.valueOf(Objects.isNull(map.get("orderColumn")) ? "" : map.get("orderColumn"));
-        if (!CacheTool.getModelOrderColumnPossibleParameterName(getModelClazz()).contains(orderColumn)) {
+        Class<T> modelClazz = getModelClazz();
+        List<String> modelOrderColumnPossibleParameterName = CacheTool.getModelOrderColumnPossibleParameterName(modelClazz);
+        if (!modelOrderColumnPossibleParameterName.contains(orderColumn)) {
             map.remove("orderColumn");
             log.warn("orderColumn 参数无效,详细参数: {}", orderColumn);
-            Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(getModelClazz());
+            Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(modelClazz);
             if (Objects.nonNull(modelDefaultOrderField)) {
-                orderColumn = CommonTool.getNewStrBySqlStyle(CacheTool.getModelSqlStyle(getModelClazz()), modelDefaultOrderField.getName());
+                orderColumn = CommonTool.getNewStrBySqlStyle(CacheTool.getModelSqlStyle(modelClazz), modelDefaultOrderField.getName());
                 log.warn("存在 DefaultOrder 标识列, orderColumn 参数重设为: {}", orderColumn);
             }
         }
@@ -709,17 +773,53 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return map;
     }
 
+    /**
+     * <p>若存在 {@link com.wangshu.annotation.DeleteFlag} 标识列，并且没有显式指定标识列的值，则设为 false，仅查询未删除数据</p>
+     **/
+    public @NotNull Map<String, Object> deleteFlagParamFilter(@NotNull Map<String, Object> map) {
+        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(getModelClazz());
+        if (Objects.nonNull(modelDeleteFlagField) && Objects.isNull(map.get(modelDeleteFlagField.getName()))) {
+            map.put(modelDeleteFlagField.getName(), false);
+        }
+        return map;
+    }
+
+    public Map<String, Object> listParamFilter(@NotNull Map<String, Object> map) {
+        map = limitParamFilter(map);
+        map = orderParamFilter(map);
+        map = deleteFlagParamFilter(map);
+        return map;
+    }
+
     public boolean listValidate(@NotNull Map<String, Object> map) {
         return true;
     }
 
     @Override
     public int _getTotal(@NotNull Map<String, Object> map) {
+        map = deleteFlagParamFilter(map);
         return getMapper()._getTotal(map);
     }
 
+    @Override
+    public int _getTotal(@NotNull T model) {
+        return _getTotal(model.safeToMap());
+    }
+
+    @Override
+    public int _getTotal(@NotNull CommonQueryParam<T> query) {
+        return _getTotal(query.safeToMap());
+    }
+
+    @Override
+    public int _getTotal(String column, Object value) {
+        Map<String, Object> map = new HashMap<>(1);
+        map.put(column, value);
+        return _getTotal(map);
+    }
+
     public int _getTotal(@NotNull Object... keyValuesArray) {
-        return _getTotal(keyValuesArrayParamssafeToMap(keyValuesArray));
+        return _getTotal(keyValuesArrayParamsToMap(keyValuesArray));
     }
 
     public int _getTotal() {
@@ -752,12 +852,37 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         return CacheTool.getModelPrimaryField(getModelClazz());
     }
 
-    public Map<String, Object> keyValuesArrayParamssafeToMap(@NotNull Object... keyValuesArray) {
+    public Map<String, Object> keyValuesArrayParamsToMap(@NotNull Object... keyValuesArray) {
         Map<String, Object> map = new HashMap<>();
         int length = keyValuesArray.length;
+        boolean isKV = false;
         for (int i = 0; i < keyValuesArray.length; i++) {
-            if (i % 2 == 0 && length >= i + 1) {
-                map.put(String.valueOf(keyValuesArray[i]), keyValuesArray[i + 1]);
+            if (isKV) {
+                Object current = keyValuesArray[i];
+                if (current instanceof KeyValue temp) {
+                    map.put(temp.getKey(), temp.getValue());
+                } else {
+                    log.error("使用 KV 时所有参数必须全部是 KeyValue 对象");
+                    throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                if (i % 2 == 0 && length >= i + 1) {
+                    Object key = keyValuesArray[i];
+                    if (key instanceof String temp) {
+                        Object value = keyValuesArray[i + 1];
+                        map.put(temp, value);
+                    } else if (key instanceof KeyValue temp) {
+                        if (i != 0) {
+                            log.error("使用 KV 时所有参数必须全部是 KeyValue 对象");
+                            throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
+                        map.put(temp.getKey(), temp.getValue());
+                        isKV = true;
+                    } else {
+                        log.error("key 类型错误");
+                        throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                }
             }
         }
         return map;

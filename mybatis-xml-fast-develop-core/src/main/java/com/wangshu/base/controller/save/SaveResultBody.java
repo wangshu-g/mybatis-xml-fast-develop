@@ -29,7 +29,7 @@ import com.wangshu.base.service.BaseDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 public interface SaveResultBody<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
@@ -37,7 +37,7 @@ public interface SaveResultBody<S extends BaseDataService<?, T>, T extends BaseM
     /**
      * <p>保存</p>
      */
-    @PostMapping("/save")
+    @RequestMapping("/save")
     @ResponseBody
     public default ResultBody<Object> save(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
         int line = this.getService()._save(this.getRequestParams(request));
