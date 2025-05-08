@@ -18,6 +18,10 @@ oracle、mssql、postgresql、mysql 语法已作支持，支持以上语法可�
 
 欢迎一起开发适配
 
+## 视频使用演示
+
+https://www.bilibili.com/video/BV17t5kzNEU2
+
 ## 模块简介
 
 + mybatis-xml-fast-develop-core
@@ -84,10 +88,6 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
 </dependencys>
 
 ```
-
-## 视频使用演示
-
-https://www.bilibili.com/video/BV17t5kzNEU2
 
 ## 联系方式
 
