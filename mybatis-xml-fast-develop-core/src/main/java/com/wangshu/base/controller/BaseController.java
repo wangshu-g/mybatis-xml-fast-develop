@@ -43,7 +43,7 @@ import java.util.UUID;
  */
 public interface BaseController {
 
-    default Map<String, Object> getRequestParams(@NotNull HttpServletRequest request) throws IOException {
+    default @NotNull Map<String, Object> getRequestParams(@NotNull HttpServletRequest request) throws IOException {
         Map<String, Object> params = new HashMap<>();
         if (StrUtil.equals(request.getMethod(), RequestMethod.POST.name())) {
             params = JSON.parseObject(IoUtil.read(request.getInputStream(), Charset.forName(request.getCharacterEncoding())));
