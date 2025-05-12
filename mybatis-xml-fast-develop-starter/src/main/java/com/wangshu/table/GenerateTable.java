@@ -23,18 +23,11 @@ package com.wangshu.table;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
-import com.wangshu.annotation.Column;
-import com.wangshu.base.model.BaseModelWithDefaultFields;
-import com.wangshu.tool.CommonTool;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,76 +48,6 @@ public abstract class GenerateTable extends ModelInfo {
 
     public GenerateTable(Class<?> clazz) {
         super(clazz);
-    }
-
-    public Type getGenericPrimaryType(@NotNull Field field) {
-        if (BaseModelWithDefaultFields.class.isAssignableFrom(this.getMetadata()) && StrUtil.equals(field.getName(), "id") && this.getMetadata().getGenericSuperclass() instanceof ParameterizedType temp) {
-            return Arrays.stream(temp.getActualTypeArguments()).toList().getFirst();
-        } else {
-            throw new IllegalArgumentException("Unsupported field: " + field);
-        }
-    }
-
-    public String getDbColumnType(@NotNull Field field) {
-        String dbColumnType = null;
-        Column column = field.getAnnotation(Column.class);
-        if (Objects.nonNull(column)) {
-            dbColumnType = column.dbColumnType();
-        }
-        if (StrUtil.isBlank(dbColumnType)) {
-            if (field.getType().equals(Object.class)) {
-                dbColumnType = CommonTool.getDbColumnTypeByJavaTypeName(this.getDataBaseType(), this.getGenericPrimaryType(field).getTypeName());
-            } else {
-                dbColumnType = CommonTool.getDbColumnTypeByField(this.getDataBaseType(), field);
-            }
-        }
-        return dbColumnType;
-    }
-
-    public int getDefaultLength(@NotNull Field field) {
-        return CommonTool.getDefaultLengthByDbColumnType(this.getDataBaseType(), this.getDbColumnType(field).toUpperCase());
-    }
-
-    public boolean isAutoIncrement(@NotNull Field field) {
-        if (!this.isPrimaryKey(field)) {
-            return false;
-        }
-        if (field.getType().equals(Object.class)) {
-            String typeName = this.getGenericPrimaryType(field).getTypeName();
-            return StrUtil.equals(typeName, Long.class.getTypeName()) || StrUtil.equals(typeName, Integer.class.getTypeName());
-        } else {
-            return Objects.equals(field.getType(), Long.class);
-        }
-    }
-
-    public boolean isDefaultNull(@NotNull Field field) {
-        return !isPrimaryKey(field);
-    }
-
-    public boolean isPrimaryKey(@NotNull Field field) {
-        if (Objects.nonNull(field.getAnnotation(Column.class))) {
-            return field.getAnnotation(Column.class).primary();
-        }
-        return StrUtil.equals(field.getName(), "id");
-    }
-
-    public String getComment(@NotNull Field field) {
-        String comment = null;
-        Column column = field.getAnnotation(Column.class);
-        if (Objects.nonNull(column)) {
-            comment = column.comment();
-            if (StrUtil.isBlank(comment)) {
-                comment = column.title();
-            }
-        }
-        if (StrUtil.isBlank(comment)) {
-            comment = field.getName();
-        }
-        return comment;
-    }
-
-    public String getSqlStyleName(@NotNull Field field) {
-        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), field.getName());
     }
 
     public ResultSet getTablesResultSetFromDatabaseMetaData(@NotNull Connection connection, String tableName) throws SQLException {
@@ -179,16 +102,16 @@ public abstract class GenerateTable extends ModelInfo {
         DatabaseMetaData databaseMetaData = connection.getMetaData();
         String catalog = connection.getCatalog();
         ResultSet columnsResult = getColumnsResultSetFromDatabaseMetaData(connection, tableName);
-        Map<String, Field> columnMap = this.getFields().stream().collect(Collectors.toMap(this::getSqlStyleName, v -> v));
+        Map<String, FieldInfo> columnMap = this.getFields().stream().collect(Collectors.toMap(FieldInfo::getSqlStyleName, v -> v));
         while (columnsResult.next()) {
             String column = columnsResult.getString("COLUMN_NAME");
-            Field columnInfo = columnMap.get(column);
+            FieldInfo columnInfo = columnMap.get(column);
             if (Objects.nonNull(columnInfo)) {
                 String currentColumnTypeName = columnsResult.getString("TYPE_NAME");
-                String columnJdbcType = this.getDbColumnType(columnInfo);
+                String columnJdbcType = columnInfo.getDbColumnType();
                 if (this.columnIsModify(currentColumnTypeName, columnJdbcType)) {
-                    String columnName = this.getSqlStyleName(columnInfo);
-                    int columnLength = this.getDefaultLength(columnInfo);
+                    String columnName = columnInfo.getSqlStyleName();
+                    int columnLength = columnInfo.getDefaultLength();
                     log.warn("修改列: {}", columnInfo.getName());
                     String sql = this.getAlterColumnSql(tableName, columnName, columnJdbcType, columnLength);
                     log.warn("执行sql: {}", sql);
@@ -203,10 +126,10 @@ public abstract class GenerateTable extends ModelInfo {
                 columnMap.remove(column);
             }
         }
-        for (Field value : columnMap.values()) {
-            String columnName = this.getSqlStyleName(value);
+        for (FieldInfo value : columnMap.values()) {
+            String columnName = value.getSqlStyleName();
             log.warn("添加列: {}", columnName);
-            String sql = this.getAddColumnSql(tableName, columnName, this.getDbColumnType(value), this.getDefaultLength(value));
+            String sql = this.getAddColumnSql(tableName, columnName, value.getDbColumnType(), value.getDefaultLength());
             log.warn("执行sql: {}", sql);
             Statement statement = connection.createStatement();
             statement.execute(sql);

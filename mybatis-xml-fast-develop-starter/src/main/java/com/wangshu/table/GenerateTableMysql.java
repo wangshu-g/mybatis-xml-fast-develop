@@ -27,7 +27,6 @@ import com.wangshu.base.model.BaseModel;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -58,31 +57,37 @@ public class GenerateTableMysql extends GenerateTable {
 
     @Override
     public String getCreateTableSql(@NotNull String tableName) {
-        String sql = StrUtil.concat(false, "create table `", tableName, "` ( ");
+        StringBuilder sql = new StringBuilder("create table `");
+        sql.append(tableName);
+        sql.append("` ( ");
         for (int index = 0; index < this.getFields().size(); index++) {
-            Field item = this.getFields().get(index);
-            String columnName = StrUtil.concat(false, "`", this.getSqlStyleName(item), "`");
-            int length = this.getDefaultLength(item);
-            String columnType = StrUtil.concat(false, this.getDbColumnType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
-            boolean defaultNullFlag = this.isDefaultNull(item);
+            FieldInfo item = this.getFields().get(index);
+            String columnName = StrUtil.concat(false, "`", item.getSqlStyleName(), "`");
+            int length = item.getDefaultLength();
+            String columnType = StrUtil.concat(false, item.getDbColumnType(), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
+            boolean defaultNullFlag = item.getDefaultNull();
             String columnNull = defaultNullFlag ? "null" : "not null";
 //            boolean primaryKeyFlag = this.isPrimaryKey(item);
-            String columnAutoIncrement = this.isAutoIncrement(item) ? "auto_increment" : "";
-            String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
-            String columnPrimary = this.isPrimaryKey(item) ? "primary key" : "";
+            String columnAutoIncrement = item.getAutoIncrement() ? "auto_increment" : "";
+            String columnComment = StrUtil.concat(false, "comment '", item.getComment(), "'");
+            String columnPrimary = item.getPrimary() ? "primary key" : "";
             String columnEnd = index == this.getFields().size() - 1 ? "" : ",";
-            sql = StrUtil.concat(false, sql,
-                    columnName, " ",
-                    columnType, " ",
-                    columnNull, " ",
-                    columnAutoIncrement, " ",
-                    columnComment, " ",
-                    columnPrimary, " ",
-                    columnEnd
-            );
+            sql.append(columnName);
+            sql.append(" ");
+            sql.append(columnType);
+            sql.append(" ");
+            sql.append(columnNull);
+            sql.append(" ");
+            sql.append(columnAutoIncrement);
+            sql.append(" ");
+            sql.append(columnComment);
+            sql.append(" ");
+            sql.append(columnPrimary);
+            sql.append(" ");
+            sql.append(columnEnd);
         }
-        sql = StrUtil.concat(false, sql, " ) collate = utf8mb4_bin;");
-        return sql;
+        sql.append(" ) collate = utf8mb4_bin;");
+        return sql.toString();
     }
 
     @Override

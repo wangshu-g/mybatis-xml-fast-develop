@@ -39,7 +39,8 @@ import java.util.stream.Stream;
 @lombok.Data
 public abstract class ModelInfo {
 
-    private List<Field> fields;
+    private List<FieldInfo> fields;
+    private FieldInfo primaryField;
     private List<String> names;
     private Class<?> metadata;
     private Model modelAnnotation;
@@ -52,11 +53,7 @@ public abstract class ModelInfo {
     public ModelInfo() {
     }
 
-    public ModelInfo(Class<?> clazz) {
-        this.init(clazz);
-    }
-
-    public void init(@NotNull Class<?> clazz) {
+    public ModelInfo(@NotNull Class<?> clazz) {
         this.metadata = clazz;
         this.modelAnnotation = clazz.getAnnotation(Model.class);
         this.dataBaseType = modelAnnotation.dataBaseType();
@@ -69,30 +66,30 @@ public abstract class ModelInfo {
     }
 
     public void initFields(Class<?> clazz) {
-        List<Field> fields = new ArrayList<>();
+        List<FieldInfo> fields = new ArrayList<>();
         while (Objects.nonNull(clazz)) {
             for (Field field : clazz.getDeclaredFields()) {
                 if (Objects.nonNull(field.getAnnotation(Column.class))) {
-                    fields.add(field);
+                    fields.add(new FieldInfo(this, field));
                 }
             }
             clazz = clazz.getSuperclass();
         }
         this.setFields(fields);
+        FieldInfo fieldInfo = this.fields.stream().filter(FieldInfo::getPrimary).findFirst().orElse(null);
+        if (Objects.isNull(fieldInfo)) {
+            throw new RuntimeException("未指定主键");
+        }
+        this.primaryField = fieldInfo;
     }
 
     public void initNames(@NotNull Class<?> clazz) {
-        Model modelAnnotation = clazz.getAnnotation(Model.class);
-        if (Objects.nonNull(modelAnnotation)) {
-            this.setNames(Stream.of(modelAnnotation.names()).toList());
-        }
+        this.setNames(Stream.of(this.modelAnnotation.names()).toList());
     }
 
     public String initTableName(@NotNull Class<?> clazz) {
-        Model modelAnnotation = clazz.getAnnotation(Model.class);
-        assert Objects.nonNull(modelAnnotation);
-        if (StrUtil.isNotBlank(modelAnnotation.table())) {
-            return modelAnnotation.table();
+        if (StrUtil.isNotBlank(this.modelAnnotation.table())) {
+            return this.modelAnnotation.table();
         }
         String table = clazz.getSimpleName();
         return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), table);

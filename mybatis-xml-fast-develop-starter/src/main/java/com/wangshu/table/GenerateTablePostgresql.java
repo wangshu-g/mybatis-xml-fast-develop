@@ -27,7 +27,7 @@ import com.wangshu.base.model.BaseModel;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
+import java.util.Objects;
 
 /**
  * @author wangshu-g
@@ -47,39 +47,39 @@ public class GenerateTablePostgresql extends GenerateTable {
 
     @Override
     public String getCreateTableSql(@NotNull String tableName) {
-        String sql = StrUtil.concat(false, "create table \"", tableName, "\" ( ");
+        StringBuilder sql = new StringBuilder("create table \"");
+        sql.append(tableName);
+        sql.append("\" ( ");
         for (int index = 0; index < this.getFields().size(); index++) {
-            Field item = this.getFields().get(index);
-            String columnName = StrUtil.concat(false, "\"", this.getSqlStyleName(item), "\"");
-            int length = this.getDefaultLength(item);
-            boolean defaultNullFlag = this.isDefaultNull(item);
+            FieldInfo item = this.getFields().get(index);
+            String columnName = StrUtil.concat(false, "\"", item.getSqlStyleName(), "\"");
+            int length = item.getDefaultLength();
+            boolean defaultNullFlag = item.getDefaultNull();
             String columnNull = defaultNullFlag ? "null" : "not null";
-            boolean primaryKeyFlag = this.isPrimaryKey(item);
-            String columnType = StrUtil.concat(false, this.getDbColumnType(item), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
-            if (this.isAutoIncrement(item)) {
-                String typeName = item.getType().getTypeName();
-                if (StrUtil.equals(typeName, Object.class.getTypeName())) {
-                    typeName = this.getGenericPrimaryType(item).getTypeName();
-                }
-                if (StrUtil.equals(typeName, Long.class.getTypeName())) {
+            boolean primaryKeyFlag = item.getPrimary();
+            String columnType = StrUtil.concat(false, item.getDbColumnType(), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
+            if (item.getAutoIncrement()) {
+                if (Objects.equals(item.getJavaType(), Long.class)) {
                     columnType = "bigserial";
-                } else if (StrUtil.equals(typeName, Integer.class.getTypeName())) {
+                } else if (Objects.equals(item.getJavaType(), Integer.class)) {
                     columnType = "serial";
                 }
             }
-            String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
+            String columnComment = StrUtil.concat(false, "comment '", item.getComment(), "'");
             String columnPrimary = primaryKeyFlag ? "primary key" : "";
             String columnEnd = index == this.getFields().size() - 1 ? "" : ",";
-            sql = StrUtil.concat(false, sql,
-                    columnName, " ",
-                    columnType, " ",
-                    columnNull, " ",
-//                    columnComment, " ",
-                    columnPrimary, " ",
-                    columnEnd);
+            sql.append(columnName);
+            sql.append(" ");
+            sql.append(columnType);
+            sql.append(" ");
+            sql.append(columnNull);
+            sql.append(" ");
+            sql.append(columnPrimary);
+            sql.append(" ");
+            sql.append(columnEnd);
         }
-        sql = StrUtil.concat(false, sql, " );");
-        return sql;
+        sql.append(" );");
+        return sql.toString();
     }
 
     @Override
