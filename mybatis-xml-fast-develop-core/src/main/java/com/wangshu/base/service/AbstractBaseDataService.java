@@ -188,8 +188,8 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         }).toList();
         if (newModelList.stream().allMatch(this::saveValidate)) {
             DataBaseType dataBaseType = CacheTool.getModelDataBaseType(getModelClazz());
-            if ((dataBaseType.equals(DataBaseType.mssql) || dataBaseType.equals(DataBaseType.oracle))) {
-                log.warn("注意 oracle 和 mssql 数据库使用主键自增,批量插入无法正常获取主键自增值,建议添加业务ID解决");
+            if ((dataBaseType.equals(DataBaseType.mssql) || dataBaseType.equals(DataBaseType.oracle)) || dataBaseType.equals(DataBaseType.postgresql)) {
+                log.warn("注意 oracle、mssql、postgresql 数据库使用主键自增,批量插入无法正常获取主键自增值,建议添加业务ID解决");
             }
             return getMapper()._batchSave(modelList);
         }
@@ -756,7 +756,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         List<String> modelOrderColumnPossibleParameterName = CacheTool.getModelOrderColumnPossibleParameterName(modelClazz);
         if (!modelOrderColumnPossibleParameterName.contains(orderColumn)) {
             map.remove("orderColumn");
-            log.warn("orderColumn 参数无效,详细参数: {}", orderColumn);
+            log.warn("orderColumn 参数无效,详细参数: {}", map.get("orderColumn"));
             Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(modelClazz);
             if (Objects.nonNull(modelDefaultOrderField)) {
                 orderColumn = CommonTool.getNewStrBySqlStyle(CacheTool.getModelSqlStyle(modelClazz), modelDefaultOrderField.getName());
