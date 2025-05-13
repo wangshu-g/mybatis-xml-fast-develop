@@ -1,5 +1,9 @@
 # mybatis-xml-fast-develop changelog
 
++ ## 1.5.2-dev
+
+fix：postgresql 保存时自增主键问题，批量和 oracle、mssql 情况一样
+
 + ## 1.5.1
 
 已推送
