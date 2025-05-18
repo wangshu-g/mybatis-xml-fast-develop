@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXml<T, F> {
+public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXmlWithGenerateGetSeqId<T, F> {
 
     public GenerateXmlPostgresql(T model) {
         super(model);
@@ -62,6 +62,11 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
         ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
         ifElement.addText(StrUtil.concat(false, "limit ", this.wrapMybatisPrecompileStr("pageSize"), " offset ", this.wrapMybatisPrecompileStr("pageIndex")));
         return ifElement;
+    }
+
+    @Override
+    public Element generateGetSequenceId() {
+        return null;
     }
 
     private String getPrimaryIncrSeqName() {

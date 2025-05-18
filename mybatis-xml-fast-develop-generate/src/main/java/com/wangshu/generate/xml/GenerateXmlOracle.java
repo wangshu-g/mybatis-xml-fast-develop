@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXml<T, F> {
+public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXmlWithGenerateGetSeqId<T, F> {
 
     public GenerateXmlOracle(T model) {
         super(model);
@@ -60,6 +60,11 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
         ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
         ifElement.addText(StrUtil.concat(false, "offset ", this.wrapMybatisPrecompileStr("pageIndex"), " rows fetch next ", this.wrapMybatisPrecompileStr("pageSize"), " rows only"));
         return ifElement;
+    }
+
+    @Override
+    public Element generateGetSequenceId() {
+        return null;
     }
 
     private String getPrimaryIncrSeqName() {
