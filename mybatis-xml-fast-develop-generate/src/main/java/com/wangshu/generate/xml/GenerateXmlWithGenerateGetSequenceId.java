@@ -11,13 +11,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public abstract class GenerateXmlWithGenerateGetSeqId<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXml<T, F> {
+public abstract class GenerateXmlWithGenerateGetSequenceId<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXml<T, F> {
 
-    public GenerateXmlWithGenerateGetSeqId(@NotNull T model) {
+    public GenerateXmlWithGenerateGetSequenceId(@NotNull T model) {
         super(model);
     }
 
-    public GenerateXmlWithGenerateGetSeqId(@NotNull T model, @Nullable Consumer<MessageException> message) {
+    public GenerateXmlWithGenerateGetSequenceId(@NotNull T model, @Nullable Consumer<MessageException> message) {
         super(model, message);
     }
 

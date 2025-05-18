@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXmlWithGenerateGetSeqId<T, F> {
+public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXmlWithGenerateGetSequenceId<T, F> {
 
     public GenerateXmlOracle(T model) {
         super(model);
