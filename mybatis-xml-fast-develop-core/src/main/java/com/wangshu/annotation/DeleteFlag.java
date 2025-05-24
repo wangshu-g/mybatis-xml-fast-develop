@@ -28,6 +28,7 @@ import java.lang.annotation.*;
  * @author wangshu-g
  *
  * <p>标记伪删除字段</p>
+ * <p>注意只支持 {@link Boolean} 默认对应 tinyint</p>
  **/
 @Documented
 @Target(ElementType.FIELD)
