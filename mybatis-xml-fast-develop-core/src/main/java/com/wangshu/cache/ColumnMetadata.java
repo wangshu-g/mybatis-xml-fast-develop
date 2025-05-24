@@ -36,7 +36,6 @@ public class ColumnMetadata {
     String name;
     String title;
     String dataType;
-    Integer order;
 
     public ColumnMetadata() {
 
@@ -45,7 +44,6 @@ public class ColumnMetadata {
     public ColumnMetadata(@NotNull Field field) {
         this.name = field.getName();
         this.dataType = field.getType().getSimpleName();
-        this.order = fieldOrder(field);
         this.title = fieldTitle(field);
     }
 
@@ -58,14 +56,6 @@ public class ColumnMetadata {
             return column.title();
         }
         return field.getName();
-    }
-
-    private @NotNull Integer fieldOrder(@NotNull Field field) {
-        Column column = field.getAnnotation(Column.class);
-        if (Objects.nonNull(column)) {
-            return column.order();
-        }
-        return 0;
     }
 
 }

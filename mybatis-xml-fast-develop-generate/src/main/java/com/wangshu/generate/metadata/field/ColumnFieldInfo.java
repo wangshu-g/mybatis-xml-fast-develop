@@ -25,6 +25,7 @@ package com.wangshu.generate.metadata.field;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
+import com.wangshu.annotation.Primary;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.model.ModelClazzInfo;
@@ -62,13 +63,17 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
     public void initColumnInfo(@NotNull Field metaData, ModelClazzInfo model) {
         Column column = metaData.getAnnotation(Column.class);
         if (Objects.nonNull(column)) {
+            Primary primary = metaData.getAnnotation(Primary.class);
             this.setColumn(column);
             this.setDbColumnType(this.initDbColumnType(metaData, column));
             this.setTitle(column.title());
             this.setComment(column.comment());
             this.setConditions(Arrays.asList(column.conditions()));
             this.setBaseField(true);
-            this.setPrimaryField(column.primary());
+            if (Objects.nonNull(primary)) {
+                this.setPrimaryField(true);
+                this.setIncr(primary.incr());
+            }
             this.setKeywordField(column.keyword());
         }
     }

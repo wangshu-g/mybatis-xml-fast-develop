@@ -31,9 +31,7 @@ import com.wangshu.tool.CommonTool;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 
 @lombok.Data
@@ -67,10 +65,14 @@ public abstract class ModelInfo {
 
     public void initFields(Class<?> clazz) {
         List<FieldInfo> fields = new ArrayList<>();
+        Map<String, Object> nameMap = new HashMap<>();
         while (Objects.nonNull(clazz)) {
             for (Field field : clazz.getDeclaredFields()) {
-                if (Objects.nonNull(field.getAnnotation(Column.class))) {
-                    fields.add(new FieldInfo(this, field));
+                if (Objects.isNull(nameMap.get(field.getName()))) {
+                    nameMap.put(field.getName(), new Object());
+                    if (Objects.nonNull(field.getAnnotation(Column.class))) {
+                        fields.add(new FieldInfo(this, field));
+                    }
                 }
             }
             clazz = clazz.getSuperclass();

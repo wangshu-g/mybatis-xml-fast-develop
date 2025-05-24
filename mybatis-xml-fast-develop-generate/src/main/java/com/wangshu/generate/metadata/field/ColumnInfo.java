@@ -97,9 +97,9 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
         return Objects.nonNull(this.getColumn());
     }
 
-    default boolean isPrimaryField() {
-        return this.isBaseField() && this.getColumn().primary();
-    }
+    boolean isPrimaryField();
+
+    boolean isIncr();
 
     default boolean isKeywordField() {
         return this.isBaseField() && this.getColumn().keyword();

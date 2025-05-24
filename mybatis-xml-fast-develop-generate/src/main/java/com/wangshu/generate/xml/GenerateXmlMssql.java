@@ -26,9 +26,11 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.exception.MessageException;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
+import com.wangshu.tool.CommonStaticField;
 import org.dom4j.Element;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class GenerateXmlMssql<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXml<T, F> {
@@ -58,6 +60,55 @@ public class GenerateXmlMssql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
         ifElement.addAttribute("test", "pageIndex != null and pageSize != null");
         ifElement.addText(StrUtil.concat(false, "offset ", this.wrapMybatisPrecompileStr("pageIndex"), " rows fetch next ", this.wrapMybatisPrecompileStr("pageSize"), " rows only"));
         return ifElement;
+    }
+
+    @Override
+    public org.dom4j.Element generateSave() {
+        F primaryField = this.getModel().getPrimaryField();
+        org.dom4j.Element insertElement = this.createXmlElement("insert");
+        insertElement.addAttribute("id", CommonStaticField.SAVE_METHOD_NAME);
+        insertElement.addAttribute("parameterType", "Map");
+        List<F> baseFields = this.getModel().getBaseFields();
+        if (primaryField.isIncr()) {
+            insertElement.addAttribute("useGeneratedKeys", "true");
+            insertElement.addAttribute("keyProperty", primaryField.getName());
+            baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
+        }
+        insertElement.addText(StrUtil.concat(false,
+                CommonStaticField.BREAK_WRAP,
+                "insert into ",
+                this.wrapEscapeCharacter(this.getModel().getTableName()),
+                this.getInsertIntoColumnsText(baseFields),
+                " values ",
+                this.getInsertIntoValuesText(baseFields),
+                CommonStaticField.BREAK_WRAP));
+        return insertElement;
+    }
+
+    public org.dom4j.Element generateBatchSave() {
+        F primaryField = this.getModel().getPrimaryField();
+        org.dom4j.Element batchInsertElement = this.createXmlElement("insert");
+        batchInsertElement.addAttribute("id", CommonStaticField.BATCH_SAVE_METHOD_NAME);
+        batchInsertElement.addAttribute("parameterType", "List");
+        List<F> baseFields = this.getModel().getBaseFields();
+        if (primaryField.isIncr()) {
+            batchInsertElement.addAttribute("useGeneratedKeys", "true");
+            batchInsertElement.addAttribute("keyProperty", primaryField.getName());
+            baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
+        }
+        String text = StrUtil.concat(false,
+                CommonStaticField.BREAK_WRAP,
+                "insert into ",
+                this.wrapEscapeCharacter(this.getModel().getTableName()),
+                this.getInsertIntoColumnsText(baseFields),
+                " values ",
+                CommonStaticField.BREAK_WRAP);
+        batchInsertElement.addText(text);
+        String forEachText = this.getInsertIntoForEachValuesText(baseFields);
+        org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
+        forEachElement.addText(forEachText);
+        batchInsertElement.add(forEachElement);
+        return batchInsertElement;
     }
 
 }

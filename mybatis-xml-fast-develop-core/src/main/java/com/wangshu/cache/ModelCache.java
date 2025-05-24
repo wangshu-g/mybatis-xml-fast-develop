@@ -48,6 +48,7 @@ public class ModelCache {
     public Map<String, Field> fieldsMap;
     public List<Field> baseFields;
     public Field primaryField;
+    public boolean incrPrimary;
     public Field createdField;
     public Field updatedField;
     public Field deletedField;
@@ -89,9 +90,11 @@ public class ModelCache {
         for (Field baseField : this.baseFields) {
             Column columnAnnotation = baseField.getAnnotation(Column.class);
             if (Objects.nonNull(columnAnnotation)) {
-                if (columnAnnotation.primary()) {
+                Primary primaryAnnotation = baseField.getAnnotation(Primary.class);
+                if (Objects.nonNull(primaryAnnotation)) {
                     if (Objects.isNull(primaryField)) {
                         this.primaryField = baseField;
+                        this.incrPrimary = primaryAnnotation.incr();
                     } else {
                         log.warn("存在多个主键字段");
                     }

@@ -39,9 +39,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
@@ -86,13 +84,17 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
     public void initFields(ModuleInfo moduleInfo, TypeElement metaData, Types typeUtils, boolean ignoreJoinFields) {
         List<ColumnElementInfo> fields = new ArrayList<>();
         DeclaredType owner = null;
+        Map<String, Object> nameMap = new HashMap<>();
         while (Objects.nonNull(metaData)) {
             for (Element enclosedElement : metaData.getEnclosedElements()) {
                 if (enclosedElement instanceof VariableElement temp) {
-                    if (Objects.nonNull(enclosedElement.getAnnotation(Column.class))) {
-                        fields.add(new ColumnElementInfo(temp, this, owner));
-                    } else if (Objects.nonNull(enclosedElement.getAnnotation(Join.class)) && !ignoreJoinFields) {
-                        fields.add(new ColumnElementInfo(temp, this, null));
+                    if (Objects.isNull(nameMap.get(temp.getSimpleName().toString()))) {
+                        nameMap.put(temp.getSimpleName().toString(), new Object());
+                        if (Objects.nonNull(enclosedElement.getAnnotation(Column.class))) {
+                            fields.add(new ColumnElementInfo(temp, this, owner));
+                        } else if (Objects.nonNull(enclosedElement.getAnnotation(Join.class)) && !ignoreJoinFields) {
+                            fields.add(new ColumnElementInfo(temp, this, null));
+                        }
                     }
                 }
             }

@@ -29,7 +29,6 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -53,8 +52,7 @@ public class GenerateTableOracle extends GenerateTable {
         log.info("执行sql: {}", sql);
         Statement statement = connection.createStatement();
         statement.execute(sql);
-        Type type = this.getPrimaryField().getJavaType();
-        if (type.equals(Long.class) || type.equals(Integer.class)) {
+        if (this.getPrimaryField().getAutoIncrement()) {
             this.createPrimaryIncrSeq(connection);
         }
         log.info("");

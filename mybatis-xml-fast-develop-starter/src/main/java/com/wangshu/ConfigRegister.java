@@ -49,6 +49,7 @@ public class ConfigRegister implements ImportBeanDefinitionRegistrar {
             builder.setLazyInit(false);
             registry.registerBeanDefinition("configManager", builder.getBeanDefinition());
         } catch (ClassNotFoundException e) {
+            log.error("获取启动类型失败");
             throw new RuntimeException(e);
         }
     }

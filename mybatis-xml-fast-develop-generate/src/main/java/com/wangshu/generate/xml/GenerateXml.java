@@ -154,56 +154,21 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         return resultMapElement;
     }
 
-    public org.dom4j.Element generateSave() {
-        F primaryField = this.getModel().getPrimaryField();
-        org.dom4j.Element insertElement = this.createXmlElement("insert");
-        insertElement.addAttribute("id", CommonStaticField.SAVE_METHOD_NAME);
-        insertElement.addAttribute("parameterType", "Map");
-        List<F> baseFields = this.getModel().getBaseFields();
-        if (StrUtil.equals(primaryField.getJavaTypeName(), Long.class.getName()) || StrUtil.equals(primaryField.getJavaTypeName(), Integer.class.getName())) {
-            insertElement.addAttribute("useGeneratedKeys", "true");
-            insertElement.addAttribute("keyProperty", primaryField.getName());
-            baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
-        }
-        insertElement.addText(StrUtil.concat(false, CommonStaticField.BREAK_WRAP,
-                "insert into ",
-                this.wrapEscapeCharacter(this.getModel().getTableName()),
-                "(",
-                baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
-                ") values (",
-                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name()))).collect(Collectors.joining(","))),
-                ")",
-                CommonStaticField.BREAK_WRAP));
-        return insertElement;
+    public String getInsertIntoColumnsText(@NotNull List<F> baseFields) {
+        return StrUtil.concat(false, "(", baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")), ")");
     }
 
-    public org.dom4j.Element generateBatchSave() {
-        F primaryField = this.getModel().getPrimaryField();
-        org.dom4j.Element batchInsertElement = this.createXmlElement("insert");
-        batchInsertElement.addAttribute("id", CommonStaticField.BATCH_SAVE_METHOD_NAME);
-        batchInsertElement.addAttribute("parameterType", "List");
-        List<F> baseFields = this.getModel().getBaseFields();
-        if (StrUtil.equals(primaryField.getJavaTypeName(), Long.class.getName()) || StrUtil.equals(primaryField.getJavaTypeName(), Integer.class.getName())) {
-            batchInsertElement.addAttribute("useGeneratedKeys", "true");
-            batchInsertElement.addAttribute("keyProperty", primaryField.getName());
-            baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
-        }
-        String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP,
-                "insert into ",
-                this.wrapEscapeCharacter(this.getModel().getTableName()),
-                "(",
-                baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
-                ") values",
-                CommonStaticField.BREAK_WRAP);
-        batchInsertElement.addText(text);
-        String forEachText = StrUtil.concat(false, "(",
-                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
-                        .collect(Collectors.joining(","))), ")");
-        org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
-        forEachElement.addText(forEachText);
-        batchInsertElement.add(forEachElement);
-        return batchInsertElement;
+    public String getInsertIntoValuesText(@NotNull List<F> baseFields) {
+        return StrUtil.concat(false, "(", String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name()))).collect(Collectors.joining(","))), ")");
     }
+
+    abstract org.dom4j.Element generateSave();
+
+    public String getInsertIntoForEachValuesText(@NotNull List<F> baseFields) {
+        return StrUtil.concat(false, "(", String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name()))).collect(Collectors.joining(","))), ")");
+    }
+
+    abstract org.dom4j.Element generateBatchSave();
 
     public org.dom4j.Element generateDelete() {
         org.dom4j.Element deleteElement = this.createXmlElement("delete");
@@ -691,6 +656,12 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     public org.dom4j.Element getIfNotNullElement(String testName) {
         org.dom4j.Element ifElement = this.createXmlElement("if");
         ifElement.addAttribute("test", StrUtil.concat(false, testName, " != null"));
+        return ifElement;
+    }
+
+    public org.dom4j.Element getIfNullElement(String testName) {
+        org.dom4j.Element ifElement = this.createXmlElement("if");
+        ifElement.addAttribute("test", StrUtil.concat(false, testName, " == null"));
         return ifElement;
     }
 

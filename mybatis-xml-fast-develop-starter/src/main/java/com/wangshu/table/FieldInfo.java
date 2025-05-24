@@ -23,6 +23,7 @@ package com.wangshu.table;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
+import com.wangshu.annotation.Primary;
 import com.wangshu.base.model.BaseModelWithDefaultFields;
 import com.wangshu.tool.CommonTool;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +42,7 @@ public class FieldInfo {
     private String name;
     private String sqlStyleName;
     private Column columnAnnotation;
+    private Primary primaryAnnotation;
     private String comment;
     private Boolean primary;
     private Boolean autoIncrement;
@@ -56,6 +58,7 @@ public class FieldInfo {
         this.name = field.getName();
         this.sqlStyleName = CommonTool.getNewStrBySqlStyle(modelInfo.getSqlStyle(), field.getName());
         this.columnAnnotation = field.getAnnotation(Column.class);
+        this.primaryAnnotation = field.getAnnotation(Primary.class);
         this.initComment(modelInfo, field);
         this.initJavaTypeInfo(modelInfo, field);
         this.initPrimaryInfo(modelInfo, field);
@@ -76,7 +79,7 @@ public class FieldInfo {
 
     public void initJavaTypeInfo(@NotNull ModelInfo modelInfo, @NotNull Field field) {
         Class<?> clazz = modelInfo.getMetadata();
-        if (this.columnAnnotation.primary() && BaseModelWithDefaultFields.class.isAssignableFrom(clazz) && field.getType().equals(Object.class) && clazz.getGenericSuperclass() instanceof ParameterizedType temp) {
+        if (BaseModelWithDefaultFields.class.isAssignableFrom(clazz) && field.getType().equals(Object.class) && StrUtil.equals("id", field.getName()) && clazz.getGenericSuperclass() instanceof ParameterizedType temp) {
             this.javaType = Arrays.stream(temp.getActualTypeArguments()).toList().getFirst();
         } else {
             this.javaType = field.getType();
@@ -85,12 +88,8 @@ public class FieldInfo {
     }
 
     public void initPrimaryInfo(@NotNull ModelInfo modelInfo, @NotNull Field field) {
-        this.primary = this.columnAnnotation.primary();
-        if (this.primary) {
-            this.autoIncrement = Objects.equals(this.getJavaType(), Long.class) || Objects.equals(this.getJavaType(), Integer.class);
-        } else {
-            this.autoIncrement = false;
-        }
+        this.primary = Objects.nonNull(this.primaryAnnotation);
+        this.autoIncrement = Objects.nonNull(this.primaryAnnotation) && this.primaryAnnotation.incr();
         this.defaultNull = !this.primary;
     }
 

@@ -33,9 +33,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXmlWithGenerateGetSequenceId<T, F> {
+public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXml<T, F> {
 
     public GenerateXmlPostgresql(T model) {
         super(model);
@@ -64,12 +63,14 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
         return ifElement;
     }
 
-    @Override
-    public Element generateGetSequenceId() {
-        return null;
+    private String getSequenceIdSql(@NotNull F primaryField) {
+        return StrUtil.concat(false, "select nextval('",
+                this.wrapEscapeCharacter(this.getPrimaryIncrSequenceName()),
+                "') as ",
+                primaryField.getSqlStyleName());
     }
 
-    private String getPrimaryIncrSeqName() {
+    private String getPrimaryIncrSequenceName() {
         return StrUtil.concat(false, this.getModel().getTableName(), "_id_seq");
     }
 
@@ -78,10 +79,7 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
         selectKeyElement.addAttribute("keyProperty", primaryField.getName());
         selectKeyElement.addAttribute("resultType", primaryField.getJavaTypeName());
         selectKeyElement.addAttribute("order", "BEFORE");
-        selectKeyElement.addText(StrUtil.concat(false, "select nextval('",
-                this.wrapEscapeCharacter(this.getPrimaryIncrSeqName()),
-                "') as ",
-                primaryField.getSqlStyleName()));
+        selectKeyElement.addText(this.getSequenceIdSql(primaryField));
         return selectKeyElement;
     }
 
@@ -92,19 +90,18 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
         insertElement.addAttribute("id", CommonStaticField.SAVE_METHOD_NAME);
         insertElement.addAttribute("parameterType", "Map");
         List<F> baseFields = this.getModel().getBaseFields();
-        if (StrUtil.equals(primaryField.getJavaTypeName(), Long.class.getName()) || StrUtil.equals(primaryField.getJavaTypeName(), Integer.class.getName())) {
+        if (primaryField.isIncr()) {
             insertElement.addAttribute("keyProperty", primaryField.getName());
-            baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
             insertElement.add(this.getSelectKeyElement(primaryField));
+            baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
         }
-        insertElement.addText(StrUtil.concat(false, CommonStaticField.BREAK_WRAP,
+        insertElement.addText(StrUtil.concat(false,
+                CommonStaticField.BREAK_WRAP,
                 "insert into ",
                 this.wrapEscapeCharacter(this.getModel().getTableName()),
-                "(",
-                baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
-                ") values (",
-                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, item.getName(), ",jdbcType=", item.getMybatisJdbcType().name()))).collect(Collectors.joining(","))),
-                ")",
+                this.getInsertIntoColumnsText(baseFields),
+                " values ",
+                this.getInsertIntoValuesText(baseFields),
                 CommonStaticField.BREAK_WRAP));
         return insertElement;
     }
@@ -116,23 +113,20 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
         batchInsertElement.addAttribute("id", CommonStaticField.BATCH_SAVE_METHOD_NAME);
         batchInsertElement.addAttribute("parameterType", "List");
         List<F> baseFields = this.getModel().getBaseFields();
-        if (StrUtil.equals(primaryField.getJavaTypeName(), Long.class.getName()) || StrUtil.equals(primaryField.getJavaTypeName(), Integer.class.getName())) {
+        if (primaryField.isIncr()) {
             batchInsertElement.addAttribute("keyProperty", primaryField.getName());
-            baseFields = baseFields.stream().filter(item -> !item.equals(primaryField)).toList();
+            baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
         }
-        String text = StrUtil.concat(false, CommonStaticField.BREAK_WRAP,
+        String text = StrUtil.concat(false,
+                CommonStaticField.BREAK_WRAP,
                 "insert into ",
                 this.wrapEscapeCharacter(this.getModel().getTableName()),
-                "(",
-                baseFields.stream().map(item -> wrapEscapeCharacter(item.getSqlStyleName())).collect(Collectors.joining(",")),
-                ") values",
+                this.getInsertIntoColumnsText(baseFields),
+                " values ",
                 CommonStaticField.BREAK_WRAP);
         batchInsertElement.addText(text);
-        String forEachText = StrUtil.concat(false, "(",
-                String.join(",", baseFields.stream().map(item -> wrapMybatisPrecompileStr(StrUtil.concat(false, "item.", item.getName(), ",jdbcType=", item.getMybatisJdbcType().name())))
-                        .collect(Collectors.joining(","))), ")");
         org.dom4j.Element forEachElement = this.getForEachElement("list", null, null, null, null, null);
-        forEachElement.addText(forEachText);
+        forEachElement.addText(this.getInsertIntoForEachValuesText(baseFields));
         batchInsertElement.add(forEachElement);
         return batchInsertElement;
     }

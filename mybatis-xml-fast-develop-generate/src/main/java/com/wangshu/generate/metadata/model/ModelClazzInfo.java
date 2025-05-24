@@ -35,9 +35,7 @@ import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
@@ -78,12 +76,16 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
     private void initFields(ModuleInfo moduleInfo, Class<? extends BaseModel> metaData, boolean ignoreJoinFields) {
         Class<?> clazz = metaData;
         List<ColumnFieldInfo> fields = new ArrayList<>();
+        Map<String, Object> nameMap = new HashMap<>();
         while (Objects.nonNull(clazz)) {
             for (Field field : clazz.getDeclaredFields()) {
-                if (Objects.nonNull(field.getAnnotation(Column.class))) {
-                    fields.add(new ColumnFieldInfo(field, this));
-                } else if (Objects.nonNull(field.getAnnotation(Join.class)) && !ignoreJoinFields) {
-                    fields.add(new ColumnFieldInfo(field, this));
+                if (Objects.isNull(nameMap.get(field.getName()))) {
+                    nameMap.put(field.getName(), new Object());
+                    if (Objects.nonNull(field.getAnnotation(Column.class))) {
+                        fields.add(new ColumnFieldInfo(field, this));
+                    } else if (Objects.nonNull(field.getAnnotation(Join.class)) && !ignoreJoinFields) {
+                        fields.add(new ColumnFieldInfo(field, this));
+                    }
                 }
             }
             clazz = clazz.getSuperclass();

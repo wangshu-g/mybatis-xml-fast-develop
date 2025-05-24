@@ -28,6 +28,7 @@ import com.squareup.javapoet.*;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.annotation.Model;
+import com.wangshu.annotation.Primary;
 import com.wangshu.base.controller.AbstractBaseDataControllerString;
 import com.wangshu.base.controller.BaseDataController;
 import com.wangshu.base.mapper.BaseDataMapper;
@@ -136,6 +137,11 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                     columnAnnotation.addMember("conditions", "$T.all", Condition.class);
                     columnAnnotation.addMember("primary", "$L", item.isPrimaryField());
                     fieldSpec.addAnnotation(columnAnnotation.build());
+                    if (item.isPrimaryField()) {
+                        AnnotationSpec.Builder primaryAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Primary.class);
+                        columnAnnotation.addMember("incr", "$S", item.isIncr());
+                        fieldSpec.addAnnotation(primaryAnnotation.build());
+                    }
                 } else if (item.isCollectionJoinField()) {
                     ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(List.class, BaseModel.class);
                     fieldSpec = GenerateJavaUtil.generateFieldBuilder(parameterizedTypeName, item.getName(), Modifier.PRIVATE);

@@ -47,6 +47,7 @@ public abstract class AbstractColumnInfo<T, M extends ModelInfo<?, ?>> implement
     private List<Condition> conditions;
     private boolean baseField;
     private boolean primaryField;
+    private boolean incr;
     private boolean keywordField;
 
     private Join join;
@@ -80,7 +81,6 @@ public abstract class AbstractColumnInfo<T, M extends ModelInfo<?, ?>> implement
         this.setDbColumnType(null);
         this.setConditions(ColumnInfo.super.getConditions());
         this.setBaseField(ColumnInfo.super.isBaseField());
-        this.setPrimaryField(ColumnInfo.super.isPrimaryField());
         this.setKeywordField(ColumnInfo.super.isKeywordField());
     }
 
