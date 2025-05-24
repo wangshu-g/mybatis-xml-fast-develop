@@ -38,7 +38,8 @@ import java.util.Date;
 @Data
 public class BaseModelWithDefaultFields<T> extends BaseModel {
 
-    @Column(primary = true)
+    @Column
+    @Primary
     @DefaultOrder
     private T id;
 
