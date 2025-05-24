@@ -22,16 +22,15 @@ package com.wangshu.enu
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//TODO 添加 getSequenceId
 enum class DataBaseType {
     //    Oracle 12c and later versions
-    //    单个保存通过 selectKey 正常回写 id，批量暂无解决方案，预添加 getSequenceId 手动获取主键序列自增 id
+    //    单个保存通过 selectKey 正常回写 id，批量暂无合适解决方案
     oracle,
 
     //    单个保存自增 id 回写正常，批量仅回写第一个元素的自增 id
     mssql,
 
-    //    单个保存通过 selectKey 正常回写 id，批量暂无解决方案，预添加 getSequenceId 手动获取主键序列自增 id
+    //    单个保存通过 selectKey 正常回写 id，批量暂无合适解决方案
     postgresql,
 
     //    正常
