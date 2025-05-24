@@ -32,7 +32,6 @@ import java.util.UUID;
  */
 public interface BaseService {
 
-    @Deprecated
     default String getUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
