@@ -68,7 +68,6 @@ public interface BaseController {
         return params;
     }
 
-    @Deprecated
     default String getId() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
