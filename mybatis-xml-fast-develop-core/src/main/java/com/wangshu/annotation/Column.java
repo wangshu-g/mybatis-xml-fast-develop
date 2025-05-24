@@ -43,11 +43,6 @@ public @interface Column {
     Class<? extends BaseModel> table() default BaseModel.class;
 
     /**
-     * <p>可选值,指定当前标注字段是否是主键</p>
-     **/
-    boolean primary() default false;
-
-    /**
      * <p>可选值,会根据类型选择数据类型</p>
      **/
     String dbColumnType() default "";
@@ -66,11 +61,6 @@ public @interface Column {
      * <p>可选值,指定当前标注字段是否是关键词字段</p>
      **/
     boolean keyword() default false;
-
-    /**
-     * <p>待用属性</p>
-     **/
-    int order() default 0;
 
     /**
      * <p>可选值,默认=,生成哪些条件</p>
