@@ -13,7 +13,7 @@
 
     <groupId>io.github.wangshu-g</groupId>
     <artifactId>mybatis-xml-fast-develop</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
 
     <packaging>pom</packaging>
 
@@ -61,7 +61,7 @@
         <mybatis-spring.version>3.0.3</mybatis-spring.version>
         <fastjson.version>2.0.51</fastjson.version>
         <hutool.version>5.8.25</hutool.version>
-        <ulid.version>5.2.3</ulid.version>
+        <uuid.version>6.1.1</uuid.version>
     </properties>
 
     <dependencyManagement>
@@ -102,8 +102,8 @@
 
             <dependency>
                 <groupId>com.github.f4b6a3</groupId>
-                <artifactId>ulid-creator</artifactId>
-                <version>${ulid.version}</version>
+                <artifactId>uuid-creator</artifactId>
+                <version>${uuid.version}</version>
             </dependency>
 
         </dependencies>
