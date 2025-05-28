@@ -22,7 +22,10 @@ package com.wangshu.tool;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.base.mapper.BaseDataMapper;
@@ -31,19 +34,59 @@ import com.wangshu.base.service.AbstractBaseDataService;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.exception.IException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.type.JdbcType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.IOException;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.*;
+import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.Function;
 
 @Slf4j
 public class CommonTool {
+
+    public static @NotNull Map<String, Object> getRequestParams(@NotNull HttpServletRequest request) throws IOException {
+        Map<String, Object> params = new HashMap<>();
+        if (StrUtil.equals(request.getMethod(), RequestMethod.POST.name())) {
+            params = JSON.parseObject(IoUtil.read(request.getInputStream(), Charset.forName(request.getCharacterEncoding())));
+            if (Objects.isNull(params)) {
+                params = new HashMap<>();
+            }
+            return params;
+        } else {
+            Map<String, String[]> paramMap = request.getParameterMap();
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String key = entry.getKey();
+                String[] values = entry.getValue();
+                if (values == null) {
+                    params.put(key, null);
+                } else if (values.length == 1) {
+                    params.put(key, values[0]);
+                } else {
+                    params.put(key, values);
+                }
+            }
+        }
+        return params;
+    }
+
+    private static final SecureRandom random = new SecureRandom();
+
+    public static @NotNull String getUUID7() {
+        return UuidCreator.getTimeOrderedEpoch().toString().replace("-", "");
+    }
+
+    public static @NotNull String getUUID() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 
     @SuppressWarnings("unchecked")
     public static @Nullable Class<? extends BaseModel> getServiceModel(@NotNull Class<?> clazz) {

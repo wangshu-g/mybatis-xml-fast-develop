@@ -22,20 +22,12 @@ package com.wangshu.base.controller;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson2.JSON;
-import com.github.f4b6a3.ulid.UlidCreator;
+import com.wangshu.tool.CommonTool;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 /**
  * @author wangshu-g
@@ -44,36 +36,7 @@ import java.util.UUID;
 public interface BaseController {
 
     default @NotNull Map<String, Object> getRequestParams(@NotNull HttpServletRequest request) throws IOException {
-        Map<String, Object> params = new HashMap<>();
-        if (StrUtil.equals(request.getMethod(), RequestMethod.POST.name())) {
-            params = JSON.parseObject(IoUtil.read(request.getInputStream(), Charset.forName(request.getCharacterEncoding())));
-            if (Objects.isNull(params)) {
-                params = new HashMap<>();
-            }
-            return params;
-        } else {
-            Map<String, String[]> paramMap = request.getParameterMap();
-            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
-                String key = entry.getKey();
-                String[] values = entry.getValue();
-                if (values == null) {
-                    params.put(key, null);
-                } else if (values.length == 1) {
-                    params.put(key, values[0]);
-                } else {
-                    params.put(key, values);
-                }
-            }
-        }
-        return params;
-    }
-
-    default String getId() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
-
-    default String getUlId() {
-        return UlidCreator.getUlid().toLowerCase();
+        return CommonTool.getRequestParams(request);
     }
 
 }
