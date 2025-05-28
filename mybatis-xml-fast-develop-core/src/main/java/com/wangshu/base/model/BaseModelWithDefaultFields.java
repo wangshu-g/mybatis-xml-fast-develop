@@ -23,6 +23,7 @@ package com.wangshu.base.model;
 // SOFTWARE.
 
 import com.wangshu.annotation.*;
+import com.wangshu.enu.Condition;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -38,25 +39,25 @@ import java.util.Date;
 @Data
 public class BaseModelWithDefaultFields<T> extends BaseModel {
 
-    @Column
+    @Column(conditions = Condition.all)
     @Primary
     @DefaultOrder
     private T id;
 
     @CreatedAt
-    @Column
+    @Column(conditions = Condition.all)
     private Date createdAt = new Date();
 
     @UpdatedAt
-    @Column
+    @Column(conditions = Condition.all)
     private Date updatedAt = new Date();
 
     @DeletedAt
-    @Column
+    @Column(conditions = Condition.all)
     private Date deletedAt;
 
     @DeleteFlag
-    @Column
+    @Column(conditions = Condition.all)
     private Boolean deleteFlag = false;
 
 }
