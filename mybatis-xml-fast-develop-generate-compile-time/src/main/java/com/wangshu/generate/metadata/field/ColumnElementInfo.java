@@ -77,7 +77,7 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
             this.setBaseField(true);
             if (Objects.nonNull(primary)) {
                 this.setPrimaryField(true);
-                this.setIncr(primary.incr());
+                this.setIncrPrimary(primary.incr());
             }
             this.setKeywordField(column.keyword());
         }
