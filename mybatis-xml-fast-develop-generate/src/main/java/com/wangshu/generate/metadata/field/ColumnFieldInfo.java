@@ -72,7 +72,7 @@ public class ColumnFieldInfo extends AbstractColumnInfo<Field, ModelClazzInfo> {
             this.setBaseField(true);
             if (Objects.nonNull(primary)) {
                 this.setPrimaryField(true);
-                this.setIncr(primary.incr());
+                this.setIncrPrimary(primary.incr());
             }
             this.setKeywordField(column.keyword());
         }

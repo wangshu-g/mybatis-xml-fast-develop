@@ -48,7 +48,7 @@ public class GenerateXmlMysql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
         insertElement.addAttribute("id", CommonStaticField.SAVE_METHOD_NAME);
         insertElement.addAttribute("parameterType", "Map");
         List<F> baseFields = this.getModel().getBaseFields();
-        if (primaryField.isIncr()) {
+        if (primaryField.isIncrPrimary()) {
             insertElement.addAttribute("useGeneratedKeys", "true");
             insertElement.addAttribute("keyProperty", primaryField.getName());
         }
@@ -69,7 +69,7 @@ public class GenerateXmlMysql<T extends ModelInfo<?, F>, F extends ColumnInfo<?,
         batchInsertElement.addAttribute("id", CommonStaticField.BATCH_SAVE_METHOD_NAME);
         batchInsertElement.addAttribute("parameterType", "List");
         List<F> baseFields = this.getModel().getBaseFields();
-        if (primaryField.isIncr()) {
+        if (primaryField.isIncrPrimary()) {
             batchInsertElement.addAttribute("useGeneratedKeys", "true");
             batchInsertElement.addAttribute("keyProperty", primaryField.getName());
         }

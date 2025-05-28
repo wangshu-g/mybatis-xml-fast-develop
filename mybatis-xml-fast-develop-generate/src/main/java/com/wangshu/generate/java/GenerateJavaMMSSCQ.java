@@ -135,11 +135,10 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
                     columnAnnotation.addMember("title", "$S", item.getTitle());
                     columnAnnotation.addMember("comment", "$S", item.getComment());
                     columnAnnotation.addMember("conditions", "$T.all", Condition.class);
-                    columnAnnotation.addMember("primary", "$L", item.isPrimaryField());
                     fieldSpec.addAnnotation(columnAnnotation.build());
                     if (item.isPrimaryField()) {
                         AnnotationSpec.Builder primaryAnnotation = GenerateJavaUtil.generateAnnotationBuilder(Primary.class);
-                        columnAnnotation.addMember("incr", "$S", item.isIncr());
+                        columnAnnotation.addMember("incr", "$S", item.isIncrPrimary());
                         fieldSpec.addAnnotation(primaryAnnotation.build());
                     }
                 } else if (item.isCollectionJoinField()) {

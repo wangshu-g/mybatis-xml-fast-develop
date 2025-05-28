@@ -47,7 +47,7 @@ public abstract class AbstractColumnInfo<T, M extends ModelInfo<?, ?>> implement
     private List<Condition> conditions;
     private boolean baseField;
     private boolean primaryField;
-    private boolean incr;
+    private boolean incrPrimary;
     private boolean keywordField;
 
     private Join join;

@@ -99,7 +99,7 @@ public interface ColumnInfo<T, M extends ModelInfo<?, ?>> extends Column {
 
     boolean isPrimaryField();
 
-    boolean isIncr();
+    boolean isIncrPrimary();
 
     default boolean isKeywordField() {
         return this.isBaseField() && this.getColumn().keyword();

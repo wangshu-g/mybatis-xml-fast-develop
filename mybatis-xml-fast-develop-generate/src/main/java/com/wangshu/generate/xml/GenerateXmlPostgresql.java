@@ -90,7 +90,7 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
         insertElement.addAttribute("id", CommonStaticField.SAVE_METHOD_NAME);
         insertElement.addAttribute("parameterType", "Map");
         List<F> baseFields = this.getModel().getBaseFields();
-        if (primaryField.isIncr()) {
+        if (primaryField.isIncrPrimary()) {
             insertElement.addAttribute("keyProperty", primaryField.getName());
             insertElement.add(this.getSelectKeyElement(primaryField));
             baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
@@ -113,7 +113,7 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
         batchInsertElement.addAttribute("id", CommonStaticField.BATCH_SAVE_METHOD_NAME);
         batchInsertElement.addAttribute("parameterType", "List");
         List<F> baseFields = this.getModel().getBaseFields();
-        if (primaryField.isIncr()) {
+        if (primaryField.isIncrPrimary()) {
             batchInsertElement.addAttribute("keyProperty", primaryField.getName());
             baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
         }
