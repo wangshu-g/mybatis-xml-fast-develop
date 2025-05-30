@@ -1,8 +1,12 @@
 # mybatis-xml-fast-develop changelog
 
-+ ## 1.5.2-dev
++ ## 1.5.2
 
-fix：postgresql 保存时自增主键问题，批量和 oracle、mssql 情况一样
+关于 id 的生成，不再强制使用，移除 ulid-creator 依赖，自行覆写选择性使用
+
+添加 Primary 注解，从 Column 注解分离，显式指定主键是否自增，不再通过类型判断是否自增，以及相关逻辑改动
+
+fix：postgresql 保存时自增主键问题，批量和 oracle、mssql 情况一样，警告信息
 
 + ## 1.5.1
 
