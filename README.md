@@ -4,17 +4,17 @@
 
 一个 mybatis-xml、spring boot 快速开发集合、mybatis-xml 编译期类似 lombok 的插件。
 
+它不是为了完全避免手写 xml，而是最大化发挥、保留 mybatis-xml 直观、结构体映射的优势
+
+不需要再手动维护普通的联表、结构体映射等，像 lombok 一样不再手动维护 get、set、equal 等方法
+
 引入依赖、注解后，仅需实体，无需其他代码，直接一键启动
 
-oracle、mssql、postgresql、mysql 语法已作支持，支持以上语法可以先使用已有配置去生成、建表
+oracle、mssql、postgresql、mysql 语法已作支持，支持以上数据库协议可以先使用已有配置去生成、建表
 
 受限于精力，一些未支持
 
 了解相关数据库可以自行继承、覆写方法实现
-
-它不是为了完全避免手写 xml，而是最大化发挥、保留 mybatis-xml 直观、结构体映射的优势
-
-不需要再手动维护普通的联表、结构体映射等，像 lombok 一样不再手动维护 get、set、equal 等方法
 
 欢迎一起开发适配
 
