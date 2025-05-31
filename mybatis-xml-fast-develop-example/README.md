@@ -12,7 +12,7 @@
 
 ``` sh
 
-mysql -u root -p 
+mysql -u root -p
 
 # Enter password: root
 
@@ -52,4 +52,4 @@ curl -X POST http://localhost:8080/Article/getNestList
 + public-module
     + data-service 内部数据操作，可以在这里统一数据清洗、校验、缓存
     + dubbo-api dubbo 共享服务接口
-    + model 模型
+    + model 共用模型
