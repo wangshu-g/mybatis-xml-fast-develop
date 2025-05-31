@@ -11,6 +11,8 @@
         <version>1.5.2</version>
     </parent>
 
+    <name>mybatis-xml-fast-develop-starter</name>
+
     <artifactId>mybatis-xml-fast-develop-starter</artifactId>
 
     <url>https://github.com/wangshu-g/mybatis-xml-fast-develop</url>

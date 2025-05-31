@@ -12,7 +12,11 @@
     </parent>
 
     <groupId>io.github.wangshu-g</groupId>
+
+    <name>mybatis-xml-fast-develop</name>
+
     <artifactId>mybatis-xml-fast-develop</artifactId>
+
     <version>1.5.2</version>
 
     <packaging>pom</packaging>
