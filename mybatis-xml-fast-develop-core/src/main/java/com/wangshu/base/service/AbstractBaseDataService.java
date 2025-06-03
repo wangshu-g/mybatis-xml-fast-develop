@@ -731,6 +731,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         } catch (NumberFormatException e) {
             log.warn("不规范的 pageIndex 参数,详细参数: {}", map.get("pageIndex"));
             pageIndex = 1;
+            log.warn("不规范的 pageIndex 参数,参数重设为: {}", pageIndex);
         }
         long pageSize;
         try {
@@ -741,6 +742,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         } catch (NumberFormatException e) {
             log.warn("不规范的 pageSize 参数,详细参数: {}", map.get("pageSize"));
             pageSize = 10;
+            log.warn("不规范的 pageSize 参数,参数重设为: {}", pageSize);
         }
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);
@@ -760,7 +762,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             Field modelDefaultOrderField = CacheTool.getModelDefaultOrderField(modelClazz);
             if (Objects.nonNull(modelDefaultOrderField)) {
                 orderColumn = CommonTool.getNewStrBySqlStyle(CacheTool.getModelSqlStyle(modelClazz), modelDefaultOrderField.getName());
-                log.warn("存在 DefaultOrder 标识列, orderColumn 参数重设为: {}", orderColumn);
+                log.warn("orderColumn 参数无效,但存在 DefaultOrder 标识列, orderColumn 参数重设为: {}", orderColumn);
             }
         }
         if (StrUtil.isNotBlank(orderColumn)) {
