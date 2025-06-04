@@ -72,7 +72,7 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
         <version>1.5.2</version>
     </dependency>
 
-    <!--这个一般引入 mybatis-xml-fast-develop-generate-compile-time 就不需要自己调用生成了-->
+  <!--这个引入 mybatis-xml-fast-develop-generate-compile-time 就不需要自己手动调用生成了-->
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate</artifactId>
