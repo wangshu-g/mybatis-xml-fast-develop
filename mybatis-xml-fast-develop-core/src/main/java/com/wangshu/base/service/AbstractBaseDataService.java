@@ -339,11 +339,9 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             if (modelDeleteFlagField.getType().equals(Boolean.class)) {
                 tempFlag = true;
                 String newDeleteFlagName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelDeleteFlagField.getName()));
-                if (Objects.isNull(map.get(newDeleteFlagName))) {
-                    map.put(newDeleteFlagName, true);
-                }
+                map.put(newDeleteFlagName, true);
             } else {
-                log.warn("DeleteFlag 标注字段必须为 Boolean 类DDeleteFlagDeleteFlagDeleteFlageleteFlag型");
+                log.warn("DeleteFlag 标注字段必须为 Boolean 类型");
             }
         }
         if (!tempFlag) {
@@ -781,7 +779,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     public @NotNull Map<String, Object> deleteFlagParamFilter(@NotNull Map<String, Object> map) {
         Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(getModelClazz());
         if (Objects.nonNull(modelDeleteFlagField) && Objects.isNull(map.get(modelDeleteFlagField.getName()))) {
-            map.put(modelDeleteFlagField.getName(), false);
+            map.put(modelDeleteFlagField.getName(), 0);
         }
         return map;
     }
