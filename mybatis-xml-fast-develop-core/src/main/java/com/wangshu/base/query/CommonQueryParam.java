@@ -35,8 +35,8 @@ import lombok.EqualsAndHashCode;
 @Data
 public class CommonQueryParam<T extends BaseModel> extends Query<T> {
 
-    private Integer pageIndex;
-    private Integer pageSize;
+    private Long pageIndex;
+    private Long pageSize;
     private String orderColumn;
     private Boolean enableForUpdate;
 
