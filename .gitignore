@@ -33,6 +33,5 @@
 *.len
 .DS_Store
 *.pem
-*.html
 *.iss
 *.cmd
