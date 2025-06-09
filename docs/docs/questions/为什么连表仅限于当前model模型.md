@@ -6,6 +6,8 @@ sidebar_position: 4
 
 可控的关联深度，避免复杂关系映射可能带来的间接查询扩散
 
+生成的 xml 连表，不会去分析关联实体内部的关联关系，限制在当前实体内
+
 ```xml
 <resultMap id="Article" type="com.test.model.Article">
     <id column="id" jdbcType="VARCHAR" property="id"/>

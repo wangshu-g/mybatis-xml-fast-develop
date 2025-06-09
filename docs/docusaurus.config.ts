@@ -136,7 +136,7 @@ const config: Config = {
                     ],
                 },
             ],
-            copyright: `Copyright © ${new Date().getFullYear()} mybatis-xml-fast-develop, Inc. Built with Docusaurus.`,
+            copyright: `Copyright © ${new Date().getFullYear()} <a href="https://github.com/wangshu-g/mybatis-xml-fast-develop">mybatis-xml-fast-develop</a>, Inc. Built with Docusaurus.`,
         },
         prism: {
             theme: prismThemes.github,
