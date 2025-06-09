@@ -18,6 +18,10 @@ oracle、mssql、postgresql、mysql 语法已作支持，支持以上数据库�
 
 欢迎一起开发适配
 
+## 文档网站
+
+https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
+
 ## 视频使用演示
 
 https://www.bilibili.com/video/BV17t5kzNEU2
