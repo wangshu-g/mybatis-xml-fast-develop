@@ -777,9 +777,14 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * <p>若存在 {@link com.wangshu.annotation.DeleteFlag} 标识列，并且没有显式指定标识列的值，则设为 false，仅查询未删除数据</p>
      **/
     public @NotNull Map<String, Object> deleteFlagParamFilter(@NotNull Map<String, Object> map) {
-        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(getModelClazz());
+        Class<T> modelClazz = getModelClazz();
+        DataBaseType modelDataBaseType = CacheTool.getModelDataBaseType(modelClazz);
+        Field modelDeleteFlagField = CacheTool.getModelDeleteFlagField(modelClazz);
         if (Objects.nonNull(modelDeleteFlagField) && Objects.isNull(map.get(modelDeleteFlagField.getName()))) {
-            map.put(modelDeleteFlagField.getName(), 0);
+            switch (modelDataBaseType) {
+                case postgresql -> map.put(modelDeleteFlagField.getName(), false);
+                default -> map.put(modelDeleteFlagField.getName(), 0);
+            }
         }
         return map;
     }
