@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
  *
  * <p>注意：这里除了 postgresql，目前其他支持的数据库，注意数值相关列要自行指定小数点后长度</p>
  */
-@EqualsAndHashCode(callSuper = true)
-@lombok.Data
 @Slf4j
 public abstract class GenerateTable extends ModelInfo {
 

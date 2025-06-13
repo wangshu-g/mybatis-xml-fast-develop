@@ -32,8 +32,6 @@ import java.util.Objects;
 /**
  * @author wangshu-g
  */
-@EqualsAndHashCode(callSuper = true)
-@lombok.Data
 public class GenerateTablePostgresql extends GenerateTable {
 
     public GenerateTablePostgresql(Class<? extends BaseModel> clazz) {

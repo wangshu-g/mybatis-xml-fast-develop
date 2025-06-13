@@ -24,58 +24,33 @@ package com.wangshu.table;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.model.BaseModel;
-import com.wangshu.tool.CommonTool;
-import lombok.EqualsAndHashCode;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * @author wangshu-g
  */
-@Slf4j
-public class GenerateTableOracle extends GenerateTable {
+//  TODO
+public class GenerateTableDameng extends GenerateTable {
 
-    public GenerateTableOracle(Class<? extends BaseModel> clazz) {
+    public GenerateTableDameng(Class<? extends BaseModel> clazz) {
         super(clazz);
     }
 
     @Override
-    public void createTable(@NotNull Connection connection, @NotNull String tableName) throws SQLException {
-        log.info("创建表: {}", tableName);
-        String sql = this.getCreateTableSql(tableName);
-        log.info("执行sql: {}", sql);
-        Statement statement = connection.createStatement();
-        statement.execute(sql);
-        if (this.getPrimaryField().getAutoIncrement()) {
-            this.createPrimaryIncrSeq(connection);
-        }
-        log.info("");
-    }
-
-    private String getPrimaryIncrSeqName() {
-        String primaryIncrSeq = CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), "primaryIncrSeq");
-        return StrUtil.concat(false, this.getTableName(), "_", primaryIncrSeq);
-    }
-
-    private void createPrimaryIncrSeq(@NotNull Connection connection) throws SQLException {
-        String primaryIncrSeqName = getPrimaryIncrSeqName();
-        log.info("创建主键自增序列: {}", primaryIncrSeqName);
-        String sequenceSql = StrUtil.concat(false, "create sequence ",
-                "\"",
-                primaryIncrSeqName,
-                "\"",
-                " start with 1 increment by 1 nocache");
-        log.info("执行sql: {}", sequenceSql);
-        connection.createStatement().execute(sequenceSql);
+    public boolean columnIsModify(@NotNull String currentColumnTypeName, @NotNull String columnJdbcType) {
+        return !StrUtil.equals(currentColumnTypeName.toLowerCase(), columnJdbcType.toLowerCase());
     }
 
     @Override
-    public boolean columnIsModify(@NotNull String currentColumnTypeName, @NotNull String columnJdbcType) {
-        return !StrUtil.equals(currentColumnTypeName.toLowerCase().split("\\(")[0], columnJdbcType.toLowerCase());
+    public ResultSet getTablesResultSetFromDatabaseMetaData(@NotNull Connection connection, String tableName) throws SQLException {
+        String catalog = connection.getCatalog();
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        return databaseMetaData.getTables(catalog, null, tableName, new String[]{"TABLE"});
     }
 
     @Override
@@ -85,40 +60,48 @@ public class GenerateTableOracle extends GenerateTable {
         sql.append("\" ( ");
         for (int index = 0; index < this.getFields().size(); index++) {
             FieldInfo item = this.getFields().get(index);
-            String columnName = StrUtil.concat(false, item.getSqlStyleName());
+            String columnName = StrUtil.concat(false, "\"", item.getSqlStyleName(), "\"");
             int length = item.getDefaultLength();
             String columnType = StrUtil.concat(false, item.getDbColumnType(), length == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(length), ")"));
             boolean defaultNullFlag = item.getDefaultNull();
             String columnNull = defaultNullFlag ? "null" : "not null";
-            boolean primaryKeyFlag = item.getPrimary();
-//            String columnAutoIncrement = (primaryKeyFlag && (item.getType().equals(Long.class) || item.getType().equals(Integer.class))) ? "generated always as identity start with 1 increment by 1" : "";
-//            String columnComment = StrUtil.concat(false, "comment '", this.getComment(item), "'");
-            String columnPrimary = primaryKeyFlag ? "primary key" : "";
+//            boolean primaryKeyFlag = this.isPrimaryKey(item);
+            String columnAutoIncrement = item.getAutoIncrement() ? "IDENTITY(1,1)" : "";
+//            String columnComment = StrUtil.concat(false, "comment '", item.getComment(), "'");
+            String columnPrimary = item.getPrimary() ? "primary key" : "";
             String columnEnd = index == this.getFields().size() - 1 ? "" : ",";
-            sql.append("\"");
             sql.append(columnName);
-            sql.append("\" ");
+            sql.append(" ");
             sql.append(columnType);
             sql.append(" ");
-            sql.append(!primaryKeyFlag ? StrUtil.concat(false, columnNull, " ") : "");
+            sql.append(columnNull);
             sql.append(" ");
-            sql.append(columnPrimary);
+            sql.append(columnAutoIncrement);
+//            sql.append(" ");
+//            sql.append(columnComment);
+//            sql.append(" ");
+//            sql.append(columnPrimary);
             sql.append(" ");
             sql.append(columnEnd);
         }
-        sql.append(" )");
+        FieldInfo primaryField = this.getPrimaryField();
+        String columnPrimary = primaryField.getPrimary() ? StrUtil.concat(false, ", primary key (\"", primaryField.getSqlStyleName(), "\")") : "";
+        sql.append(columnPrimary);
+        sql.append(" );");
         return sql.toString();
     }
 
     @Override
     public String getAlterColumnSql(String tableName, String columnName, String columnJdbcType, int columnLength) {
-        return StrUtil.concat(false, "alter table \"",
+        return StrUtil.concat(false,
+                "alter table \"",
                 tableName,
-                "\" modify \"",
+                "\" alter column \"",
                 columnName,
-                "\" ",
+                "\" type ",
                 columnJdbcType,
-                columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")"));
+                columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
+        );
     }
 
     @Override
@@ -128,7 +111,9 @@ public class GenerateTableOracle extends GenerateTable {
                 "\" add \"",
                 columnName,
                 "\" ",
-                columnJdbcType, columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")"));
+                columnJdbcType,
+                columnLength == -1 ? "" : StrUtil.concat(false, "(", String.valueOf(columnLength), ")")
+        );
     }
 
 }

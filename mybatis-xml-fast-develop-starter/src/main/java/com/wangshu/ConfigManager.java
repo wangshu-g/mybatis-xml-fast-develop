@@ -92,6 +92,8 @@ public class ConfigManager implements ApplicationContextAware {
                             case mssql -> generateTable = new GenerateTableMssql(modelClazz);
                             case postgresql -> generateTable = new GenerateTablePostgresql(modelClazz);
                             case mysql -> generateTable = new GenerateTableMysql(modelClazz);
+                            case mariadb -> generateTable = new GenerateTableMariadb(modelClazz);
+                            case dameng -> generateTable = new GenerateTableDameng(modelClazz);
                         }
                         if (Objects.isNull(generateTable)) {
                             log.warn("暂无对应数据库类型实现: {}", modelAnnotation.dataBaseType());

@@ -30,8 +30,6 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author wangshu-g
  */
-@EqualsAndHashCode(callSuper = true)
-@lombok.Data
 public class GenerateTableMssql extends GenerateTable {
 
     public GenerateTableMssql(Class<? extends BaseModel> clazz) {
