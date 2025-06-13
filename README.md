@@ -2,7 +2,7 @@
 
 ## 介绍
 
-一个 mybatis-xml、spring boot 快速开发集合、mybatis-xml 编译期类似 lombok 的插件。
+*一个 myb*atis-xml、spring boot 快速开发集合、mybatis-xml 编译期类似 lombok 的插件。
 
 它不是为了完全避免手写 xml，而是最大化发挥、保留 mybatis-xml 直观、结构体映射的优势
 
@@ -10,13 +10,11 @@
 
 引入依赖、注解后，仅需实体，无需其他代码，直接一键启动
 
-oracle、mssql、postgresql、mysql 语法已作支持，支持以上数据库协议可以先使用已有配置去生成、建表
+oracle、mssql、postgresql、mysql、mariadb、dameng 已作支持，支持以上数据库协议可以先使用已有配置去生成、建表
 
-受限于精力，一些未支持
+受限于精力，一些未支持，欢迎一起开发适配
 
 了解相关数据库可以自行继承、覆写方法实现
-
-欢迎一起开发适配
 
 ## 文档网站
 
@@ -76,7 +74,7 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
         <version>1.5.2</version>
     </dependency>
 
-  <!--这个引入 mybatis-xml-fast-develop-generate-compile-time 就不需要自己手动调用生成了-->
+    <!--这个引入 mybatis-xml-fast-develop-generate-compile-time 就不需要自己手动调用生成了-->
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate</artifactId>
@@ -97,8 +95,8 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
 
 ## 联系方式
 
-备注来意哦，欢迎一起开发适配
+2560334673@qq.com
 
-<center>
-  <img alt="author-qq-qrcode.jpg" height="1158" src="author-qq-qrcode.jpg" width="588"/>
-</center>
+wangshu10086@gmail.com
+
+表明来意哦，欢迎一起开发适配
