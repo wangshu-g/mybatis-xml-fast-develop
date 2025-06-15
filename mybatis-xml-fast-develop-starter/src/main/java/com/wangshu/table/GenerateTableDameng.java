@@ -34,7 +34,6 @@ import java.sql.SQLException;
 /**
  * @author wangshu-g
  */
-//  TODO
 public class GenerateTableDameng extends GenerateTable {
 
     public GenerateTableDameng(Class<? extends BaseModel> clazz) {

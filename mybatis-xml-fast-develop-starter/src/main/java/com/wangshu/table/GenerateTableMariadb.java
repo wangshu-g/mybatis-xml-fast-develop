@@ -35,7 +35,6 @@ import java.sql.SQLException;
 /**
  * @author wangshu-g
  */
-//  TODO
 public class GenerateTableMariadb extends GenerateTable {
 
     public GenerateTableMariadb(Class<? extends BaseModel> clazz) {

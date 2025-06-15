@@ -32,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-// TODO
 public class GenerateXmlDameng<T extends ModelInfo<?, F>, F extends ColumnInfo<?, T>> extends GenerateXml<T, F> {
 
     public GenerateXmlDameng(T model) {
