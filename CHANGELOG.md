@@ -1,5 +1,19 @@
 # mybatis-xml-fast-develop changelog
 
++ ## 1.5.3
+
+待推送
+
+文档网站 github pages
+
+mariadb 数据库生成和建表支持
+
+damneg（达梦）数据库生成和建表支持
+
+fix: postgresql 软删除参数问题
+
+pageIndex，pageSize 参数类型修改
+
 + ## 1.5.2
 
 已推送
