@@ -34,7 +34,13 @@ enum class DataBaseType {
     postgresql,
 
     //    正常
-    mysql;
+    mysql,
+
+    //    单个保存自增 id 回写正常，批量仅回写第一个元素的自增 id
+    mariadb,
+
+    //    正常
+    dameng;
 
     companion object {
         @JvmStatic

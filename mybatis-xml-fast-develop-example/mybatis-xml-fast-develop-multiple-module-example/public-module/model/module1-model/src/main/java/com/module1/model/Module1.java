@@ -2,6 +2,7 @@ package com.module1.model;
 
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Model;
+import com.wangshu.annotation.Primary;
 import com.wangshu.base.model.BaseModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +12,8 @@ import lombok.EqualsAndHashCode;
 @Model
 public class Module1 extends BaseModel {
 
-    @Column(primary = true)
+    @Primary
+    @Column
     private Long id;
 
     @Column

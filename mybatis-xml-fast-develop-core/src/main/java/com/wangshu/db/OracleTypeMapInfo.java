@@ -1,4 +1,4 @@
-package com.wangshu.tool;
+package com.wangshu.db;
 
 // MIT License
 //

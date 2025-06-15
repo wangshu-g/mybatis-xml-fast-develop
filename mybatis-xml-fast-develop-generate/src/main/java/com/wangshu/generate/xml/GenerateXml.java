@@ -42,7 +42,6 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -331,7 +330,8 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         totalElement.addAttribute("parameterType", "Map");
         totalElement.addAttribute("resultType", Integer.class.getSimpleName());
         totalElement.addText(CommonStaticField.BREAK_WRAP);
-        totalElement.addText(StrUtil.concat(false, "select count(", this.wrapEscapeCharacter(this.getModel().getTableName()), ".", this.wrapEscapeCharacter(this.getModel().getPrimaryField().getName()), ") from ", this.wrapEscapeCharacter(this.getModel().getTableName())));
+//        totalElement.addText(StrUtil.concat(false, "select count(", this.wrapEscapeCharacter(this.getModel().getTableName()), ".", this.wrapEscapeCharacter(this.getModel().getPrimaryField().getName()), ") from ", this.wrapEscapeCharacter(this.getModel().getTableName())));
+        totalElement.addText(StrUtil.concat(false, "select count(*) from ", this.wrapEscapeCharacter(this.getModel().getTableName())));
         totalElement.addText(CommonStaticField.BREAK_WRAP);
 
         List<F> joinFields = new ArrayList<>();
@@ -368,7 +368,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
                 org.dom4j.Element element = this.getAssociationElement(field.getName(), leftModel.getModelFullName());
                 for (F baseField : baseFields) {
                     String property = baseField.getName();
-                    String column = StrUtil.concat(false, field.getName(), field.getInfix(), StringUtils.capitalize(property));
+                    String column = StrUtil.concat(false, field.getName(), field.getInfix(), StrUtil.upperFirst(property));
                     JdbcType mybatisJdbcType = baseField.getMybatisJdbcType();
                     Element idResultElement = this.getResultMapElement(column, mybatisJdbcType.name(), property, baseField.isPrimaryField());
                     element.add(idResultElement);
@@ -405,12 +405,16 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
                 for (F baseField : baseFields) {
                     String table = getJoinLeftTableAsName(field);
                     String columnName = baseField.getSqlStyleName();
-                    String columnAsName = StrUtil.concat(false, field.getName(), field.getInfix(), StringUtils.capitalize(columnName));
+                    String columnAsName = getJoinModelBaseFieldColumnAsName(field, baseField);
                     fieldsSelectText.add(this.getSelectText(table, columnName, columnAsName));
                 }
             }
         }
         return fieldsSelectText;
+    }
+
+    public String getJoinModelBaseFieldColumnAsName(@NotNull F joinField, @NotNull F joinModelBaseField) {
+        return StrUtil.concat(false, joinField.getName(), joinField.getInfix(), StrUtil.upperFirst(joinModelBaseField.getName()));
     }
 
     public String getJoinLeftTableAsName(@NotNull F joinField) {
@@ -539,7 +543,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
     }
 
     public org.dom4j.Element getBaseFieldIfElement(@NotNull F field, @NotNull Condition condition) {
-        String testConditionName = StrUtil.concat(false, field.getName(), StringUtils.capitalize(condition.equals(Condition.equal) ? "" : condition.name()));
+        String testConditionName = StrUtil.concat(false, field.getName(), StrUtil.upperFirst(condition.equals(Condition.equal) ? "" : condition.name()));
         org.dom4j.Element ifElement = this.getIfNotNullElement(testConditionName);
         this.getBaseFieldIfText(ifElement, field, condition, testConditionName);
         return ifElement;
@@ -558,7 +562,8 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
      * @return org.dom4j.Element ifElement
      **/
     public org.dom4j.Element getJoinFieldIfElement(@NotNull F joinField, T leftModel, @NotNull F selectField, @NotNull Condition condition) {
-        String testConditionName = StrUtil.concat(false, joinField.getName(), joinField.getInfix(), StringUtils.capitalize(selectField.getName()), StringUtils.capitalize(condition.equals(Condition.equal) ? "" : condition.name()));
+        String columnAsName = this.getJoinModelBaseFieldColumnAsName(joinField, selectField);
+        String testConditionName = StrUtil.concat(false, columnAsName, StrUtil.upperFirst(condition.equals(Condition.equal) ? "" : condition.name()));
         org.dom4j.Element ifElement = this.getIfNotNullElement(testConditionName);
         this.getJoinFieldIfText(ifElement, joinField, leftModel, selectField, condition, testConditionName);
         return ifElement;

@@ -1,4 +1,4 @@
-package com.wangshu.tool;
+package com.wangshu.db;
 
 // MIT License
 //
@@ -31,60 +31,66 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class PostgresqlTypeMapInfo {
+public class MssqlTypeMapInfo {
 
     private static final Map<String, String> JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE = new HashMap<>();
     private static final Map<String, Integer> DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH = new HashMap<>();
 
     static {
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Integer.class.getName(), "INTEGER");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Integer.class.getName(), "INT");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Long.class.getName(), "BIGINT");
         JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Short.class.getName(), "SMALLINT");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Float.class.getName(), "REAL");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Double.class.getName(), "DOUBLE PRECISION");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Boolean.class.getName(), "BOOLEAN");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Character.class.getName(), "CHAR");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(BigDecimal.class.getName(), "NUMERIC");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(String.class.getName(), "VARCHAR");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.util.Date.class.getName(), "TIMESTAMP");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.sql.Date.class.getName(), "TIMESTAMP");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte.class.getName(), "SMALLINT");
-        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte[].class.getName(), "BYTEA");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Float.class.getName(), "FLOAT");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Double.class.getName(), "FLOAT");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Boolean.class.getName(), "BIT");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Character.class.getName(), "NCHAR");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(BigDecimal.class.getName(), "DECIMAL");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(String.class.getName(), "NVARCHAR");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.util.Date.class.getName(), "DATETIME");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(java.sql.Date.class.getName(), "DATETIME");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte.class.getName(), "TINYINT");
+        JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.put(Byte[].class.getName(), "VARBINARY");
     }
 
     static {
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BOOLEAN", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BIT", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TINYINT", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("SMALLINT", -1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INTEGER", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("INT", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BIGINT", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("FLOAT", 8);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("REAL", -1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DOUBLE PRECISION", -1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NUMERIC", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DECIMAL", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NUMERIC", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("CHAR", 1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NCHAR", 1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("VARCHAR", 255);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NVARCHAR", 255);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TEXT", -1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIMESTAMP", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("NTEXT", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATETIME", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("DATE", -1);
         DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("TIME", -1);
-        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BYTEA", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("BINARY", 1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("VARBINARY", -1);
+        DB_COLUMN_TYPE_MAP_DEFAULT_LENGTH.put("IMAGE", -1);
     }
 
     public static String getDbColumnTypeByField(@NotNull Field field) {
         String type = field.getType().getName();
-        String postgresqlType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(type);
-        if (StrUtil.isBlank(postgresqlType)) {
+        String mysqlType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(type);
+        if (StrUtil.isBlank(mysqlType)) {
             throw new IllegalArgumentException("Unsupported field: " + field);
         }
-        return postgresqlType;
+        return mysqlType;
     }
 
     public static String getDbColumnTypeByJavaTypeName(String javaTypeName) {
-        String postgresqlType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(javaTypeName);
-        if (StrUtil.isBlank(postgresqlType)) {
+        String mysqlType = JAVA_TYPE_NAME_MAP_DB_COLUMN_TYPE.get(javaTypeName);
+        if (StrUtil.isBlank(mysqlType)) {
             throw new IllegalArgumentException("Unsupported javaTypeName: " + javaTypeName);
         }
-        return postgresqlType;
+        return mysqlType;
     }
 
     public static @NotNull Integer getDefaultLengthByDbColumnType(String dbColumnType) {

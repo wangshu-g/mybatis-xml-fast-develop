@@ -31,6 +31,7 @@ import com.wangshu.annotation.Join;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.AbstractBaseDataService;
+import com.wangshu.db.*;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.exception.IException;
@@ -292,6 +293,8 @@ public class CommonTool {
             case mssql -> dbColumnType = MssqlTypeMapInfo.getDbColumnTypeByField(field);
             case postgresql -> dbColumnType = PostgresqlTypeMapInfo.getDbColumnTypeByField(field);
             case mysql -> dbColumnType = MysqlTypeMapInfo.getDbColumnTypeByField(field);
+            case mariadb -> dbColumnType = MariadbTypeMapInfo.getDbColumnTypeByField(field);
+            case dameng -> dbColumnType = DamengTypeMapInfo.getDbColumnTypeByField(field);
             default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
         }
         return dbColumnType;
@@ -304,6 +307,8 @@ public class CommonTool {
             case mssql -> dbColumnType = MssqlTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
             case postgresql -> dbColumnType = PostgresqlTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
             case mysql -> dbColumnType = MysqlTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
+            case mariadb -> dbColumnType = MariadbTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
+            case dameng -> dbColumnType = DamengTypeMapInfo.getDbColumnTypeByJavaTypeName(javaTypeName);
             default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
         }
         return dbColumnType;
@@ -316,6 +321,8 @@ public class CommonTool {
             case mssql -> defaultLength = MssqlTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
             case postgresql -> defaultLength = PostgresqlTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
             case mysql -> defaultLength = MysqlTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
+            case mariadb -> defaultLength = MariadbTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
+            case dameng -> defaultLength = DamengTypeMapInfo.getDefaultLengthByDbColumnType(dbColumnType);
             default -> throw new IllegalArgumentException("暂无对应数据库类型实现");
         }
         return defaultLength;

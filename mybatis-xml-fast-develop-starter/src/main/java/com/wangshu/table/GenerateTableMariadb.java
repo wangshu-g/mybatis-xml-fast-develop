@@ -24,6 +24,7 @@ package com.wangshu.table;
 
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.model.BaseModel;
+import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -34,9 +35,9 @@ import java.sql.SQLException;
 /**
  * @author wangshu-g
  */
-public class GenerateTableMysql extends GenerateTable {
+public class GenerateTableMariadb extends GenerateTable {
 
-    public GenerateTableMysql(Class<? extends BaseModel> clazz) {
+    public GenerateTableMariadb(Class<? extends BaseModel> clazz) {
         super(clazz);
     }
 

@@ -16,5 +16,5 @@ mybatis:
     # 不会被覆盖，自定义 xml 注意单独找个文件夹
     - classpath:mapper/*.xml
     # 可选强制覆盖
-    - classpath:[模块名称]/*.xml
+    - classpath:[你的模块名称]-mapper/*.xml
 ```

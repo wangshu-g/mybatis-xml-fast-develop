@@ -150,6 +150,8 @@ public abstract class AbstractModelInfo<T, F extends ColumnInfo<?, ?>> implement
             case mssql -> generateXml = new GenerateXmlMssql<>((ModelInfo) this, messageExceptionConsumer);
             case postgresql -> generateXml = new GenerateXmlPostgresql<>((ModelInfo) this, messageExceptionConsumer);
             case mysql -> generateXml = new GenerateXmlMysql<>((ModelInfo) this, messageExceptionConsumer);
+            case mariadb -> generateXml = new GenerateXmlMariadb<>((ModelInfo) this, messageExceptionConsumer);
+            case dameng -> generateXml = new GenerateXmlDameng<>((ModelInfo) this, messageExceptionConsumer);
         }
         return generateXml;
     }

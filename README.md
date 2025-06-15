@@ -4,23 +4,11 @@
 
 一个 mybatis-xml、spring boot 快速开发集合、mybatis-xml 编译期类似 lombok 的插件。
 
-它不是为了完全避免手写 xml，而是最大化发挥、保留 mybatis-xml 直观、结构体映射的优势
+用法类似 lombok，通过编译期生成模板 xml。
 
-不需要再手动维护普通的联表、结构体映射等，像 lombok 一样不再手动维护 get、set、equal 等方法一样的效果
+其完全基于 mybatis xml 扩展功能，因此引入后不会为团队带来任何学习成本和心智负担，几乎为零的侵入性，不存在任何黑盒
 
-引入依赖、注解后，仅需实体，无需其他代码，直接一键启动
-
-oracle、mssql、postgresql、mysql 语法已作支持，支持以上数据库协议可以先使用已有配置去生成、建表
-
-受限于精力，一些未支持
-
-了解相关数据库可以自行继承、覆写方法实现
-
-欢迎一起开发适配
-
-## 视频使用演示
-
-https://www.bilibili.com/video/BV17t5kzNEU2
+受限于精力，一些数据库语法生成暂未支持，欢迎一起开发适配
 
 ## 模块简介
 
@@ -40,13 +28,32 @@ https://www.bilibili.com/video/BV17t5kzNEU2
     + mybatis-xml-fast-develop-single-example 单体应用案例
     + mybatis-xml-fast-develop-multiple-module-example 多模块应用案例
 
-## 为什么是 mybatis-xml
+## 文档网站
 
-**直观，不存在黑盒，所见即所得**
+https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
 
-完全基于 xml ，对于团队和开发人员，它可以是 **零心智负担、侵入**
+## 生成语法和自动建表数据库支持
 
-你也可以通过配置仅使用 xml 产物
+| 枚举值                     | 数据库类型说明              | 
+|-------------------------|----------------------|
+| DataBaseType.oracle     | Oracle               |
+| DataBaseType.mssql      | Microsoft SQL Server |
+| DataBaseType.postgresql | Postgresql           |
+| DataBaseType.mysql      | MySQL（默认）            |
+| DataBaseType.mariadb    | MariaDB              |
+| DataBaseType.dameng     | 达梦数据库（Dameng）        |
+
+## 常用sql语法风格
+
+| 枚举值          | 命名风格                        | 示例        |
+|--------------|-----------------------------|-----------|
+| SqlStyle.lcc | Lower Camel Case（默认，小写开头驼峰） | `userId`  |
+| SqlStyle.sc  | Snake Case（小写蛇形）            | `user_id` |
+| SqlStyle.su  | Snake Upper（大写蛇形）           | `USER_ID` |
+
+## 视频使用演示
+
+https://www.bilibili.com/video/BV17t5kzNEU2
 
 ## 如何使用
 
@@ -63,26 +70,26 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-core</artifactId>
-        <version>1.5.2</version>
+        <version>1.5.3</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-starter</artifactId>
-        <version>1.5.2</version>
+        <version>1.5.3</version>
     </dependency>
 
-  <!--这个引入 mybatis-xml-fast-develop-generate-compile-time 就不需要自己手动调用生成了-->
+    <!--这个引入 mybatis-xml-fast-develop-generate-compile-time 就不需要自己手动调用生成了-->
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate</artifactId>
-        <version>1.5.2</version>
+        <version>1.5.3</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate-compile-time</artifactId>
-        <version>1.5.2</version>
+        <version>1.5.3</version>
         <!--对于项目中存在某些动态编译场景，这里很重要哦！！！（编译不会引入该依赖）-->
         <scoppe>provided</scoppe>
     </dependency>
@@ -93,8 +100,8 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
 
 ## 联系方式
 
-备注来意哦，欢迎一起开发适配
+2560334673@qq.com
 
-<center>
-  <img alt="author-qq-qrcode.jpg" height="1158" src="author-qq-qrcode.jpg" width="588"/>
-</center>
+wangshu10086@gmail.com
+
+表明来意哦，欢迎一起开发适配
