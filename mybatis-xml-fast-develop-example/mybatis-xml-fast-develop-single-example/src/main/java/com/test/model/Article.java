@@ -1,8 +1,6 @@
 package com.test.model;
 
-import com.wangshu.annotation.Column;
-import com.wangshu.annotation.Join;
-import com.wangshu.annotation.Model;
+import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import lombok.Data;
@@ -16,16 +14,21 @@ import java.util.List;
 @Model(title = "文章", modelDefaultKeyword = "title")
 public class Article extends BaseModel {
 
-    @Column(title = "ID", conditions = {Condition.all}, primary = true)
+    @Column(title = "ID", conditions = {Condition.all})
+    @Primary
+    @DefaultOrder
     private String id;
 
     @Column(title = "创建时间", conditions = {Condition.all})
+    @CreatedAt
     private Date createdAt;
 
     @Column(title = "更新时间", conditions = {Condition.all})
+    @UpdatedAt
     private Date updatedAt;
 
     @Column(title = "删除时间", conditions = {Condition.all})
+    @DeletedAt
     private Date deletedAt;
 
     @Column(conditions = {Condition.all}, title = "文章标题", keyword = true)

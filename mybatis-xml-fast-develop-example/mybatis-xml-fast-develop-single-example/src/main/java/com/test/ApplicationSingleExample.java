@@ -8,7 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
-@EnableConfig(modelPackage = {"com.test.model"}, enableAutoInitTable = true)
+@EnableConfig(modelPackage = {"com.test.entity", "com.test.model"}, enableAutoInitTable = true)
 @MapperScan(value = {"com.test.mapper"})
 @SpringBootApplication
 public class ApplicationSingleExample implements CommandLineRunner {
