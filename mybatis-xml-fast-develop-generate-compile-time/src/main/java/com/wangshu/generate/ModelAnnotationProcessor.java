@@ -51,6 +51,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -114,38 +116,40 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
             return true;
         }
         try {
-            ModuleTemplateInfo moduleTemplateInfo = null;
+            Map<String, ModuleTemplateInfo> moduleTemplateInfoMap = new HashMap<>();
             if (generateJavaConfigCompileTime.isScanClassFile()) {
                 if (StrUtil.isBlank(generateJavaConfigCompileTime.getScanClassFileModelPackage())) {
                     printError("使用 scan-class-file 必须配置 scan-class-file-model-package");
                 } else {
                     for (Class<?> clazz : ClassUtil.scanPackage(generateJavaConfigCompileTime.getScanClassFileModelPackage())) {
                         if (clazz.isAnnotationPresent(Model.class) && BaseModel.class.isAssignableFrom(clazz)) {
-                            if (Objects.isNull(moduleTemplateInfo)) {
-                                moduleTemplateInfo = this.getModuleTemplateInfo(clazz.getName(), clazz.getSimpleName());
-                                FileUtil.del(moduleTemplateInfo.getModuleGeneratePath());
-                            }
+                            String modelPackageName = this.getModelPackageName(clazz.getName());
+                            String modelParentPackageName = this.getModelParentPackageName(modelPackageName);
+                            String modelPackageDirName = this.getModelPackageDirName(modelPackageName);
+                            ModuleTemplateInfo moduleTemplateInfo = new ModuleTemplateInfo(moduleName, modelParentPackageName, modulePath, modelPackageDirName);
                             ModelClazzInfo modelClazzInfo = new ModelClazzInfo(moduleTemplateInfo, (Class<? extends BaseModel>) clazz);
                             writeGenerateFile(modelClazzInfo, generateJavaConfigCompileTime);
+                            moduleTemplateInfoMap.put(modelPackageDirName, moduleTemplateInfo);
                         }
                     }
                 }
             } else {
                 for (Element element : roundEnv.getElementsAnnotatedWith(Model.class)) {
                     if (element instanceof TypeElement temp) {
-                        if (Objects.isNull(moduleTemplateInfo)) {
-                            moduleTemplateInfo = this.getModuleTemplateInfo(element.asType().toString(), element.getSimpleName().toString());
-                            FileUtil.del(moduleTemplateInfo.getModuleGeneratePath());
-                        }
+                        String modelPackageName = this.getModelPackageName(element.asType().toString());
+                        String modelParentPackageName = this.getModelParentPackageName(modelPackageName);
+                        String modelPackageDirName = this.getModelPackageDirName(modelPackageName);
+                        ModuleTemplateInfo moduleTemplateInfo = new ModuleTemplateInfo(moduleName, modelParentPackageName, modulePath, modelPackageDirName);
                         ModelElementInfo modelElementInfo = new ModelElementInfo(moduleTemplateInfo, temp, typeUtils);
                         writeGenerateFile(modelElementInfo, generateJavaConfigCompileTime);
+                        moduleTemplateInfoMap.put(modelPackageDirName, moduleTemplateInfo);
                     }
                 }
             }
-            if (Objects.nonNull(moduleTemplateInfo)) {
-                copyFolderToFolder(new File(moduleTemplateInfo.getModuleGeneratePath()).getAbsolutePath(), new File(moduleTemplateInfo.getModulePath()).getAbsolutePath(), false);
-                copyFolderToFolder(new File(moduleTemplateInfo.getModuleGenerateXmlPath()).getAbsolutePath(), new File(moduleTemplateInfo.getModuleXmlPath()).getAbsolutePath(), generateJavaConfigCompileTime.isForceOverwriteXml());
-                copyFolderToFolder(new File(moduleTemplateInfo.getModuleGenerateXmlPath()).getAbsolutePath(), new File(moduleTemplateInfo.getModuleCompileClassesXmlPath()).getAbsolutePath(), generateJavaConfigCompileTime.isForceOverwriteXml());
+            for (ModuleTemplateInfo item : moduleTemplateInfoMap.values()) {
+                copyFolderToFolder(new File(item.getModuleGeneratePath()).getAbsolutePath(), new File(item.getModulePath()).getAbsolutePath(), false);
+                copyFolderToFolder(new File(item.getModuleGenerateXmlPath()).getAbsolutePath(), new File(item.getModuleXmlPath()).getAbsolutePath(), generateJavaConfigCompileTime.isForceOverwriteXml());
+                copyFolderToFolder(new File(item.getModuleGenerateXmlPath()).getAbsolutePath(), new File(item.getModuleCompileClassesXmlPath()).getAbsolutePath(), generateJavaConfigCompileTime.isForceOverwriteXml());
             }
         } catch (Exception e) {
             printError("生成失败");
@@ -155,19 +159,27 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
         return true;
     }
 
-    public ModuleTemplateInfo getModuleTemplateInfo(@NotNull String modelFullName, String modelSimpleName) {
-        String modulePackageName = modelFullName.replace(StrUtil.concat(false, ".model.", modelSimpleName), "");
-        return new ModuleTemplateInfo(moduleName, modulePackageName, modulePath);
+
+    private @NotNull String getModelPackageName(@NotNull String modelFullName) {
+        return modelFullName.substring(0, modelFullName.lastIndexOf("."));
+    }
+
+    private @NotNull String getModelParentPackageName(@NotNull String modelPackageName) {
+        return modelPackageName.substring(0, modelPackageName.lastIndexOf("."));
+    }
+
+    private @NotNull String getModelPackageDirName(@NotNull String modelPackageName) {
+        String[] parts = modelPackageName.split("\\.");
+        return parts[parts.length - 1];
     }
 
     private void writeGenerateFile(@NotNull ModelInfo<?, ?> modelInfo, GenerateConfigCompileTime generateJavaConfigCompileTime) throws IOException {
         GenerateXml generateXml = modelInfo.getGenerateXml(this.messageExceptionConsumer);
-        GenerateJavaMMSSCQ generateJava = (GenerateJavaMMSSCQ) modelInfo.getGenerateJava(generateJavaConfigCompileTime, this.messageExceptionConsumer);
         if (Objects.isNull(generateXml)) {
             this.printError("暂未支持的数据库类型");
             return;
         }
-        assert generateJava != null;
+        GenerateJavaMMSSCQ generateJava = (GenerateJavaMMSSCQ) modelInfo.getGenerateJava(generateJavaConfigCompileTime, this.messageExceptionConsumer);
         generateXml.writeXml();
         generateJava.writeJava();
         if (!FileUtil.exist(modelInfo.getMapperFilePath()) && generateJavaConfigCompileTime.isMapper()) {

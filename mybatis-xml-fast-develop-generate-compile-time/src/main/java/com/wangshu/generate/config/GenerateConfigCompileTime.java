@@ -68,7 +68,7 @@ public class GenerateConfigCompileTime extends GenerateConfig {
      **/
     private boolean scanClassFile = false;
     /**
-     * <p>你的模型务必要放在 com.xxx.model 下，{@link com.wangshu.annotation.Model}</p>
+     * <p>{@link com.wangshu.annotation.Model}</p>
      **/
     private String scanClassFileModelPackage;
 

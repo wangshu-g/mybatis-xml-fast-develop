@@ -36,6 +36,8 @@ public interface ModuleInfo extends Module {
 
     String getModulePath();
 
+    String getModelPackageDirName();
+
     default String getModuleJavaPath() {
         return StrUtil.concat(false, this.getModulePath(), "src", File.separator, "main", File.separator, "java", File.separator);
     }
@@ -57,7 +59,7 @@ public interface ModuleInfo extends Module {
     }
 
     default String getModuleModelPath() {
-        return StrUtil.concat(false, this.getModulePackagePath(), "model", File.separator);
+        return StrUtil.concat(false, this.getModulePackagePath(), this.getModelPackageDirName(), File.separator);
     }
 
     default String getModuleXmlPath() {
@@ -105,7 +107,7 @@ public interface ModuleInfo extends Module {
     }
 
     default String getModuleGenerateModelPath() {
-        return StrUtil.concat(false, this.getModuleGeneratePackagePath(), "model", File.separator);
+        return StrUtil.concat(false, this.getModuleGeneratePackagePath(), this.getModelPackageDirName(), File.separator);
     }
 
     default String getModuleGenerateXmlPath() {

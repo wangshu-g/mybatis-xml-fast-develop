@@ -76,6 +76,15 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
         return this.getModelFullName().replace(StrUtil.concat(false, ".", this.getModelName()), "");
     }
 
+    default String getModelParentPackageFullName() {
+        return this.getModelPackageName().substring(0, this.getModelPackageName().lastIndexOf('.'));
+    }
+
+    default String getModelPackageDirName() {
+        String[] parts = this.getModelPackageName().split("\\.");
+        return parts[parts.length - 1];
+    }
+
     List<F> getFields();
 
     default List<F> getBaseFields() {
@@ -119,7 +128,7 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
     }
 
     default String getMapperFullName() {
-        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "mapper.", this.getMapperName()));
+        return StrUtil.concat(false, this.getModelParentPackageFullName(), ".mapper.", this.getMapperName());
     }
 
     default String getMapperPackageName() {
@@ -131,7 +140,7 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
     }
 
     default String getServiceFullName() {
-        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "service.", this.getServiceName()));
+        return StrUtil.concat(false, this.getModelParentPackageFullName(), ".service.", this.getServiceName());
     }
 
     default String getServicePackageName() {
@@ -143,7 +152,7 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
     }
 
     default String getServiceImplFullName() {
-        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "service.impl.", this.getServiceImplName()));
+        return StrUtil.concat(false, this.getModelParentPackageFullName(), ".service.impl.", this.getServiceImplName());
     }
 
     default String getServiceImplPackageName() {
@@ -155,7 +164,7 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
     }
 
     default String getControllerFullName() {
-        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "controller.", this.getControllerName()));
+        return StrUtil.concat(false, this.getModelParentPackageFullName(), ".controller.", this.getControllerName());
     }
 
     default String getControllerPackageName() {
@@ -167,7 +176,7 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
     }
 
     default String getQueryFullName() {
-        return this.getModelFullName().replace(StrUtil.concat(false, "model.", this.getModelName()), StrUtil.concat(false, "query.", this.getQueryName()));
+        return StrUtil.concat(false, this.getModelParentPackageFullName(), ".query.", this.getQueryName());
     }
 
     default String getQueryPackageName() {

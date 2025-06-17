@@ -29,7 +29,7 @@ import java.lang.annotation.*;
 
 /**
  * @author wangshu-g
- * <p>标记 model 实体类，遗留问题（你的模型务必要放在 com.xxx.model 下）</p>
+ * <p>标记 model 实体类</p>
  */
 @Documented
 @Target({ElementType.TYPE})

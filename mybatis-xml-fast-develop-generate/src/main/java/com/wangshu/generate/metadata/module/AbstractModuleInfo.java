@@ -28,6 +28,7 @@ public abstract class AbstractModuleInfo implements ModuleInfo {
     private String moduleName;
     private String modulePackageName;
     private String modulePath;
+    private String modelPackageDirName;
 
     public AbstractModuleInfo() {
 
@@ -37,6 +38,14 @@ public abstract class AbstractModuleInfo implements ModuleInfo {
         this.moduleName = moduleName;
         this.modulePackageName = modulePackageName;
         this.modulePath = modulePath;
+        this.modelPackageDirName = "model";
+    }
+
+    public AbstractModuleInfo(String moduleName, String modulePackageName, String modulePath, String modelPackageDirName) {
+        this.moduleName = moduleName;
+        this.modulePackageName = modulePackageName;
+        this.modulePath = modulePath;
+        this.modelPackageDirName = modelPackageDirName;
     }
 
     @Override

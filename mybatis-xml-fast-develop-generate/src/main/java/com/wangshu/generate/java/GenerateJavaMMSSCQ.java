@@ -203,7 +203,9 @@ public class GenerateJavaMMSSCQ<T extends ModelInfo<?, F>, F extends ColumnInfo<
 
         try {
             mapperCode = GenerateJavaUtil.getJavaCode(this.getModel().getMapperPackageName(), typeSpec.build());
-            mapperCode = mapperCode.replaceAll(StrUtil.concat(false, "package ", this.getModel().getMapperFullName()), StrUtil.concat(false, "package ", this.getModel().getMapperPackageName()))
+            mapperCode = mapperCode.replaceAll(
+                            StrUtil.concat(false, "package ", this.getModel().getMapperFullName()),
+                            StrUtil.concat(false, "package ", this.getModel().getMapperPackageName()))
                     .replaceAll(BASE_MODEL_PACKAGE_NAME, this.getModel().getModelFullName()).replaceAll(BASE_MODEL_CLAZZ_SIMPLE_NAME, this.getModel().getModelName());
             this.setMapperCode(mapperCode);
         } catch (IOException e) {

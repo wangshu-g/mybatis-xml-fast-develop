@@ -34,4 +34,8 @@ public class ModuleTemplateInfo extends AbstractModuleInfo {
     public ModuleTemplateInfo(String moduleName, String modulePackageName, String modulePath) {
         super(moduleName, modulePackageName, modulePath);
     }
+
+    public ModuleTemplateInfo(String moduleName, String modulePackageName, String modulePath, String modelPackageDirName) {
+        super(moduleName, modulePackageName, modulePath, modelPackageDirName);
+    }
 }
