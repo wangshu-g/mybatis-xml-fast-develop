@@ -51,6 +51,7 @@ public class GenerateXmlMariadb<T extends ModelInfo<?, F>, F extends ColumnInfo<
         if (primaryField.isIncrPrimary()) {
             insertElement.addAttribute("useGeneratedKeys", "true");
             insertElement.addAttribute("keyProperty", primaryField.getName());
+            baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
         }
         insertElement.addText(StrUtil.concat(false,
                 CommonStaticField.BREAK_WRAP,
@@ -72,6 +73,7 @@ public class GenerateXmlMariadb<T extends ModelInfo<?, F>, F extends ColumnInfo<
         if (primaryField.isIncrPrimary()) {
             batchInsertElement.addAttribute("useGeneratedKeys", "true");
             batchInsertElement.addAttribute("keyProperty", primaryField.getName());
+            baseFields = baseFields.stream().filter(item -> !item.isPrimaryField()).toList();
         }
         String text = StrUtil.concat(false,
                 CommonStaticField.BREAK_WRAP,
