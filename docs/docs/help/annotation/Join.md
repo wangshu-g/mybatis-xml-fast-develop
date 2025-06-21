@@ -40,6 +40,10 @@ import java.util.List;
 @Data
 @Model(title = "文章", modelDefaultKeyword = "title", dataBaseType = DataBaseType.mysql)
 public class Article extends BaseModel {
+    
+    @Column
+    @Primary
+    private String id;
 
     // 一对一，left join User on User.id = Article.uid
     @Join(rightJoinField = "uid")
@@ -49,7 +53,7 @@ public class Article extends BaseModel {
     @Join(rightJoinField = "groupId")
     private ArticleGroup articleGroup;
 
-    // 一对多
+    // 一对多，不建议使用，最好单独查
     @Join(leftJoinField = "articleId")
     private List<ArticleTag> articleTagList;
 

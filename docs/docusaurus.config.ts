@@ -18,7 +18,7 @@ const config: Config = {
     url: 'https://your-docusaurus-site.example.com',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
-    baseUrl: '/mybatis-xml-fast-develop-docs/',
+    baseUrl: '/',
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
@@ -47,21 +47,22 @@ const config: Config = {
                     editUrl:
                         'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
                 },
-                blog: {
-                    showReadingTime: true,
-                    feedOptions: {
-                        type: ['rss', 'atom'],
-                        xslt: true,
-                    },
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
-                    editUrl:
-                        'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-                    // Useful options to enforce blogging best practices
-                    onInlineTags: 'warn',
-                    onInlineAuthors: 'warn',
-                    onUntruncatedBlogPosts: 'warn',
-                },
+                blog: false,
+                // blog: {
+                //     showReadingTime: true,
+                //     feedOptions: {
+                //         type: ['rss', 'atom'],
+                //         xslt: true,
+                //     },
+                //     // Please change this to your repo.
+                //     // Remove this to remove the "edit this page" links.
+                //     editUrl:
+                //         'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+                //     // Useful options to enforce blogging best practices
+                //     onInlineTags: 'warn',
+                //     onInlineAuthors: 'warn',
+                //     onUntruncatedBlogPosts: 'warn',
+                // },
                 theme: {
                     customCss: './src/css/custom.css',
                 },
@@ -85,7 +86,7 @@ const config: Config = {
                     position: 'left',
                     label: 'Docs',
                 },
-                {to: '/blog', label: 'Blog', position: 'left'},
+                // {to: '/blog', label: 'Blog', position: 'left'},
                 {
                     href: 'https://github.com/wangshu-g/mybatis-xml-fast-develop',
                     label: 'GitHub',
@@ -115,11 +116,7 @@ const config: Config = {
                         {
                             label: 'BiliBili',
                             href: 'https://space.bilibili.com/405577865',
-                        },
-                        {
-                            label: 'X',
-                            href: 'https://x.com/docusaurus',
-                        },
+                        }
                     ],
                 },
                 {

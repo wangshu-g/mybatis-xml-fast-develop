@@ -19,7 +19,7 @@ sidebar_position: 3
 
 ## xml 中参数名称生成对照
 
-以 String name 字段为例子，除了 equal，生成逻辑就是 [字段名称]+[首字母大写的条件名称]
+以 String name 字段为例子，除了 equal，参数名称生成逻辑就是 [字段名称]+[首字母大写的条件名称]
 
 **所有的 or 条件，必须添加 enableOr 参数**，[详情见CommonQueryParam](/docs/struct/query)
 
@@ -43,4 +43,33 @@ sidebar_position: 3
 | orIsNotNull | 或：不为空            | nameOrIsNotNull |
 | all         | 所有条件都生效（通常表示全匹配） | 代表所有条件          |
 
+```java
+import com.wangshu.annotation.*;
+import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.Condition;
+import com.wangshu.enu.DataBaseType;
+import com.wangshu.enu.SqlStyle;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
+import java.util.Date;
+
+@EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
+@Data
+@Model(title = "用户")
+public class User extends BaseModel {
+
+    @Column(title = "ID")
+    @Primary
+    private String id;
+
+    @Column(conditions = {Condition.equal, Condition.instr, Condition.like})
+    private String name;
+
+    @Column(conditions = {Condition.equal, Condition.less, Condition.great})
+    private String age;
+
+}
+```

@@ -25,19 +25,6 @@ public class GenerateConfig {
 }
 ```
 
-| 配置项                                                 | 说明                               | 默认值   |
-|-----------------------------------------------------|----------------------------------|-------|
-| generate-compile-time.scan-class-file               | 配合 @ForceTrigger 使用，扫描已编译模型实体类   | false |
-| generate-compile-time.scan-class-file-model-package | 配合 @ForceTrigger 使用，指定模型实体类全包名路径 | null  |
-| generate-compile-time.force-cover-xml               | 强制覆盖旧的 XML 文件                    | false |
-| generate-compile-time.model                         | 反向生成 model，暂时没用到                 | false |
-| generate-compile-time.controller                    | 是否生成 controller                  | true  |
-| generate-compile-time.mapper                        | 是否生成 mapper                      | true  |
-| generate-compile-time.service                       | 是否生成 service                     | true  |
-| generate-compile-time.service-impl                  | 是否生成 service-impl                | true  |
-| generate-compile-time.query                         | 是否生成 query                       | true  |
-| generate-compile-time.xml                           | 是否生成 XML                         | true  |
-
 ```yaml
 mybatis-xml-fast-develop:
   generate-compile-time:
@@ -60,3 +47,16 @@ mybatis-xml-fast-develop:
     # 是否生成 xml
     xml: true
 ```
+
+| 配置项                                                 | 说明                               | 默认值   |
+|-----------------------------------------------------|----------------------------------|-------|
+| generate-compile-time.scan-class-file               | 配合 @ForceTrigger 使用，扫描已编译模型实体类   | false |
+| generate-compile-time.scan-class-file-model-package | 配合 @ForceTrigger 使用，指定模型实体类全包名路径 | null  |
+| generate-compile-time.force-cover-xml               | 强制覆盖旧的 XML 文件                    | false |
+| generate-compile-time.model                         | 反向生成 model，暂时没用到                 | false |
+| generate-compile-time.controller                    | 是否生成 controller                  | true  |
+| generate-compile-time.mapper                        | 是否生成 mapper                      | true  |
+| generate-compile-time.service                       | 是否生成 service                     | true  |
+| generate-compile-time.service-impl                  | 是否生成 service-impl                | true  |
+| generate-compile-time.query                         | 是否生成 query                       | true  |
+| generate-compile-time.xml                           | 是否生成 XML                         | true  |
