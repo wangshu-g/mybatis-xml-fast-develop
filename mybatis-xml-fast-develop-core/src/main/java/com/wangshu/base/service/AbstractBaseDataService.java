@@ -197,6 +197,20 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     /**
+     * <p>全表删除</p>
+     * <p>danger</p>
+     *
+     * @param confirm 确认知道自己在做什么
+     **/
+    public int _delete(boolean confirm) {
+        log.warn("全表删除: {}", confirm);
+        if (confirm) {
+            return getMapper()._delete(Map.of());
+        }
+        return 0;
+    }
+
+    /**
      * <p>删除</p>
      *
      * @param map {conditionName : value}
@@ -251,7 +265,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     }
 
     public Map<String, Object> deleteParamFilter(@NotNull Map<String, Object> map) {
-        if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelDeleteMethodPossibleWhereParameterName(getModelClazz())::contains)) {
+        if (map.isEmpty()
+                || map.keySet().stream().noneMatch(CacheTool.getModelDeleteMethodPossibleWhereParameterName(getModelClazz())::contains)
+                || map.values().stream().filter(Objects::nonNull).toList().isEmpty()
+        ) {
             log.error("没有合法的删除参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
@@ -365,7 +382,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
 
     public boolean softDeleteValidate(@NotNull Map<String, Object> map) {
         if (map.keySet().stream().filter(key -> !key.startsWith("new")).toList().isEmpty()) {
-            log.warn("更新条件参数没有有效新值,注意检查相关代码,详细参数: {}", map);
+            log.warn("软删除条件参数没有有效新值,注意检查相关代码,详细参数: {}", map);
         }
         return true;
     }
@@ -448,7 +465,7 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
     public Map<String, Object> updateParamFilter(@NotNull Map<String, Object> map) {
         Class<T> modelClazz = getModelClazz();
         if (map.isEmpty() || map.keySet().stream().noneMatch(CacheTool.getModelUpdateMethodPossibleWhereParameterName(modelClazz)::contains)) {
-            log.error("没有合法的更新参数!如场景需要,建议单独写一个方法(也可重写该验证方法,但不建议!),异常参数: {}", map);
+            log.error("没有合法的更新参数!如场景需要,建议单独写一个方法(也可重写该验证方法),异常参数: {}", map);
             throw new IException(HttpStatus.BAD_REQUEST);
         }
         Field modelUpdatedField = CacheTool.getModelUpdatedField(modelClazz);
@@ -727,9 +744,8 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
                 pageIndex = 1;
             }
         } catch (NumberFormatException e) {
-            log.warn("不规范的 pageIndex 参数,详细参数: {}", map.get("pageIndex"));
             pageIndex = 1;
-            log.warn("不规范的 pageIndex 参数,参数重设为: {}", pageIndex);
+            log.warn("不规范的 pageIndex 参数,原参数: {},参数重设为: {}", map.get("pageIndex"), pageIndex);
         }
         long pageSize;
         try {
@@ -738,9 +754,8 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
                 pageSize = 10;
             }
         } catch (NumberFormatException e) {
-            log.warn("不规范的 pageSize 参数,详细参数: {}", map.get("pageSize"));
             pageSize = 10;
-            log.warn("不规范的 pageSize 参数,参数重设为: {}", pageSize);
+            log.warn("不规范的 pageSize 参数,原参数: {},参数重设为: {}", map.get("pageSize"), pageSize);
         }
         map.put("pageIndex", (pageIndex - 1) * pageSize);
         map.put("pageSize", pageSize);

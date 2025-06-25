@@ -30,24 +30,27 @@ enum class SqlStyle {
 
     /**
      *
-     * <p>Lower Camel Case</p>
-     * <p>userId</p>
+     * Lower Camel Case
+     *
+     * userId
      *
      **/
     lcc,
 
     /**
      *
-     * <p>Snake Case</p>
-     * <p>user_id</p>
+     * Snake Case
+     *
+     * user_id
      *
      **/
     sc,
 
     /**
      *
-     * <p>Snake Upper</p>
-     * <p>USER_ID</p>
+     * Snake Upper
+     *
+     * USER_ID
      *
      **/
     su;

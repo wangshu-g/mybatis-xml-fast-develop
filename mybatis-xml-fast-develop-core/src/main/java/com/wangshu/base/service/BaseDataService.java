@@ -57,6 +57,14 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
     int _batchSave(@NotNull List<T> modelList);
 
     /**
+     * <p>全表删除</p>
+     * <p>danger</p>
+     *
+     * @param confirm 确认知道自己在做什么
+     **/
+    int _delete(boolean confirm);
+
+    /**
      * <p>删除</p>
      *
      * @param map {columnName : value}
