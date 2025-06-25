@@ -17,20 +17,20 @@ sidebar_position: 1
 ## 模块简介
 
 + mybatis-xml-fast-develop-core
-  + 基本功能，基类、字段、注解关联关系标识
+    + 基本功能，基类、字段、注解关联关系标识
 + mybatis-xml-fast-develop-starter
-  + 启动自动建表，异常控制
+    + 启动自动建表，异常控制
 + mybatis-xml-fast-develop-generate
-  + 主要代码生成模块
+    + 主要代码生成模块
 + mybatis-xml-fast-develop-generate-compile-time
-  + 以上的是子弹，这个就是全自动步枪。
-  + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
-  + 该组件解决使用 mybatis 及其相关组件进行开发时，sql、结构体映射等 xml 编写复杂耗时等问题，连表仅需在 model 基类字段添加注解即可
-  + 如果没有被触发，这是因为 IDEA 编辑器的编译变更策略导致，手动 Build --> Rebuild Module 'xxx'(Ctrl Shift F9)
+    + 以上的是子弹，这个就是全自动步枪。
+    + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
+    + 该组件解决使用 mybatis 及其相关组件进行开发时，sql、结构体映射等 xml 编写复杂耗时等问题，连表仅需在 model 基类字段添加注解即可
+    + 如果没有被触发，这是因为 IDEA 编辑器的编译变更策略导致，手动 Build --> Rebuild Module 'xxx'(Ctrl Shift F9)
 + mybatis-xml-fast-develop-example
-  + 最佳实践案例
-  + mybatis-xml-fast-develop-single-example 单体应用案例
-  + mybatis-xml-fast-develop-multiple-module-example 多模块应用案例
+    + 最佳实践案例
+    + mybatis-xml-fast-develop-single-example 单体应用案例
+    + mybatis-xml-fast-develop-multiple-module-example 多模块应用案例
 
 ## 文档网站
 
@@ -45,7 +45,7 @@ https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
 | DataBaseType.postgresql | Postgresql           |
 | DataBaseType.mysql      | MySQL（默认）            |
 | DataBaseType.mariadb    | MariaDB              |
-| DataBaseType.dameng     | 达梦数据库（Dameng）        |
+| DataBaseType.dameng     | Dameng（达梦数据库）        |
 
 ## 常用sql语法风格
 

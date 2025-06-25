@@ -33,7 +33,7 @@ const FeatureList: FeatureItem[] = [
         Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
         description: (
             <>
-                支持 Oracle、SQL Server、PostgreSQL、MySQL 自动建表、生成，并且支持多种风格 sql 语句，方便在不同环境中快速落地和迁移。
+                支持 oracle、mssql、postgresql、mysql、mariadb、dameng（达梦）语法生成、自动建表，并且支持多种风格 sql 语句，方便在不同环境中快速落地和迁移。
             </>
         ),
     },

@@ -2,7 +2,7 @@
 
 + ## 1.5.3
 
-待推送
+已推送
 
 文档网站 github pages
 
@@ -43,8 +43,6 @@ fix：_update(P id, @NotNull String column1, Object newValue) 方法，参数处
 BaseDataService 添加 Query、这 O、那 O 的相关支持。。。
 
 @NotNull List<T> _getNestList(@NotNull Object... keyValuesArray) 方法支持类似 _getNestList(KV(ArticleQuery::getTitleLike, titleLike)) 这样的写法。。。
-
-有点脱裤子放屁似的功能更新。。。
 
 + ## 1.5.0
 
