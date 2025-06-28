@@ -102,7 +102,7 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
     }
 
     private SqlStyle initSqlStyle() {
-        if (this.getModelAnnotation().table()) {
+        if (this.getModelAnnotation().table() || StrUtil.isNotBlank(this.getModelAnnotation().name())) {
             return this.getModelAnnotation().sqlStyle();
         }
         Class<?> parentTableModel = this.findParentTableModel();

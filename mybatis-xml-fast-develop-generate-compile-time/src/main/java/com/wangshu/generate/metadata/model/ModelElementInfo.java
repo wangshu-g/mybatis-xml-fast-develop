@@ -119,7 +119,7 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
     }
 
     private SqlStyle initSqlStyle() {
-        if (this.getModelAnnotation().table()) {
+        if (this.getModelAnnotation().table() || StrUtil.isNotBlank(this.getModelAnnotation().name())) {
             return this.getModelAnnotation().sqlStyle();
         }
         TypeElement parentTableModel = this.findParentTableModel();
