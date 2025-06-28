@@ -86,19 +86,21 @@ public class ConfigManager implements ApplicationContextAware {
                 try (Connection connection = v.getConnection()) {
                     for (Class<? extends BaseModel> modelClazz : CommonParam.modelClazz) {
                         Model modelAnnotation = modelClazz.getAnnotation(Model.class);
-                        GenerateTable generateTable = null;
-                        switch (modelAnnotation.dataBaseType()) {
-                            case oracle -> generateTable = new GenerateTableOracle(modelClazz);
-                            case mssql -> generateTable = new GenerateTableMssql(modelClazz);
-                            case postgresql -> generateTable = new GenerateTablePostgresql(modelClazz);
-                            case mysql -> generateTable = new GenerateTableMysql(modelClazz);
-                            case mariadb -> generateTable = new GenerateTableMariadb(modelClazz);
-                            case dameng -> generateTable = new GenerateTableDameng(modelClazz);
-                        }
-                        if (Objects.isNull(generateTable)) {
-                            log.warn("暂无对应数据库类型实现: {}", modelAnnotation.dataBaseType());
-                        } else {
-                            generateTable.execute(connection);
+                        if (modelAnnotation.table()) {
+                            GenerateTable generateTable = null;
+                            switch (modelAnnotation.dataBaseType()) {
+                                case oracle -> generateTable = new GenerateTableOracle(modelClazz);
+                                case mssql -> generateTable = new GenerateTableMssql(modelClazz);
+                                case postgresql -> generateTable = new GenerateTablePostgresql(modelClazz);
+                                case mysql -> generateTable = new GenerateTableMysql(modelClazz);
+                                case mariadb -> generateTable = new GenerateTableMariadb(modelClazz);
+                                case dameng -> generateTable = new GenerateTableDameng(modelClazz);
+                            }
+                            if (Objects.isNull(generateTable)) {
+                                log.warn("暂无对应数据库类型实现: {}", modelAnnotation.dataBaseType());
+                            } else {
+                                generateTable.execute(connection);
+                            }
                         }
                     }
                 } catch (SQLException e) {

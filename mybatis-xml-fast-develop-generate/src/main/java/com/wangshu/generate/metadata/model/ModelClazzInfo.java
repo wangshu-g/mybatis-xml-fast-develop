@@ -27,6 +27,7 @@ import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnFieldInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
@@ -65,7 +66,7 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
         this.setModelAnnotation(modelAnnotation);
         this.setDataBaseType(modelAnnotation.dataBaseType());
         this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
-        this.setSqlStyle(modelAnnotation.sqlStyle());
+        this.setSqlStyle(this.initSqlStyle());
         this.setTableName(this.initTableName(moduleInfo, metaData, ignoreJoinFields));
         this.setModelTitle(modelAnnotation.title());
         this.setModelName(metaData.getSimpleName());
@@ -100,11 +101,52 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
         this.setDefaultModelKeyWordField(this.getFieldByName(this.getModelDefaultKeyword()));
     }
 
-    private String initTableName(ModuleInfo moduleInfo, @NotNull Class<? extends BaseModel> metaData, boolean ignoreJoinFields) {
-        if (Objects.nonNull(this.getModelAnnotation()) && StrUtil.isNotBlank(this.getModelAnnotation().table())) {
-            return this.getModelAnnotation().table();
+    private SqlStyle initSqlStyle() {
+        if (this.getModelAnnotation().table()) {
+            return this.getModelAnnotation().sqlStyle();
         }
-        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), metaData.getSimpleName());
+        Class<?> parentTableModel = this.findParentTableModel();
+        Model tableModelAnnotation = parentTableModel.getAnnotation(Model.class);
+        return tableModelAnnotation.sqlStyle();
+    }
+
+    private String initTableName(ModuleInfo moduleInfo, @NotNull Class<? extends BaseModel> metaData, boolean ignoreJoinFields) {
+        if (this.getModelAnnotation().table()) {
+            return this.initTableModelTableName();
+        } else {
+            return this.initModelTableName();
+        }
+    }
+
+    private String initTableModelTableName() {
+        if (StrUtil.isNotBlank(this.getModelAnnotation().name())) {
+            return this.getModelAnnotation().name();
+        }
+        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), this.getMetaData().getSimpleName());
+    }
+
+    private String initModelTableName() {
+        Class<?> parentTableModel = this.findParentTableModel();
+        Model tableModelAnnotation = parentTableModel.getAnnotation(Model.class);
+        if (StrUtil.isNotBlank(tableModelAnnotation.name())) {
+            return tableModelAnnotation.name();
+        }
+        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), parentTableModel.getSimpleName());
+    }
+
+    private Class<?> findParentTableModel() {
+        Class<?> clazz = this.getMetaData();
+        while (Objects.nonNull(clazz)) {
+            Model annotation = clazz.getAnnotation(Model.class);
+            if (Objects.nonNull(annotation) && annotation.table()) {
+                break;
+            }
+            clazz = clazz.getSuperclass();
+        }
+        if (Objects.isNull(clazz)) {
+            throw new IllegalArgumentException("未能向上查找到表实体的 Model 注解，请手动指定当前模型类表名");
+        }
+        return clazz;
     }
 
 }

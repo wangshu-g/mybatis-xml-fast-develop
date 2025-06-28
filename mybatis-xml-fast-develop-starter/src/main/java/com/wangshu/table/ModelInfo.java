@@ -39,7 +39,6 @@ public abstract class ModelInfo {
 
     private List<FieldInfo> fields;
     private FieldInfo primaryField;
-    private List<String> names;
     private Class<?> metadata;
     private Model modelAnnotation;
     private DataBaseType dataBaseType;
@@ -59,7 +58,6 @@ public abstract class ModelInfo {
         this.tableName = this.initTableName(clazz);
         this.modelName = clazz.getSimpleName();
         this.modelFullName = clazz.getTypeName();
-        this.initNames(clazz);
         this.initFields(clazz);
     }
 
@@ -85,13 +83,9 @@ public abstract class ModelInfo {
         this.primaryField = fieldInfo;
     }
 
-    public void initNames(@NotNull Class<?> clazz) {
-        this.setNames(Stream.of(this.modelAnnotation.names()).toList());
-    }
-
     public String initTableName(@NotNull Class<?> clazz) {
-        if (StrUtil.isNotBlank(this.modelAnnotation.table())) {
-            return this.modelAnnotation.table();
+        if (StrUtil.isNotBlank(this.modelAnnotation.name())) {
+            return this.modelAnnotation.name();
         }
         String table = clazz.getSimpleName();
         return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), table);

@@ -57,7 +57,7 @@ public interface ModelInfo<T, F extends ColumnInfo<?, ?>> extends com.wangshu.ge
     }
 
     default String getTableName() {
-        return this.getModelAnnotation().table();
+        return this.getModelAnnotation().name();
     }
 
     default SqlStyle getSqlStyle() {

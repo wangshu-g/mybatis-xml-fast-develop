@@ -26,6 +26,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.annotation.Model;
+import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnElementInfo;
 import com.wangshu.generate.metadata.module.ModuleInfo;
@@ -73,7 +74,7 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
         this.setModelAnnotation(modelAnnotation);
         this.setDataBaseType(modelAnnotation.dataBaseType());
         this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
-        this.setSqlStyle(modelAnnotation.sqlStyle());
+        this.setSqlStyle(this.initSqlStyle());
         this.setTableName(this.initTableName(moduleInfo, metaData, typeUtils, ignoreJoinFields));
         this.setModelTitle(modelAnnotation.title());
         this.setModelName(metaData.getSimpleName().toString());
@@ -81,7 +82,7 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
         this.setModelPackageName(this.getModelFullName().replace(StrUtil.concat(false, ".", this.getModelName()), ""));
     }
 
-    public void initFields(ModuleInfo moduleInfo, TypeElement metaData, Types typeUtils, boolean ignoreJoinFields) {
+    private void initFields(ModuleInfo moduleInfo, TypeElement metaData, Types typeUtils, boolean ignoreJoinFields) {
         List<ColumnElementInfo> fields = new ArrayList<>();
         DeclaredType owner = null;
         Map<String, Object> nameMap = new HashMap<>();
@@ -117,12 +118,56 @@ public class ModelElementInfo extends AbstractModelInfo<TypeElement, ColumnEleme
         this.setDefaultModelKeyWordField(this.getFieldByName(this.getModelDefaultKeyword()));
     }
 
-    private String initTableName(ModuleInfo moduleInfo, @NotNull Element metaData, Types typeUtils, boolean ignoreJoinFields) {
-        if (Objects.nonNull(this.getModelAnnotation()) && StrUtil.isNotBlank(this.getModelAnnotation().table())) {
-            return this.getModelAnnotation().table();
+    private SqlStyle initSqlStyle() {
+        if (this.getModelAnnotation().table()) {
+            return this.getModelAnnotation().sqlStyle();
         }
-        String table = metaData.getSimpleName().toString();
-        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), table);
+        TypeElement parentTableModel = this.findParentTableModel();
+        Model tableModelAnnotation = parentTableModel.getAnnotation(Model.class);
+        return tableModelAnnotation.sqlStyle();
+    }
+
+    private String initTableName(ModuleInfo moduleInfo, @NotNull Element metaData, Types typeUtils, boolean ignoreJoinFields) {
+        if (this.getModelAnnotation().table()) {
+            return this.initTableModelTableName();
+        } else {
+            return this.initModelTableName();
+        }
+    }
+
+    private String initTableModelTableName() {
+        if (StrUtil.isNotBlank(this.getModelAnnotation().name())) {
+            return this.getModelAnnotation().name();
+        }
+        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), this.getMetaData().getSimpleName().toString());
+    }
+
+    private String initModelTableName() {
+        TypeElement parentTableModel = this.findParentTableModel();
+        Model tableModelAnnotation = parentTableModel.getAnnotation(Model.class);
+        if (StrUtil.isNotBlank(tableModelAnnotation.name())) {
+            return tableModelAnnotation.name();
+        }
+        return CommonTool.getNewStrBySqlStyle(this.getSqlStyle(), parentTableModel.getSimpleName().toString());
+    }
+
+    private TypeElement findParentTableModel() {
+        TypeElement metaData = this.getMetaData();
+        while (Objects.nonNull(metaData)) {
+            Model annotation = metaData.getAnnotation(Model.class);
+            if (Objects.nonNull(annotation) && annotation.table()) {
+                break;
+            }
+            if (Objects.nonNull(metaData.getSuperclass())) {
+                metaData = (TypeElement) typeUtils.asElement(metaData.getSuperclass());
+            } else {
+                metaData = null;
+            }
+        }
+        if (Objects.isNull(metaData)) {
+            throw new IllegalArgumentException("未能向上查找到表实体的 Model 注解，请手动指定当前模型类表名");
+        }
+        return metaData;
     }
 
 }

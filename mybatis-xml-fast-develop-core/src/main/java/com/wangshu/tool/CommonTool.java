@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.*;
 import java.nio.charset.Charset;
-import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.Function;
 
@@ -78,8 +77,6 @@ public class CommonTool {
         }
         return params;
     }
-
-    private static final SecureRandom random = new SecureRandom();
 
     public static @NotNull String getUUID7() {
         return UuidCreator.getTimeOrderedEpoch().toString().replace("-", "");

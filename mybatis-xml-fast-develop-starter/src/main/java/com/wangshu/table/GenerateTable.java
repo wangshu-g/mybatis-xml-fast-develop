@@ -23,12 +23,10 @@ package com.wangshu.table;
 // SOFTWARE.
 
 import cn.hutool.core.util.StrUtil;
-import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,26 +54,21 @@ public abstract class GenerateTable extends ModelInfo {
 
     public void execute(@NotNull Connection connection) throws SQLException {
         log.info("当前数据源: {} {}", connection.getCatalog(), connection.getMetaData().getURL());
-        List<String> names = this.getNames();
-        if (Objects.isNull(names) || names.isEmpty()) {
-            names = List.of(this.getTableName());
-        }
-        for (String tableName : names) {
-            boolean flag = false;
-            try {
-                ResultSet tables = getTablesResultSetFromDatabaseMetaData(connection, tableName);
-                flag = tables.next();
-                if (flag) {
-                    this.alterTable(connection, tableName);
-                } else {
-                    this.createTable(connection, tableName);
-                }
-            } catch (SQLException e) {
-                if (flag) {
-                    log.error(StrUtil.concat(false, "修改表 ", tableName, " 失败"), e);
-                } else {
-                    log.error(StrUtil.concat(false, "创建表 ", tableName, " 失败"), e);
-                }
+        String tableName = this.getTableName();
+        boolean flag = false;
+        try {
+            ResultSet tables = getTablesResultSetFromDatabaseMetaData(connection, tableName);
+            flag = tables.next();
+            if (flag) {
+                this.alterTable(connection, tableName);
+            } else {
+                this.createTable(connection, tableName);
+            }
+        } catch (SQLException e) {
+            if (flag) {
+                log.error(StrUtil.concat(false, "修改表 ", tableName, " 失败"), e);
+            } else {
+                log.error(StrUtil.concat(false, "创建表 ", tableName, " 失败"), e);
             }
         }
     }
