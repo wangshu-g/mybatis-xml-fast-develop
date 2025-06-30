@@ -24,6 +24,9 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
     // oracle、mssql、postgresql 使用该方法会有警告信息
     int _batchSave(@NotNull List<T> modelList);
 
+    // 全表删除，confirm 确认知道自己在做什么
+    int _delete(boolean confirm);
+
     // 删除，默认会有参数合法性校验避免意外的全表删除，若不存在有效删除参数，会抛出异常
     // 如果需要全表删除，请单独写个不验证有效参数的方法
     // 注意此处的删除是真实删除
