@@ -56,8 +56,8 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
 
     int _softDelete(@NotNull Object... keyValuesArray);
 
-    // 查询但条数据，若返回多条，会抛出异常
-    // 会验证是否存在 @DeleteFlag 标识的字段，若不存在，会添加 deleteFlag = '0' 查询未删除数据
+    // 查询单条数据，若返回多条，会抛出异常
+    // 会验证是否存在 @DeleteFlag 标识的字段，若存在，会添加 deleteFlag = '0' 查询未删除数据
     @Nullable T _select(@NotNull Map<String, Object> map);
 
     @Nullable T _select(@NotNull T model);
@@ -71,7 +71,7 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
     @Nullable T _select(@NotNull Object... keyValuesArray);
 
     // 查询连表列表，返回 Map 扁平化数据（没有 ResultMap 映射），会校验分页参数
-    // 会验证是否存在 @DeleteFlag 标识的字段，若不存在，会添加 deleteFlag = '0' 查询未删除数据
+    // 会验证是否存在 @DeleteFlag 标识的字段，若存在，会添加 deleteFlag = '0' 查询未删除数据
     @NotNull List<Map<String, Object>> _getList(@NotNull Map<String, Object> map);
 
     @NotNull List<Map<String, Object>> _getList(@NotNull T model);
@@ -83,7 +83,7 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
     @NotNull List<Map<String, Object>> _getList(@NotNull Object... keyValuesArray);
 
     // 查询连表列表，返回 Map 扁平化数据（没有 ResultMap 映射），不校验分页参数
-    // 会验证是否存在 @DeleteFlag 标识的字段，若不存在，会添加 deleteFlag = '0' 查询未删除数据
+    // 会验证是否存在 @DeleteFlag 标识的字段，若存在，会添加 deleteFlag = '0' 查询未删除数据
     @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Map<String, Object> map);
 
     @NotNull List<Map<String, Object>> _getListWithOutLimit(String column, Object value);
@@ -95,7 +95,7 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
     @NotNull List<Map<String, Object>> _getListWithOutLimit(@NotNull Object... keyValuesArray);
 
     // 查询连表列表，返回 model 模型，会校验分页参数
-    // 会验证是否存在 @DeleteFlag 标识的字段，若不存在，会添加 deleteFlag = '0' 查询未删除数据
+    // 会验证是否存在 @DeleteFlag 标识的字段，若存在，会添加 deleteFlag = '0' 查询未删除数据
     @NotNull List<T> _getNestList(@NotNull Map<String, Object> map);
 
     @NotNull List<T> _getNestList(@NotNull T model);
@@ -107,7 +107,7 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
     @NotNull List<T> _getNestList(@NotNull Object... keyValuesArray);
     
     // 查询连表列表，返回 model 模型，不校验分页参数
-    // 会验证是否存在 @DeleteFlag 标识的字段，若不存在，会添加 deleteFlag = '0' 查询未删除数据
+    // 会验证是否存在 @DeleteFlag 标识的字段，若存在，会添加 deleteFlag = '0' 查询未删除数据
     @NotNull List<T> _getNestListWithOutLimit(@NotNull Map<String, Object> map);
 
     @NotNull List<T> _getNestListWithOutLimit(String column, Object value);
@@ -119,7 +119,7 @@ public interface BaseDataService<P, T extends BaseModel> extends BaseService {
     @NotNull List<T> _getNestListWithOutLimit(@NotNull Object... keyValuesArray);
 
     // 返回符合条件的数据条数
-    // 会验证是否存在 @DeleteFlag 标识的字段，若不存在，会添加 deleteFlag = '0' 查询未删除数据
+    // 会验证是否存在 @DeleteFlag 标识的字段，若存在，会添加 deleteFlag = '0' 查询未删除数据
     int _getTotal(@NotNull Map<String, Object> map);
 
     int _getTotal(@NotNull T model);

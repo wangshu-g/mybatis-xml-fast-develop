@@ -5,9 +5,32 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-    title: 'mybatis-xml-fast-develop',
+    title: 'mybatis-xml-fast-develop-docs',
     tagline: 'mybatis-xml、spring boot 快速开发集合、mybatis 编译期类 lombok 插件。',
     favicon: 'img/favicon.ico',
+
+    headTags: [
+        {
+            tagName: 'meta',
+            attributes: {
+                name: 'msvalidate.01',
+                content: 'FFBCB3A10D96926D9B2FAD68E6F439F9',
+            },
+        },
+        {
+            tagName: 'script',
+            attributes: {},
+            innerHTML: `
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?219ec5d20389acffafac712cee154525";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+      `,
+        },
+    ],
 
     // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
     future: {
@@ -18,7 +41,7 @@ const config: Config = {
     url: 'https://your-docusaurus-site.example.com',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
-    baseUrl: '/',
+    baseUrl: '/mybatis-xml-fast-develop-docs/',
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
@@ -122,10 +145,10 @@ const config: Config = {
                 {
                     title: 'More',
                     items: [
-                        {
-                            label: 'Blog',
-                            to: '/blog',
-                        },
+                        // {
+                        //     label: 'Blog',
+                        //     to: '/blog',
+                        // },
                         {
                             label: 'GitHub',
                             href: 'https://github.com/wangshu-g/mybatis-xml-fast-develop',
