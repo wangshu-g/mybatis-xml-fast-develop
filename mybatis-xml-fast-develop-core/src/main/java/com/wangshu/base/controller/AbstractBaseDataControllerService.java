@@ -31,9 +31,13 @@ import com.wangshu.base.controller.update.UpdateService;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.BaseDataService;
 
+import java.util.Map;
+
 /**
  * @author wangshu-g
  * <p>基础控制器,不经过任何包装,直接响应Service的结果</p>
+ * <p>注意这里默认的删除调用的是 {@link BaseDataService#_delete(Map)} 真删除</p>
+ * <p>conteollrt 接口，我的建议是根据自己的业务，新建一个选择性继承或覆写一些方法，满足常用业务规则即可</p>
  */
 public abstract class AbstractBaseDataControllerService<S extends BaseDataService<?, T>, T extends BaseModel> extends AbstractBaseDataController<S, T> implements SaveService<S, T>, DeleteService<S, T>, UpdateService<S, T>, SelectService<S, T>, ListService<S, T>, NestListService<S, T> {
 

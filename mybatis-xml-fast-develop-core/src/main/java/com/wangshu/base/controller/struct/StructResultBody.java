@@ -36,7 +36,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.IOException;
 
 /**
- * <p>用于返回实体类结构信息</p>
+ * @author wangshu-g
+ *
+ * <p>表实体结构体信息，中后台可能很常用</p>
  **/
 public interface StructResultBody<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 

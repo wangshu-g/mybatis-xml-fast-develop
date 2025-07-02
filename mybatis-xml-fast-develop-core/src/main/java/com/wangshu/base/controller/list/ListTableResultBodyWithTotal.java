@@ -37,6 +37,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>列表，返回 {@link com.wangshu.base.controller.list.List <java.util.Map>} 扁平化数据</p>
+ **/
 public interface ListTableResultBodyWithTotal<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**

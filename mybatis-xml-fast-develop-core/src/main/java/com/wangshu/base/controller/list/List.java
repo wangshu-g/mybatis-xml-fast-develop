@@ -34,6 +34,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>列表，返回 {@link List<java.util.Map>} 扁平化数据</p>
+ **/
 public interface List<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**

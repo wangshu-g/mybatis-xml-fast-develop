@@ -34,6 +34,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>真删除</p>
+ **/
 public interface Delete<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**

@@ -32,7 +32,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
+import java.util.Map;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>更新，{@link BaseDataService#_save(Map)} 做的有根据主键选择更新或保存，直接调用 save 接口也可以</p>
+ **/
 public interface UpdateService<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**

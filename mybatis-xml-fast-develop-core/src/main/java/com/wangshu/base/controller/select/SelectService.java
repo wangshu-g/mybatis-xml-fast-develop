@@ -33,6 +33,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>查询单条</p>
+ **/
 public interface SelectService<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**

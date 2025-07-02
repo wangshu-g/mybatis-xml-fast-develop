@@ -37,6 +37,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>列表，返回 ResultMap 模型数据</p>
+ **/
 public interface NestListResultBodyWithTotal<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**

@@ -35,6 +35,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author wangshu-g
+ *
+ * <p>列表，返回 ResultMap 模型数据</p>
+ **/
 public interface NestListResultBody<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**

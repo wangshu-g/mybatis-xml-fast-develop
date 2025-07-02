@@ -31,6 +31,13 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Map;
+
+/**
+ * @author wangshu-g
+ *
+ * <p>保存，调用 {@link BaseDataService#_save(Map)} 方法，根据主键选择更新或保存</p>
+ **/
 public interface SaveService<S extends BaseDataService<?, T>, T extends BaseModel> extends BaseDataController<S, T> {
 
     /**
