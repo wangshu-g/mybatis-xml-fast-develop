@@ -56,12 +56,7 @@ public class Article extends BaseModel {
     private ArticleGroup articleGroup;
 
     /**
-     * <p>
-     * 并不推荐这么做，一般我会在代码中单独处理此类查询
-     * 更推荐在业务中避免此类对多查询映射，比如把 articleTagList 处理为 json 字符串存储，使用时再做处理，尽量只做一次性查询
-     * 更多避免的是复杂关系映射可能带来的间接查询扩散和不可控问题，特别是查询一个列表
-     * 可以看到对于 {@link Article#user} 此类对一查询映射，没有使用 select 方式间接查询，而是通过手动映射方式，仅做一次性查询
-     * </p>
+     * <p>不推荐</p>
      **/
     @Join(leftJoinField = "articleId")
     private List<ArticleTag> articleTagList;
