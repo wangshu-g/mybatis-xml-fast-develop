@@ -34,14 +34,16 @@ https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
 
 ## 生成语法和自动建表数据库支持
 
-| 枚举值                     | 数据库类型说明              | 
-|-------------------------|----------------------|
-| DataBaseType.oracle     | Oracle               |
-| DataBaseType.mssql      | Microsoft SQL Server |
-| DataBaseType.postgresql | Postgresql           |
-| DataBaseType.mysql      | MySQL（默认）            |
-| DataBaseType.mariadb    | MariaDB              |
-| DataBaseType.dameng     | 达梦数据库（Dameng）        |
+| 枚举值                     | 数据库类型说明              | 测试镜像版本                                             |
+|-------------------------|----------------------|----------------------------------------------------|
+| DataBaseType.oracle     | Oracle               | container-registry.oracle.com/database/free:latest |
+| DataBaseType.mssql      | Microsoft SQL Server | mcr.microsoft.com/mssql/server:2019-latest         |
+| DataBaseType.postgresql | Postgresql           | postgres:latest                                    |
+| DataBaseType.mysql      | MySQL（默认）            | mysql:8                                            |
+| DataBaseType.mariadb    | MariaDB              | mariadb:latest                                     |
+| DataBaseType.dameng     | 达梦数据库（Dameng）        | dm8_single:dm8_20240715_rev232765_x86_rh6_64       |
+
+测试用例存在未覆盖情况，如有问题，请反馈
 
 ## 常用sql语法风格
 
