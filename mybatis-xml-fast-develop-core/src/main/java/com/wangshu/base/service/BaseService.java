@@ -31,7 +31,7 @@ import com.wangshu.tool.CommonTool;
 public interface BaseService {
 
     default String getId() {
-        return CommonTool.getUUID();
+        return CommonTool.getUUID7();
     }
 
 }
