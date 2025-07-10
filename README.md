@@ -10,6 +10,10 @@
 
 受限于精力，一些数据库语法生成暂未支持，欢迎一起开发适配
 
+## 文档网站
+
+https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
+
 ## 模块简介
 
 + mybatis-xml-fast-develop-core
@@ -27,10 +31,6 @@
     + 最佳实践案例
     + mybatis-xml-fast-develop-single-example 单体应用案例
     + mybatis-xml-fast-develop-multiple-module-example 多模块应用案例
-
-## 文档网站
-
-https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
 
 ## 生成语法和自动建表数据库支持
 
