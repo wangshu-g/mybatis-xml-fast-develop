@@ -1,5 +1,19 @@
 # mybatis-xml-fast-develop changelog
 
++ ## 1.6.0-dev
+
+待推送
+
+getId 方法默认使用 UUIDV7
+
+解放掉 @Model 注解只能作用于表实体上的限制，方便扩展需求，相较于以前版本，略有破坏性更新
+
+controller 多种 SoftDelete 模板方法
+
+service 添加_delete(boolean confirm) 方法
+
+解放模型包名限制，多包生成
+
 + ## 1.5.3
 
 已推送
