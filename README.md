@@ -8,8 +8,6 @@
 
 其完全基于 mybatis xml 扩展功能，因此引入后不会为团队带来任何学习成本和心智负担，几乎为零的侵入性，不存在任何黑盒
 
-受限于精力，一些数据库语法生成暂未支持，欢迎一起开发适配
-
 ## 文档网站
 
 https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
@@ -33,6 +31,8 @@ https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
     + mybatis-xml-fast-develop-multiple-module-example 多模块应用案例
 
 ## 生成语法和自动建表数据库支持
+
+受限于精力，一些数据库语法生成暂未支持，欢迎一起开发适配反馈
 
 | 枚举值                     | 数据库类型说明              | 测试镜像版本                                             |
 |-------------------------|----------------------|----------------------------------------------------|
