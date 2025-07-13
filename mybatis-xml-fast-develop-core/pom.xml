@@ -8,7 +8,7 @@
     <parent>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop</artifactId>
-        <version>1.5.4</version>
+        <version>1.6.0</version>
     </parent>
 
     <name>mybatis-xml-fast-develop-core</name>
