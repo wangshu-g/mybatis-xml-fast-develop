@@ -1,8 +1,10 @@
 # mybatis-xml-fast-develop changelog
 
-+ ## 1.6.0-dev
++ ## 1.6.0
 
-待推送
+已推送
+
+隔了一周才推送，电脑主板进水了...
 
 getId 方法默认使用 UUIDV7
 
