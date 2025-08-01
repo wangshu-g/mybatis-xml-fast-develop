@@ -49,6 +49,11 @@ public class IException extends RuntimeException {
         this.errorMsg = errorMsg;
     }
 
+    public IException(String errorCode, String errorMsg) {
+        this.errorCode = errorCode;
+        this.errorMsg = errorMsg;
+    }
+
     public IException(String errorMsg, Exception e) {
         this(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), errorMsg, e);
     }
