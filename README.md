@@ -12,51 +12,6 @@
 
 https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
 
-## 模块简介
-
-+ mybatis-xml-fast-develop-core
-    + 基本功能，基类、字段、注解关联关系标识
-+ mybatis-xml-fast-develop-starter
-    + 启动自动建表，异常控制
-+ mybatis-xml-fast-develop-generate
-    + 主要代码生成模块
-+ mybatis-xml-fast-develop-generate-compile-time
-    + 以上的是子弹，这个就是全自动步枪。
-    + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
-    + 该组件解决使用 mybatis 及其相关组件进行开发时，sql、结构体映射等 xml 编写复杂耗时等问题，连表仅需在 model 基类字段添加注解即可
-    + 如果没有被触发，这是因为 IDEA 编辑器的编译变更策略导致，手动 Build --> Rebuild Module 'xxx'(Ctrl Shift F9)
-+ mybatis-xml-fast-develop-example
-    + 最佳实践案例
-    + mybatis-xml-fast-develop-single-example 单体应用案例
-    + mybatis-xml-fast-develop-multiple-module-example 多模块应用案例
-
-## 生成语法和自动建表数据库支持
-
-受限于精力，一些数据库语法生成暂未支持，欢迎一起开发适配反馈
-
-| 枚举值                     | 数据库类型说明              | 测试镜像版本                                             |
-|-------------------------|----------------------|----------------------------------------------------|
-| DataBaseType.oracle     | Oracle               | container-registry.oracle.com/database/free:latest |
-| DataBaseType.mssql      | Microsoft SQL Server | mcr.microsoft.com/mssql/server:2019-latest         |
-| DataBaseType.postgresql | Postgresql           | postgres:latest                                    |
-| DataBaseType.mysql      | MySQL（默认）            | mysql:8                                            |
-| DataBaseType.mariadb    | MariaDB              | mariadb:latest                                     |
-| DataBaseType.dameng     | 达梦数据库（Dameng）        | dm8_single:dm8_20240715_rev232765_x86_rh6_64       |
-
-测试用例存在未覆盖情况，如有问题，请反馈
-
-## 常用sql语法风格
-
-| 枚举值          | 命名风格                        | 示例        |
-|--------------|-----------------------------|-----------|
-| SqlStyle.lcc | Lower Camel Case（默认，小写开头驼峰） | `userId`  |
-| SqlStyle.sc  | Snake Case（小写蛇形）            | `user_id` |
-| SqlStyle.su  | Snake Upper（大写蛇形）           | `USER_ID` |
-
-## 视频使用演示
-
-https://www.bilibili.com/video/BV17t5kzNEU2
-
 ## 如何使用
 
 注意：请使用 maven 不再使用 github packages（后续将会清理掉）
@@ -99,6 +54,51 @@ https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-devel
 </dependencys>
 
 ```
+
+## 生成语法和自动建表数据库支持
+
+受限于精力，一些数据库语法生成暂未支持，欢迎一起开发适配反馈
+
+| 枚举值                     | 数据库类型说明              | 测试镜像版本                                             | 精确版本                                                                            |
+|-------------------------|----------------------|----------------------------------------------------|---------------------------------------------------------------------------------|
+| DataBaseType.oracle     | Oracle               | container-registry.oracle.com/database/free:latest | Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free |
+| DataBaseType.mssql      | Microsoft SQL Server | mcr.microsoft.com/mssql/server:2019-latest         | Microsoft SQL Server 2019 (RTM-CU32-GDR) (KB5063757) - 15.0.4440.1 (X64)        |
+| DataBaseType.postgresql | Postgresql           | postgres:latest                                    | PostgreSQL 17.6 (Debian 17.6-1.pgdg13+1)                                        |
+| DataBaseType.mysql      | MySQL（默认）            | mysql:8                                            | 8.4.6                                                                           |
+| DataBaseType.mariadb    | MariaDB              | mariadb:latest                                     | 12.0.2-MariaDB-ubu2404                                                          |
+| DataBaseType.dameng     | 达梦数据库（Dameng）        | dm8_single:dm8_20240715_rev232765_x86_rh6_64       | 8                                                                               |
+
+测试用例存在未覆盖情况，如有问题，请反馈
+
+## 常用sql语法风格
+
+| 枚举值          | 命名风格                        | 示例        |
+|--------------|-----------------------------|-----------|
+| SqlStyle.lcc | Lower Camel Case（默认，小写开头驼峰） | `userId`  |
+| SqlStyle.sc  | Snake Case（小写蛇形）            | `user_id` |
+| SqlStyle.su  | Snake Upper（大写蛇形）           | `USER_ID` |
+
+## 模块简介
+
++ mybatis-xml-fast-develop-core
+    + 基本功能，基类、字段、注解关联关系标识
++ mybatis-xml-fast-develop-starter
+    + 启动自动建表，异常控制
++ mybatis-xml-fast-develop-generate
+    + 主要代码生成模块
++ mybatis-xml-fast-develop-generate-compile-time
+    + 以上的是子弹，这个就是全自动步枪。
+    + 类似 lombok，编译期根据配置生成，一键启动支持，还会根据包名将生成的源代码自动拷贝至源代码处（不会覆盖原同名文件），方便开发修改
+    + 该组件解决使用 mybatis 及其相关组件进行开发时，sql、结构体映射等 xml 编写复杂耗时等问题，连表仅需在 model 基类字段添加注解即可
+    + 如果没有被触发，这是因为 IDEA 编辑器的编译变更策略导致，手动 Build --> Rebuild Module 'xxx'(Ctrl Shift F9)
++ mybatis-xml-fast-develop-example
+    + 最佳实践案例
+    + mybatis-xml-fast-develop-single-example 单体应用案例
+    + mybatis-xml-fast-develop-multiple-module-example 多模块应用案例
+
+## 视频使用演示
+
+https://www.bilibili.com/video/BV17t5kzNEU2
 
 ## 联系方式
 
