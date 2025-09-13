@@ -1,5 +1,9 @@
 # mybatis-xml-fast-develop changelog
 
++ ## 1.6.1-dev
+
+预添加乐观更新、自增 1、自减 1
+
 + ## 1.6.0
 
 已推送

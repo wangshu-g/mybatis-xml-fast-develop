@@ -183,6 +183,8 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         return deleteElement;
     }
 
+    private final List<String> numJavaTypeName = List.of(Integer.class.getTypeName(), Long.class.getTypeName(), Double.class.getTypeName(), Float.class.getTypeName());
+
     public org.dom4j.Element generateUpdate() {
         org.dom4j.Element updateElement = this.createXmlElement("update");
         updateElement.addAttribute("id", CommonStaticField.UPDATE_METHOD_NAME);
@@ -197,6 +199,14 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             Element ifSetNullElement = this.getIfSetNullElement(item.getName());
             ifSetNullElement.addText(StrUtil.concat(false, wrapEscapeCharacter(item.getSqlStyleName()), " = null,"));
             setElement.add(ifSetNullElement);
+            if (numJavaTypeName.contains(item.getJavaTypeName())) {
+                Element ifIncrElement = this.getIfIncrElement(item.getName());
+                ifIncrElement.addText(StrUtil.concat(false, wrapEscapeCharacter(item.getSqlStyleName()), " = ", wrapEscapeCharacter(item.getSqlStyleName()), " + 1 ", ","));
+                setElement.add(ifIncrElement);
+                Element ifDecrElement = this.getIfDecrElement(item.getName());
+                ifDecrElement.addText(StrUtil.concat(false, wrapEscapeCharacter(item.getSqlStyleName()), " = ", wrapEscapeCharacter(item.getSqlStyleName()), " - 1 ", ","));
+                setElement.add(ifDecrElement);
+            }
         });
         updateElement.add(setElement);
         org.dom4j.Element whereElement = this.createXmlElement("where");
@@ -576,7 +586,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         this.getIfText(ifElement, isAndStr, table, columnName, condition, testConditionName);
     }
 
-    private final List<Condition> normalConditionList = List.of(Condition.equal, Condition.orEqual, Condition.less, Condition.orLess, Condition.great, Condition.orGreat);
+    private final List<Condition> equalConditionList = List.of(Condition.equal, Condition.orEqual, Condition.less, Condition.orLess, Condition.great, Condition.orGreat);
     private final List<Condition> instrConditionList = List.of(Condition.instr, Condition.orInstr);
     private final List<Condition> likeConditionList = List.of(Condition.like, Condition.orLike);
     private final List<Condition> inConditionList = List.of(Condition.in, Condition.orIn);
@@ -585,12 +595,12 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
 
     public void getIfText(org.dom4j.Element ifElement, boolean isAndStr, String table, String columnName, Condition condition, String testConditionName) {
         String ifText = null;
-        if (normalConditionList.contains(condition)) {
-            ifText = this.getNormalIfText(table, columnName, this.getConditionStr(condition), testConditionName, isAndStr);
+        if (equalConditionList.contains(condition)) {
+            ifText = this.getIfEqualText(table, columnName, this.getConditionStr(condition), testConditionName, isAndStr);
         } else if (likeConditionList.contains(condition)) {
-            ifText = this.getLikeIfText(table, columnName, testConditionName, isAndStr);
+            ifText = this.getIfLikeText(table, columnName, testConditionName, isAndStr);
         } else if (instrConditionList.contains(condition)) {
-            ifText = this.getInstrIfText(table, columnName, testConditionName, isAndStr);
+            ifText = this.getIfInstrText(table, columnName, testConditionName, isAndStr);
         } else if (inConditionList.contains(condition)) {
             String orAndStr = condition.name().indexOf("or") == 0 ? "or " : "and ";
             String itemText = StrUtil.concat(false, testConditionName, "Item");
@@ -603,7 +613,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
             return;
         } else if (nullConditionList.contains(condition)) {
             boolean isNull = isNullConditionList.contains(condition);
-            ifText = this.getNullIfText(table, columnName, isAndStr, isNull);
+            ifText = this.getIfNullText(table, columnName, isAndStr, isNull);
         }
         ifElement.addText(ifText);
     }
@@ -676,22 +686,34 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         return ifElement;
     }
 
-    public String getNormalIfText(String tableName, String columnName, String conditionSeparator, String testConditionName, boolean isAndStr) {
+    public org.dom4j.Element getIfIncrElement(String testName) {
+        org.dom4j.Element ifElement = this.createXmlElement("if");
+        ifElement.addAttribute("test", StrUtil.concat(false, testName, "Incr", " != null"));
+        return ifElement;
+    }
+
+    public org.dom4j.Element getIfDecrElement(String testName) {
+        org.dom4j.Element ifElement = this.createXmlElement("if");
+        ifElement.addAttribute("test", StrUtil.concat(false, testName, "Decr", " != null"));
+        return ifElement;
+    }
+
+    public String getIfEqualText(String tableName, String columnName, String conditionSeparator, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
         return StrUtil.concat(false, orAndStr, this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), conditionSeparator, this.wrapMybatisPrecompileStr(testConditionName));
     }
 
-    public String getLikeIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
+    public String getIfLikeText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
         return StrUtil.concat(false, orAndStr, this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), " like concat(", this.wrapMybatisPrecompileStr(testConditionName), ", '%')");
     }
 
-    public String getInstrIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
+    public String getIfInstrText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
         return StrUtil.concat(false, orAndStr, "instr(", this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), ",", this.wrapMybatisPrecompileStr(testConditionName), ") > 0");
     }
 
-    public String getNullIfText(String tableName, String columnName, boolean isAndStr, boolean isNull) {
+    public String getIfNullText(String tableName, String columnName, boolean isAndStr, boolean isNull) {
         String orAndStr = isAndStr ? "and " : "or ";
         String endStr = isNull ? " is null" : " is not null";
         return StrUtil.concat(false, orAndStr, this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), endStr);

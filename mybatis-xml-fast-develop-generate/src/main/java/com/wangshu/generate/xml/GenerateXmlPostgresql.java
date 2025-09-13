@@ -45,7 +45,7 @@ public class GenerateXmlPostgresql<T extends ModelInfo<?, F>, F extends ColumnIn
     }
 
     @Override
-    public String getInstrIfText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
+    public String getIfInstrText(String tableName, String columnName, String testConditionName, boolean isAndStr) {
         String orAndStr = isAndStr ? "and " : "or ";
         return StrUtil.concat(false, orAndStr, "strpos(", this.wrapEscapeCharacter(tableName), ".", this.wrapEscapeCharacter(columnName), ",", this.wrapMybatisPrecompileStr(testConditionName), ") > 0");
     }
