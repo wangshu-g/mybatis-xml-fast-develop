@@ -48,12 +48,14 @@ public class ModelCache {
     public Map<String, Field> fieldsMap;
     public List<Field> baseFields;
     public Field primaryField;
+    public Field versionField;
     public boolean incrPrimary;
     public Field createdField;
     public Field updatedField;
     public Field deletedField;
     public Field defaultOrderField;
     public Field deleteFlagField;
+    public Map<String, String> fieldsDefaultValue;
     public List<ColumnMetadata> columnMetadata;
     public DataBaseType dataBaseType;
     public SqlStyle sqlStyle;
@@ -87,6 +89,7 @@ public class ModelCache {
     }
 
     private void initCriticalFields() {
+        Map<String, String> fieldsDefaultValue = new HashMap<>();
         for (Field baseField : this.baseFields) {
             Column columnAnnotation = baseField.getAnnotation(Column.class);
             if (Objects.nonNull(columnAnnotation)) {
@@ -97,6 +100,14 @@ public class ModelCache {
                         this.incrPrimary = primaryAnnotation.incr();
                     } else {
                         log.warn("存在多个主键字段");
+                    }
+                }
+                Version versionAnnotation = baseField.getAnnotation(Version.class);
+                if (Objects.nonNull(versionAnnotation)) {
+                    if (Objects.isNull(versionField)) {
+                        this.versionField = baseField;
+                    } else {
+                        log.warn("存在多个版本号字段");
                     }
                 }
                 CreatedAt createdAtAnnotation = baseField.getAnnotation(CreatedAt.class);
@@ -139,8 +150,13 @@ public class ModelCache {
                         log.warn("存在多个DefaultOrderColumn标识字段");
                     }
                 }
+                DefaultValue defaultValueColumnAnnotation = baseField.getAnnotation(DefaultValue.class);
+                if (Objects.nonNull(defaultValueColumnAnnotation)) {
+                    fieldsDefaultValue.put(baseField.getName(), defaultValueColumnAnnotation.value());
+                }
             }
         }
+        this.fieldsDefaultValue = fieldsDefaultValue;
     }
 
     private @NotNull List<ColumnMetadata> modelColumnType(@NotNull Class<? extends BaseModel> modelClazz) {
