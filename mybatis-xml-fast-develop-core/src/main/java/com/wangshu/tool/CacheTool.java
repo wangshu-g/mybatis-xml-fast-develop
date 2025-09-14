@@ -128,12 +128,24 @@ public class CacheTool {
         return getOrCreateModelCache(modelClazz).fields;
     }
 
+    public static @NotNull Map<String, Field> getModelFieldsMap(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).fieldsMap;
+    }
+
+    public static @NotNull Map<String, String> getModelFieldsDefaultValue(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).fieldsDefaultValue;
+    }
+
     public static @NotNull List<Field> getModelBaseFields(@NotNull Class<? extends BaseModel> modelClazz) {
         return getOrCreateModelCache(modelClazz).baseFields;
     }
 
     public static @Nullable Field getModelPrimaryField(@NotNull Class<? extends BaseModel> modelClazz) {
         return getOrCreateModelCache(modelClazz).primaryField;
+    }
+
+    public static @Nullable Field getModelVersionField(@NotNull Class<? extends BaseModel> modelClazz) {
+        return getOrCreateModelCache(modelClazz).versionField;
     }
 
     public static @Nullable Field getModelCreatedAtField(@NotNull Class<? extends BaseModel> modelClazz) {
