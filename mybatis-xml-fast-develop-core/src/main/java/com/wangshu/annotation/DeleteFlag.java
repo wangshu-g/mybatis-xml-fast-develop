@@ -29,6 +29,7 @@ import java.lang.annotation.*;
  *
  * <p>标记伪删除字段</p>
  * <p>注意只支持 {@link Boolean} 默认对应 tinyint</p>
+ * <p>新增保存时会存在默认值 false</p>
  **/
 @Documented
 @Target(ElementType.FIELD)

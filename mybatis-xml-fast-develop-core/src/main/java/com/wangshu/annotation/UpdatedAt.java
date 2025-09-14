@@ -28,6 +28,7 @@ import java.lang.annotation.*;
  * @author wangshu-g
  *
  * <p>标记更新时间字段</p>
+ * <p>新增保存时会存在默认值当前时间</p>
  **/
 @Documented
 @Target(ElementType.FIELD)

@@ -28,7 +28,7 @@ import java.lang.annotation.*;
  * <p>当使用 {@link com.wangshu.generate.config.GenerateConfig} scan-class-file: true</p>
  * <p>并且模块内没有模型基类直接使用 {@link com.wangshu.annotation.Model} 注解时</p>
  * <p>{@link javax.annotation.processing.AbstractProcessor} 不会触发，使用该注解强制触发生成</p>
- * <p>从扫描待模型基类切换为扫描指定包已存在的模型基类</p>
+ * <p>从扫描待编译模型基类切换为扫描指定包已编译的模型基类</p>
  *
  * @author wangshu-g
  */
