@@ -46,6 +46,16 @@ public class BaseModel extends EntityTool {
         return CacheTool.getModelFields(this.getClass());
     }
 
+    @Override
+    public Map<String, Field> modelFieldsMap() {
+        return CacheTool.getModelFieldsMap(this.getClass());
+    }
+
+    @Override
+    public @Nullable Field modelFieldByName(@NotNull String name) {
+        return modelFieldsMap().get(name);
+    }
+
     public @Nullable Field modelPrimaryField() {
         return CacheTool.getModelPrimaryField(this.getClass());
     }
