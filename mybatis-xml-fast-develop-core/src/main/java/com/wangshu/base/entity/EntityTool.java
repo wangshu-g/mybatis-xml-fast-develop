@@ -57,6 +57,10 @@ public class EntityTool implements Serializable {
         }});
     }
 
+    public @Nullable Field modelFieldByName(@NotNull String name) {
+        return this.modelFieldsMap().get(name);
+    }
+
     @SuppressWarnings("unchecked")
     public @Nullable <T> T modelAnyValueByFieldName(String name, Class<T> clazz) throws IllegalAccessException {
         Object object = this.toMap().get(name);
