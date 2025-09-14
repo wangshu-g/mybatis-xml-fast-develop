@@ -22,6 +22,7 @@ package com.wangshu.base.service;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
@@ -147,6 +148,13 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             model.setModelAnyValueByFieldName(modelPrimaryField.getName(), getId());
         }
         Class<T> modelClazz = getModelClazz();
+        Field modelVersionField = CacheTool.getModelVersionField(modelClazz);
+        if (Objects.nonNull(modelVersionField)) {
+            Object versionValue = model.safeModelAnyValueByFieldName(modelVersionField.getName());
+            if (Objects.isNull(versionValue)) {
+                model.setModelAnyValueByFieldName(modelVersionField.getName(), 0);
+            }
+        }
         Field modelCreatedAtField = CacheTool.getModelCreatedAtField(modelClazz);
         if (Objects.nonNull(modelCreatedAtField)) {
             model.setModelAnyValueByFieldName(modelCreatedAtField.getName(), new Date());
@@ -159,6 +167,16 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         if (Objects.nonNull(modelDeleteFlagField)) {
             model.setModelAnyValueByFieldName(modelDeleteFlagField.getName(), false);
         }
+        Map<String, String> modelFieldsDefaultValue = CacheTool.getModelFieldsDefaultValue(modelClazz);
+        modelFieldsDefaultValue.forEach((modelFieldName, fieldDefaultValue) -> {
+            Field field = model.modelFieldByName(modelFieldName);
+            if (Objects.nonNull(field)) {
+                Object fieldValue = model.safeModelAnyValueByFieldName(modelFieldName);
+                if (Objects.isNull(fieldValue)) {
+                    model.setModelAnyValueByFieldName(modelFieldName, Convert.convert(field.getType(), fieldDefaultValue));
+                }
+            }
+        });
         return model;
     }
 
@@ -479,6 +497,10 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         if (Objects.nonNull(modelCreatedAtField)) {
             String newCreatedAtName = StrUtil.concat(false, "new", StrUtil.upperFirst(modelCreatedAtField.getName()));
             map.remove(newCreatedAtName);
+        }
+        Field modelVersionField = CacheTool.getModelVersionField(modelClazz);
+        if (Objects.nonNull(modelVersionField)) {
+            map.put(StrUtil.concat(false, modelVersionField.getName(), "Incr"), true);
         }
         return map;
     }
