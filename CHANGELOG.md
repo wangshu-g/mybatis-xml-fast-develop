@@ -1,8 +1,12 @@
 # mybatis-xml-fast-develop changelog
 
-+ ## 1.6.1-dev
++ ## 1.6.1
 
-预添加乐观更新、自增 1、自减 1
+添加 @Version 版本号标识注解
+
+添加 @DefaultValue 默认值注解
+
+添加基于 @Version 注解的乐观更新、自增 1、自减 1
 
 + ## 1.6.0
 
