@@ -501,6 +501,9 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
         Field modelVersionField = CacheTool.getModelVersionField(modelClazz);
         if (Objects.nonNull(modelVersionField)) {
             map.put(StrUtil.concat(false, modelVersionField.getName(), "Incr"), true);
+            if (Objects.isNull(map.get(modelVersionField.getName()))) {
+                log.warn("存在版本号字段,但未使用版本号字段作为更新条件");
+            }
         }
         return map;
     }
