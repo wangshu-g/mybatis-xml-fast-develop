@@ -1,4 +1,4 @@
-package com.test.model;
+package com.test.table;
 
 import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -48,17 +47,5 @@ public class Article extends BaseModel {
 
     @Column(conditions = {Condition.all}, title = "文章所属分组")
     private String groupId;
-
-    @Join(rightJoinField = "uid")
-    private User user;
-
-    @Join(rightJoinField = "groupId")
-    private ArticleGroup articleGroup;
-
-    /**
-     * <p>不推荐</p>
-     **/
-    @Join(leftJoinField = "articleId")
-    private List<ArticleTag> articleTagList;
 
 }

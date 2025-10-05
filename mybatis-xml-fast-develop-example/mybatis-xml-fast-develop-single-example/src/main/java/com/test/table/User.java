@@ -1,4 +1,4 @@
-package com.test.model;
+package com.test.table;
 
 import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;

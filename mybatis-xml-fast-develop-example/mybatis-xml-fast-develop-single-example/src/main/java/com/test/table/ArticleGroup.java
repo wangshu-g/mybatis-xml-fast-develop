@@ -1,4 +1,4 @@
-package com.test.model;
+package com.test.table;
 
 import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
@@ -10,8 +10,8 @@ import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Model(title = "文章标签", modelDefaultKeyword = "tagName")
-public class ArticleTag extends BaseModel {
+@Model(title = "文章分组", modelDefaultKeyword = "groupName")
+public class ArticleGroup extends BaseModel {
 
     @Column(title = "ID", conditions = {Condition.all})
     @Primary
@@ -30,10 +30,13 @@ public class ArticleTag extends BaseModel {
     @DeletedAt
     private Date deletedAt;
 
-    @Column(title = "标签名称", conditions = {Condition.all}, keyword = true)
-    private String tagName;
+    @Column(title = "分组名称", conditions = {Condition.all}, keyword = true)
+    private String groupName;
 
-    @Column(title = "所属文章", conditions = {Condition.all})
-    private String articleId;
+    @Column(title = "描述", conditions = {Condition.all}, keyword = true)
+    private String desc;
+
+    @Column(title = "创建者", conditions = {Condition.all})
+    private String uid;
 
 }
