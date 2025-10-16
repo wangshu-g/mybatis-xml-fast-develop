@@ -75,7 +75,9 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
             throw new IException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Object primaryValue = model.safeModelAnyValueByFieldName(modelPrimaryField.getName());
-        if (!StrUtil.isBlankIfStr(primaryValue) && Objects.nonNull(_select(modelPrimaryField.getName(), primaryValue))) {
+        if (!StrUtil.isBlankIfStr(primaryValue) && Objects.nonNull(getMapper()._select(new HashMap<>() {{
+            put(modelPrimaryField.getName(), primaryValue);
+        }}))) {
             return _update(model);
         }
         model = saveParamFilter(model);
