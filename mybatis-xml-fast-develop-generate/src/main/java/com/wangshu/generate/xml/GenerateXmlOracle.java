@@ -206,6 +206,14 @@ public class GenerateXmlOracle<T extends ModelInfo<?, F>, F extends ColumnInfo<?
             Element ifSetNullElement = this.getIfSetNullElement(item.getName());
             ifSetNullElement.addText(StrUtil.concat(false, wrapEscapeCharacter(item.getSqlStyleName()), " = null,"));
             setElement.add(ifSetNullElement);
+            if (GenerateXml.numJavaTypeName.contains(item.getJavaTypeName())) {
+                Element ifIncrElement = this.getIfIncrElement(item.getName());
+                ifIncrElement.addText(StrUtil.concat(false, wrapEscapeCharacter(item.getSqlStyleName()), " = ", wrapEscapeCharacter(item.getSqlStyleName()), " + 1 ", ","));
+                setElement.add(ifIncrElement);
+                Element ifDecrElement = this.getIfDecrElement(item.getName());
+                ifDecrElement.addText(StrUtil.concat(false, wrapEscapeCharacter(item.getSqlStyleName()), " = ", wrapEscapeCharacter(item.getSqlStyleName()), " - 1 ", ","));
+                setElement.add(ifDecrElement);
+            }
         });
         updateElement.add(setElement);
         org.dom4j.Element whereElement = this.createXmlElement("where");

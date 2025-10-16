@@ -183,7 +183,7 @@ public abstract class GenerateXml<T extends ModelInfo<?, F>, F extends ColumnInf
         return deleteElement;
     }
 
-    private final List<String> numJavaTypeName = List.of(Integer.class.getTypeName(), Long.class.getTypeName(), Double.class.getTypeName(), Float.class.getTypeName());
+    public static final List<String> numJavaTypeName = List.of(Integer.class.getTypeName(), Long.class.getTypeName(), Double.class.getTypeName(), Float.class.getTypeName());
 
     public org.dom4j.Element generateUpdate() {
         org.dom4j.Element updateElement = this.createXmlElement("update");
