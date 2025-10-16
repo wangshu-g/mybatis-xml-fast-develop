@@ -83,9 +83,30 @@ public class ModelCache {
             this.orderColumnPossibleParameterName = orderColumnPossibleParameterName(modelClazz);
             this.deleteMethodPossibleWhereParameterName = deleteMethodPossibleWhereParameterName(modelClazz);
             this.updateMethodPossibleWhereParameterName = this.deleteMethodPossibleWhereParameterName;
-            this.dataBaseType = annotation.dataBaseType();
-            this.sqlStyle = annotation.sqlStyle();
+            if (annotation.table()) {
+                this.dataBaseType = annotation.dataBaseType();
+                this.sqlStyle = annotation.sqlStyle();
+            } else {
+                Class<?> parentTableModel = findParentTableModel(modelClazz);
+                Model tableModelAnnotation = parentTableModel.getAnnotation(Model.class);
+                this.dataBaseType = tableModelAnnotation.dataBaseType();
+                this.sqlStyle = tableModelAnnotation.sqlStyle();
+            }
         }
+    }
+
+    private Class<?> findParentTableModel(Class<?> clazz) {
+        while (Objects.nonNull(clazz)) {
+            Model annotation = clazz.getAnnotation(Model.class);
+            if (Objects.nonNull(annotation) && annotation.table()) {
+                break;
+            }
+            clazz = clazz.getSuperclass();
+        }
+        if (Objects.isNull(clazz)) {
+            throw new IllegalArgumentException("未能向上查找到表实体的 Model 注解，请手动指定当前模型类表名");
+        }
+        return clazz;
     }
 
     private void initCriticalFields() {

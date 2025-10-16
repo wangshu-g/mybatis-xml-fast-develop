@@ -27,6 +27,7 @@ import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
+import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.generate.metadata.field.AbstractColumnInfo;
 import com.wangshu.generate.metadata.field.ColumnFieldInfo;
@@ -64,7 +65,7 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
     public void initBaseInfo(ModuleInfo moduleInfo, @NotNull Class<? extends BaseModel> metaData, boolean ignoreJoinFields) {
         Model modelAnnotation = metaData.getAnnotation(Model.class);
         this.setModelAnnotation(modelAnnotation);
-        this.setDataBaseType(modelAnnotation.dataBaseType());
+        this.setDataBaseType(this.initDataBaseType());
         this.setModelDefaultKeyword(modelAnnotation.modelDefaultKeyword());
         this.setSqlStyle(this.initSqlStyle());
         this.setTableName(this.initTableName(moduleInfo, metaData, ignoreJoinFields));
@@ -99,6 +100,15 @@ public class ModelClazzInfo extends AbstractModelInfo<Class<? extends BaseModel>
         this.setKeyWordFields(fields.stream().filter(AbstractColumnInfo::isKeywordField).collect(Collectors.toList()));
         this.setPrimaryField(fields.stream().filter(AbstractColumnInfo::isPrimaryField).findFirst().orElse(null));
         this.setDefaultModelKeyWordField(this.getFieldByName(this.getModelDefaultKeyword()));
+    }
+
+    private DataBaseType initDataBaseType() {
+        if (this.getModelAnnotation().table() || StrUtil.isNotBlank(this.getModelAnnotation().name())) {
+            return this.getModelAnnotation().dataBaseType();
+        }
+        Class<?> parentTableModel = this.findParentTableModel();
+        Model tableModelAnnotation = parentTableModel.getAnnotation(Model.class);
+        return tableModelAnnotation.dataBaseType();
     }
 
     private SqlStyle initSqlStyle() {
