@@ -2,6 +2,12 @@
 
 + ## 1.6.1
 
+待推送
+
+fix: [子模型元数据未正确处理dataBaseType导致生成错误的xml文件](https://github.com/wangshu-g/mybatis-xml-fast-develop/issues/2)
+
+fix: 保存前根据主键查询是否存在，应忽略删除标记字段
+
 添加 @Version 版本号标识注解
 
 添加 @DefaultValue 默认值注解
