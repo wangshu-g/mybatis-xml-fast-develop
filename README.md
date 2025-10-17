@@ -7,17 +7,12 @@ XML、Mapper、ServiceInterface、ServiceInstance、Controller 等模板代码�
 XML开发极其友好。
 
 * 它完全基于 MyBatis XML 原生机制实现
+* 几乎 **零学习成本**、**零心智负担**，对现有项目 **无侵入性**，**无黑盒逻辑**
 * 自动在编译期根据实体、注解生成对应的 XML 映射与 SQL；
 * 支持常见数据库（MySQL / PostgreSQL / Oracle / SQL Server / MariaDB / 达梦等）；
 * 支持多种命名风格（如驼峰、下划线、上划线等）；
 * 包括核心模块、自动建表、生成模块、编译期插件与示例工程等；
 * 可作为 “Lombok + MyBatis XML 生成器” 插件使用，让开发者免于手写冗长的 XML。
-
-它完全基于 MyBatis 原生扩展机制实现，引入后：
-
-* 几乎 **零学习成本**、**零心智负担**；
-* 对现有项目 **无侵入性**；
-* **无黑盒逻辑**，可直接查看、调试、修改生成的 XML 文件。
 
 ---
 
