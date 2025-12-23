@@ -38,27 +38,27 @@ Maven 仓库地址：
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-core</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
     </dependency>
 
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-starter</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
     </dependency>
 
     <!-- 引入后无需手动执行生成操作 -->
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
     </dependency>
 
     <!-- 编译期生成插件（类似 Lombok） -->
     <dependency>
         <groupId>io.github.wangshu-g</groupId>
         <artifactId>mybatis-xml-fast-develop-generate-compile-time</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
         <!-- 对于存在动态编译场景的项目，该配置非常重要 -->
         <scope>provided</scope>
     </dependency>
