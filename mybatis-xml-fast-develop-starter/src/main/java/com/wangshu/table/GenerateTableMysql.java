@@ -53,6 +53,13 @@ public class GenerateTableMysql extends GenerateTable {
     }
 
     @Override
+    public ResultSet getColumnsResultSetFromDatabaseMetaData(@NotNull Connection connection, String tableName) throws SQLException {
+        String catalog = connection.getCatalog();
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        return databaseMetaData.getColumns(catalog, null, tableName, null);
+    }
+
+    @Override
     public String getCreateTableSql(@NotNull String tableName) {
         StringBuilder sql = new StringBuilder("create table `");
         sql.append(tableName);

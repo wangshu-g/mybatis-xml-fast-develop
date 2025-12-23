@@ -575,12 +575,11 @@ public abstract class AbstractBaseDataService<P, M extends BaseDataMapper<T>, T 
      * @return T extends BaseModel
      **/
     public @Nullable T _select(P id) {
-        if (Objects.isNull(id) || StrUtil.isBlank(id.toString())) {
-            log.error("根据主键字段查询时主键字段不能为空,异常参数: {}", id);
-            throw new IException(HttpStatus.BAD_REQUEST);
+        if (Objects.isNull(id) || StrUtil.isBlankIfStr(id)) {
+            return null;
         }
-        Map<String, Object> map = new HashMap<>();
         Field modelPrimaryField = getModelPrimaryField();
+        Map<String, Object> map = new HashMap<>();
         if (Objects.isNull(modelPrimaryField)) {
             log.error("实体类需要指定主键字段");
             throw new IException(HttpStatus.BAD_REQUEST);

@@ -90,40 +90,48 @@ public abstract class GenerateTable extends ModelInfo {
 
     public void alterTable(@NotNull Connection connection, @NotNull String tableName) throws SQLException {
         log.info("表 {} 已存在", tableName);
-        DatabaseMetaData databaseMetaData = connection.getMetaData();
-        String catalog = connection.getCatalog();
-        ResultSet columnsResult = getColumnsResultSetFromDatabaseMetaData(connection, tableName);
-        Map<String, FieldInfo> columnMap = this.getFields().stream().collect(Collectors.toMap(FieldInfo::getSqlStyleName, v -> v));
-        while (columnsResult.next()) {
-            String column = columnsResult.getString("COLUMN_NAME");
-            FieldInfo columnInfo = columnMap.get(column);
-            if (Objects.nonNull(columnInfo)) {
-                String currentColumnTypeName = columnsResult.getString("TYPE_NAME");
-                String columnJdbcType = columnInfo.getDbColumnType();
-                if (this.columnIsModify(currentColumnTypeName, columnJdbcType)) {
-                    String columnName = columnInfo.getSqlStyleName();
-                    int columnLength = columnInfo.getDefaultLength();
-                    log.warn("修改列: {}", columnInfo.getName());
-                    String sql = this.getAlterColumnSql(tableName, columnName, columnJdbcType, columnLength);
-                    log.warn("执行sql: {}", sql);
-                    Statement statement = connection.createStatement();
-                    try {
-                        statement.execute(sql);
-                    } catch (SQLException e) {
-                        log.error("修改列: {},失败", columnName);
-                        log.error("异常: ", e);
+        Map<String, FieldInfo> columnMap = this.getFields().stream().collect(Collectors.toMap(f -> f.getSqlStyleName().toLowerCase(), v -> v));
+        try (ResultSet columnsResult = getColumnsResultSetFromDatabaseMetaData(connection, tableName)) {
+            while (columnsResult.next()) {
+                String column = columnsResult.getString("COLUMN_NAME").toLowerCase();
+                FieldInfo columnInfo = columnMap.get(column);
+                if (Objects.nonNull(columnInfo)) {
+                    String currentColumnTypeName = columnsResult.getString("TYPE_NAME");
+                    String targetColumnType = columnInfo.getDbColumnType();
+                    if (this.columnIsModify(currentColumnTypeName, targetColumnType)) {
+                        String columnName = columnInfo.getSqlStyleName();
+                        int columnLength = columnInfo.getDefaultLength();
+                        log.warn("修改列: {}", columnInfo.getName());
+                        String sql = this.getAlterColumnSql(
+                                tableName,
+                                columnName,
+                                targetColumnType,
+                                columnLength
+                        );
+                        log.warn("执行sql: {}", sql);
+                        try (Statement statement = connection.createStatement()) {
+                            statement.execute(sql);
+                        } catch (SQLException e) {
+                            log.error("修改列: {} 失败", columnName, e);
+                        }
                     }
+                    columnMap.remove(column);
                 }
-                columnMap.remove(column);
             }
         }
         for (FieldInfo value : columnMap.values()) {
             String columnName = value.getSqlStyleName();
             log.warn("添加列: {}", columnName);
-            String sql = this.getAddColumnSql(tableName, columnName, value.getDbColumnType(), value.getDefaultLength());
+            String sql = this.getAddColumnSql(
+                    tableName,
+                    columnName,
+                    value.getDbColumnType(),
+                    value.getDefaultLength()
+            );
             log.warn("执行sql: {}", sql);
-            Statement statement = connection.createStatement();
-            statement.execute(sql);
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(sql);
+            }
         }
         log.info("");
     }
