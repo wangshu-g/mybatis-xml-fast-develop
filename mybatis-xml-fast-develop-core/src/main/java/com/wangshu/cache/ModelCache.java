@@ -22,13 +22,13 @@ package com.wangshu.cache;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.*;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.enu.Condition;
 import com.wangshu.enu.DataBaseType;
 import com.wangshu.enu.SqlStyle;
 import com.wangshu.tool.CommonTool;
+import com.wangshu.tool.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

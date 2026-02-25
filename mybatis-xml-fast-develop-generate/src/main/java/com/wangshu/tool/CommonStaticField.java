@@ -22,7 +22,7 @@ package com.wangshu.tool;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.util.StrUtil;
+import com.wangshu.tool.StrUtil;
 import com.wangshu.base.mapper.BaseDataMapper;
 import com.wangshu.base.model.BaseModel;
 import com.wangshu.base.service.AbstractBaseDataService;

@@ -22,13 +22,14 @@ package com.wangshu.generate.config;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.Dict;
-import cn.hutool.setting.yaml.YamlUtil;
+import com.wangshu.tool.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.core.io.FileSystemResource;
 
 import java.util.Objects;
+import java.util.Properties;
 
 /**
  * @author wangshu-g
@@ -39,19 +40,27 @@ import java.util.Objects;
 @Data
 public class GenerateConfigCompileTime extends GenerateConfig {
 
+    private static Boolean getBoolean(Properties properties, String key) {
+        String value = properties.getProperty(key);
+        return Objects.nonNull(value) ? Boolean.parseBoolean(value) : null;
+    }
+
     public GenerateConfigCompileTime(String applicationYmlFilePath) {
         if (FileUtil.exist(applicationYmlFilePath)) {
-            Dict dict = YamlUtil.loadByPath(applicationYmlFilePath);
-            Boolean scanClassFileValue = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.scan-class-file", Boolean.class);
-            Boolean forceOverwriteXml = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.force-overwrite-xml", Boolean.class);
-            Boolean xmlValue = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.xml", Boolean.class);
-            Boolean mapperValue = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.mapper", Boolean.class);
-            Boolean serviceValue = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.service", Boolean.class);
-            Boolean serviceImplValue = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.serviceImpl", Boolean.class);
-            Boolean controllerValue = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.controller", Boolean.class);
-            Boolean queryValue = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.query", Boolean.class);
-            this.scanClassFile = !Objects.isNull(scanClassFileValue) && scanClassFileValue;
-            this.scanClassFileModelPackage = dict.getByPath("mybatis-xml-fast-develop.generate-compile-time.scan-class-file-model-package", String.class);
+            YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
+            yaml.setResources(new FileSystemResource(applicationYmlFilePath));
+            Properties properties = yaml.getObject();
+            assert properties != null;
+            Boolean scanClassFileValue = getBoolean(properties, "mybatis-xml-fast-develop.generate-compile-time.scan-class-file");
+            Boolean forceOverwriteXml = getBoolean(properties, "mybatis-xml-fast-develop.generate-compile-time.force-overwrite-xml");
+            Boolean xmlValue = getBoolean(properties, "mybatis-xml-fast-develop.generate-compile-time.xml");
+            Boolean mapperValue = getBoolean(properties, "mybatis-xml-fast-develop.generate-compile-time.mapper");
+            Boolean serviceValue = getBoolean(properties, "mybatis-xml-fast-develop.generate-compile-time.service");
+            Boolean serviceImplValue = getBoolean(properties, "mybatis-xml-fast-develop.generate-compile-time.serviceImpl");
+            Boolean controllerValue = getBoolean(properties, "mybatis-xml-fast-develop.generate-compile-time.controller");
+            Boolean queryValue = getBoolean(properties, "mybatis-xml-fast-develop.generate-compile-time.query");
+            this.scanClassFile = Boolean.TRUE.equals(scanClassFileValue);
+            this.scanClassFileModelPackage = properties.getProperty("mybatis-xml-fast-develop.generate-compile-time.scan-class-file-model-package");
             this.forceOverwriteXml = !Objects.isNull(forceOverwriteXml) && forceOverwriteXml;
             this.setXml(Objects.isNull(xmlValue) || xmlValue);
             this.setMapper(Objects.isNull(mapperValue) || mapperValue);

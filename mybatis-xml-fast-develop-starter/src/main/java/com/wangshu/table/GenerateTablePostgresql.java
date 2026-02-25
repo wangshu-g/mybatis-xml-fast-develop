@@ -22,7 +22,7 @@ package com.wangshu.table;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.util.StrUtil;
+import com.wangshu.tool.StrUtil;
 import com.wangshu.base.model.BaseModel;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;

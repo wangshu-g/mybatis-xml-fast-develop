@@ -22,7 +22,7 @@ package com.wangshu.generate.metadata.field;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.util.StrUtil;
+import com.wangshu.tool.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
 import com.wangshu.annotation.Primary;
@@ -121,7 +121,7 @@ public class ColumnElementInfo extends AbstractColumnInfo<VariableElement, Model
     }
 
     private boolean initIsCollectionJoinField(@NotNull VariableElement field) {
-        return field.asType() instanceof DeclaredType temp && StrUtil.equals(temp.asElement().getSimpleName(), List.class.getSimpleName());
+        return field.asType() instanceof DeclaredType temp && StrUtil.equals(temp.asElement().getSimpleName().toString(), List.class.getSimpleName());
     }
 
     @Nullable
