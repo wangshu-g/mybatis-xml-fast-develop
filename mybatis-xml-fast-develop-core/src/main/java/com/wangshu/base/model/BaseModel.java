@@ -22,11 +22,11 @@ package com.wangshu.base.model;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
 import com.wangshu.base.entity.EntityTool;
 import com.wangshu.tool.CacheTool;
+import com.wangshu.tool.Convert;
+import com.wangshu.tool.StrUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

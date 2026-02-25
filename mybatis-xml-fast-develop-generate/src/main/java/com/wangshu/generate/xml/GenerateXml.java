@@ -22,8 +22,6 @@ package com.wangshu.generate.xml;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
 import com.wangshu.enu.Condition;
 import com.wangshu.enu.JoinCondition;
 import com.wangshu.enu.JoinType;
@@ -34,6 +32,8 @@ import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.tool.CommonStaticField;
 import com.wangshu.tool.CommonTool;
+import com.wangshu.tool.FileUtil;
+import com.wangshu.tool.StrUtil;
 import org.apache.ibatis.type.JdbcType;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;

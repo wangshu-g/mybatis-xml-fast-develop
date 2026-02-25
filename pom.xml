@@ -6,8 +6,8 @@
 
     <parent>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.3.4</version>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.0.0</version>
         <relativePath/>
     </parent>
 
@@ -17,7 +17,7 @@
 
     <artifactId>mybatis-xml-fast-develop</artifactId>
 
-    <version>1.6.2</version>
+    <version>1.6.3</version>
 
     <packaging>pom</packaging>
 
@@ -57,28 +57,14 @@
 
     <properties>
         <java.version>21</java.version>
-        <kotlin.version>1.9.25</kotlin.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-framework-bom.version>6.2.3</spring-framework-bom.version>
-        <mybatis.version>3.5.14</mybatis.version>
-        <mybatis-starter.version>3.0.3</mybatis-starter.version>
-        <mybatis-spring.version>3.0.3</mybatis-spring.version>
-        <fastjson.version>2.0.51</fastjson.version>
-        <hutool.version>5.8.25</hutool.version>
-        <uuid.version>6.1.1</uuid.version>
+        <mybatis.version>3.5.19</mybatis.version>
+        <mybatis-starter.version>4.0.0</mybatis-starter.version>
+        <mybatis-spring.version>4.0.0</mybatis-spring.version>
     </properties>
 
     <dependencyManagement>
 
         <dependencies>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring-framework-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 
             <dependency>
                 <groupId>org.mybatis</groupId>
@@ -90,24 +76,6 @@
                 <groupId>org.mybatis</groupId>
                 <artifactId>mybatis-spring</artifactId>
                 <version>${mybatis-spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba.fastjson2</groupId>
-                <artifactId>fastjson2</artifactId>
-                <version>${fastjson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-all</artifactId>
-                <version>${hutool.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.f4b6a3</groupId>
-                <artifactId>uuid-creator</artifactId>
-                <version>${uuid.version}</version>
             </dependency>
 
         </dependencies>

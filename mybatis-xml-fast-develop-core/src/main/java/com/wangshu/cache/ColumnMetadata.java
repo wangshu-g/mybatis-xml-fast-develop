@@ -22,8 +22,8 @@ package com.wangshu.cache;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.util.StrUtil;
 import com.wangshu.annotation.Column;
+import com.wangshu.tool.StrUtil;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 

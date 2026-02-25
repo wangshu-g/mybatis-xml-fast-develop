@@ -22,8 +22,6 @@ package com.wangshu.generate.java;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
 import com.squareup.javapoet.*;
 import com.wangshu.annotation.Column;
 import com.wangshu.annotation.Join;
@@ -43,7 +41,9 @@ import com.wangshu.exception.MessageException;
 import com.wangshu.generate.config.GenerateConfig;
 import com.wangshu.generate.metadata.field.ColumnInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
+import com.wangshu.tool.FileUtil;
 import com.wangshu.tool.GenerateJavaUtil;
+import com.wangshu.tool.StrUtil;
 import jakarta.annotation.Resource;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -22,9 +22,6 @@ package com.wangshu.generate;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.StrUtil;
 import com.google.auto.service.AutoService;
 import com.wangshu.annotation.Model;
 import com.wangshu.base.model.BaseModel;
@@ -36,6 +33,9 @@ import com.wangshu.generate.metadata.model.ModelElementInfo;
 import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.generate.metadata.module.ModuleTemplateInfo;
 import com.wangshu.generate.xml.GenerateXml;
+import com.wangshu.tool.ClassUtil;
+import com.wangshu.tool.FileUtil;
+import com.wangshu.tool.StrUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.processing.*;

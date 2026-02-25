@@ -22,7 +22,7 @@ package com.wangshu.generate.xml;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import cn.hutool.core.util.StrUtil;
+import com.wangshu.tool.StrUtil;
 import com.wangshu.enu.JoinCondition;
 import com.wangshu.enu.JoinType;
 import com.wangshu.exception.MessageException;
