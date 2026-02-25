@@ -1,6 +1,7 @@
 package com.wangshu.tool;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.util.Objects;
 
@@ -22,11 +23,11 @@ public final class StrUtil {
     }
 
     public static boolean equals(String str1, String str2) {
-        return StringUtils.equals(str1, str2);
+        return Strings.CS.equals(str1, str2);
     }
 
     public static boolean equalsIgnoreCase(String str1, String str2) {
-        return StringUtils.equalsIgnoreCase(str1, str2);
+        return Strings.CI.equals(str1, str2);
     }
 
     public static String upperFirst(String str) {
