@@ -14,10 +14,6 @@ https://wangshu-g.github.io/mybatis-xml-fast-develop-docs/
 
 ## 如何使用
 
-注意：请使用 maven 不再使用 github packages（后续将会清理掉）
-
-maven 仓库链接:
-
 https://central.sonatype.com/artifact/io.github.wangshu-g/mybatis-xml-fast-develop
 
 ```xml

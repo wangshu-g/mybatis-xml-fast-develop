@@ -1,11 +1,11 @@
 ## 🆕 1.6.3
 
-> 暂未推送
+> ✅ 已推送
 
 ### 依赖变更
 
 * 移除 hutool 工具包，使用 commons、spring 等内置工具包替代
-* 父依赖变更至 spring-boot-starter-parent 4.0.0 相关更改
+* 父依赖变更至 spring-boot-starter-parent 4.0.0
 
 ## 🆕 1.6.2
 
