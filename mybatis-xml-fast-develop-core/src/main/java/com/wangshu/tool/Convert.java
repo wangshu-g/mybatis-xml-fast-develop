@@ -1,5 +1,6 @@
 package com.wangshu.tool;
 
+import com.alibaba.fastjson2.JSONObject;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public final class Convert {
 
@@ -35,6 +37,9 @@ public final class Convert {
     public static <T> T convert(Class<T> targetClass, Object value) {
         if (value == null) {
             return null;
+        }
+        if (value instanceof Map<?, ?>) {
+            return JSONObject.parseObject(JSONObject.toJSONString(value), targetClass);
         }
         return CONVERSION_SERVICE.convert(value, targetClass);
     }
