@@ -13,8 +13,6 @@
 
     <artifactId>mybatis-xml-fast-develop-single-example</artifactId>
 
-    <version>1.0-SNAPSHOT</version>
-
     <url>https://github.com/wangshu-g/mybatis-xml-fast-develop</url>
 
     <licenses>
