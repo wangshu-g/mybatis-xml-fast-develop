@@ -34,6 +34,7 @@ import com.wangshu.generate.metadata.model.ModelInfo;
 import com.wangshu.generate.metadata.module.ModuleTemplateInfo;
 import com.wangshu.generate.xml.GenerateXml;
 import com.wangshu.tool.ClassUtil;
+import com.wangshu.tool.CommonTool;
 import com.wangshu.tool.FileUtil;
 import com.wangshu.tool.StrUtil;
 import org.jetbrains.annotations.NotNull;
@@ -45,12 +46,16 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -93,12 +98,16 @@ public class ModelAnnotationProcessor extends AbstractProcessor {
                     break;
             }
         };
-        String moduleClassesPath = Objects.requireNonNull(ModelAnnotationProcessor.class.getClassLoader().getResource("")).getPath();
-        modulePath = moduleClassesPath.replace("target/classes/", "");
-        String[] dirNamePath = modulePath.replaceFirst("/", "").split("/");
-        moduleName = dirNamePath[dirNamePath.length - 1];
-        String applicationYmlFilePath = StrUtil.concat(false, moduleClassesPath, File.separator, "application.yml");
-        generateJavaConfigCompileTime = new GenerateConfigCompileTime(applicationYmlFilePath);
+        try {
+            String uuid = CommonTool.getUUID();
+            Path tempFilePath = Paths.get(processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", uuid).toUri());
+            modulePath = StrUtil.concat(false, tempFilePath.getParent().getParent().getParent().toString(), File.separator);
+            moduleName = tempFilePath.getName(tempFilePath.getNameCount() - 4).toString();
+            String applicationYmlFilePath = StrUtil.concat(false, tempFilePath.getParent().toString(), File.separator, "application.yml");
+            generateJavaConfigCompileTime = new GenerateConfigCompileTime(applicationYmlFilePath);
+        } catch (IOException e) {
+            printError(e.getMessage());
+        }
     }
 
     @Override
